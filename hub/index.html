@@ -796,16 +796,16 @@
 <script>
 // ═══ SERVICES DATA ═══
 const SERVICES = [
-  { id:'portal',    name:'Cloud Portal',    icon:'🌐', desc:'Main command centre',         url:'https://cloud.dannygc.cloud',    badge:'PORTAL',  badgeClass:'',       canIframe: true  },
-  { id:'ollama',    name:'Ollama / Gemma',  icon:'🤖', desc:'AI model management',          url:'https://ai.dannygc.cloud',       badge:'AI',      badgeClass:'purple', canIframe: true  },
-  { id:'portainer', name:'Portainer',       icon:'🐳', desc:'Container management',         url:'https://portainer.dannygc.cloud',badge:'TOOLS',   badgeClass:'',       canIframe: false },
-  { id:'grafana',   name:'Grafana',         icon:'📊', desc:'Metrics & analytics',          url:'https://grafana.dannygc.cloud',  badge:'MONITOR', badgeClass:'',       canIframe: false },
-  { id:'monitor',   name:'System Monitor',  icon:'📈', desc:'Real-time server stats',       url:'https://monitor.dannygc.cloud',  badge:'MONITOR', badgeClass:'',       canIframe: false },
-  { id:'files',     name:'File Manager',    icon:'📁', desc:'Browse server files',          url:'https://files.dannygc.cloud',    badge:'TOOLS',   badgeClass:'',       canIframe: true  },
-  { id:'code',      name:'VS Code Server',  icon:'💻', desc:'Browser-based code editor',    url:'https://code.dannygc.cloud',     badge:'DEV',     badgeClass:'',       canIframe: true  },
-  { id:'n8n',       name:'n8n Automation',  icon:'⚡', desc:'Workflow automation',          url:'https://n8n.dannygc.cloud',      badge:'AUTO',    badgeClass:'gold',   canIframe: true  },
-  { id:'office',    name:'OnlyOffice',      icon:'📝', desc:'Documents & spreadsheets',     url:'https://office.dannygc.cloud',   badge:'PROD',    badgeClass:'green',  canIframe: true  },
-  { id:'kasm',      name:'Web Browser',     icon:'🌍', desc:'Kasm cloud browser',           url:'https://kasm.dannyk.online',     badge:'DEV',     badgeClass:'',       canIframe: false },
+  { id:'portal',    name:'Cloud Portal',    icon:'🌐', desc:'Main command centre',          url:'https://cloud.dannygc.cloud',    badge:'PORTAL',  badgeClass:'',       canIframe: false },
+  { id:'ollama',    name:'Ollama / Gemma',  icon:'🤖', desc:'AI model management',           url:'https://ai.dannygc.cloud',       badge:'AI',      badgeClass:'purple', canIframe: false },
+  { id:'portainer', name:'Portainer',       icon:'🐳', desc:'Container management',          url:'https://portainer.dannygc.cloud',badge:'TOOLS',   badgeClass:'',       canIframe: false },
+  { id:'grafana',   name:'Grafana',         icon:'📊', desc:'Metrics & analytics',           url:'https://grafana.dannygc.cloud',  badge:'MONITOR', badgeClass:'',       canIframe: false },
+  { id:'monitor',   name:'System Monitor',  icon:'📈', desc:'Real-time server stats',        url:'https://monitor.dannygc.cloud',  badge:'MONITOR', badgeClass:'',       canIframe: false },
+  { id:'files',     name:'File Manager',    icon:'📁', desc:'Browse server files',           url:'https://files.dannygc.cloud',    badge:'TOOLS',   badgeClass:'',       canIframe: false },
+  { id:'code',      name:'VS Code Server',  icon:'💻', desc:'Browser-based code editor',     url:'https://code.dannygc.cloud',     badge:'DEV',     badgeClass:'',       canIframe: false },
+  { id:'n8n',       name:'n8n Automation',  icon:'⚡', desc:'Workflow automation',           url:'https://n8n.dannygc.cloud',      badge:'AUTO',    badgeClass:'gold',   canIframe: false },
+  { id:'office',    name:'LibreOffice',     icon:'📝', desc:'Online documents & sheets',     url:'https://www.libreoffice.org/download/libreoffice-online/', badge:'PROD', badgeClass:'green', canIframe: false },
+  { id:'kasm',      name:'Web Browser',     icon:'🌍', desc:'Kasm cloud browser',            url:'https://kasm.dannyk.online',     badge:'DEV',     badgeClass:'',       canIframe: false },
 ];
 
 // Mock dashboard data for services that block iframes
@@ -1032,37 +1032,33 @@ function loadPreview(service) {
 
   wrap.innerHTML = '';
 
-  if (service.canIframe) {
-    // Try iframe first
-    const iframe = document.createElement('iframe');
-    iframe.className = 'preview-iframe';
-    iframe.src = service.url;
-    iframe.title = service.name;
-    iframe.setAttribute('loading', 'lazy');
-    // If iframe fails (X-Frame-Options), show placeholder
-    iframe.addEventListener('error', () => showPlaceholder(wrap, service));
-    // Fallback after 4s if nothing loads
-    const fallbackTimer = setTimeout(() => {
-      if (!iframe.contentDocument || iframe.contentDocument.title === '') {
-        showPlaceholder(wrap, service);
-      }
-    }, 4000);
-    iframe.addEventListener('load', () => clearTimeout(fallbackTimer));
-    wrap.appendChild(iframe);
-  } else if (MOCK_DASHBOARDS[service.id]) {
+  // Use mock dashboard if available, otherwise show clean service card
+  if (MOCK_DASHBOARDS[service.id]) {
     showMockDashboard(wrap, service);
   } else {
-    showPlaceholder(wrap, service);
+    showServiceCard(wrap, service);
   }
 }
 
-function showPlaceholder(wrap, service) {
+function showServiceCard(wrap, service) {
+  const badgeColour = {
+    'purple': '#a855f7', 'gold': 'var(--gold)', 'green': '#22c55e', '': 'var(--cyan)'
+  }[service.badgeClass] || 'var(--cyan)';
   wrap.innerHTML = `
-    <div class="preview-placeholder">
-      <div class="placeholder-icon">${service.icon}</div>
-      <div class="placeholder-name">${service.name}</div>
-      <div class="placeholder-url">${service.url}</div>
-      <a class="placeholder-open" href="${service.url}" target="_blank">Open in New Tab ↗</a>
+    <div class="preview-placeholder" style="gap:18px">
+      <div style="font-size:4.5rem;filter:drop-shadow(0 0 28px ${badgeColour});animation:logoFloat 3s ease-in-out infinite">${service.icon}</div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;color:${badgeColour};letter-spacing:0.12em">${service.name.toUpperCase()}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-dim);max-width:340px;text-align:center">${service.desc}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:rgba(0,200,255,0.5);margin-top:-6px">${service.url}</div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <a href="${service.url}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,rgba(0,200,255,0.15),rgba(0,136,187,0.1));border:1px solid rgba(0,200,255,0.35);border-radius:9px;padding:10px 22px;font-size:0.8rem;color:var(--cyan);text-decoration:none;font-family:'JetBrains Mono',monospace;transition:all 0.2s" onmouseover="this.style.background='rgba(0,200,255,0.25)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(0,200,255,0.15),rgba(0,136,187,0.1))'">
+          ▶ Open ${service.name}
+        </a>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text-dim)">
+        <div style="width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 5px #22c55e;animation:dotPulse 2s ease-in-out infinite"></div>
+        Service operational
+      </div>
     </div>`;
 }
 
