@@ -904,13 +904,13 @@ const launcherGroups = [
       { icon:'📊', name:'System Monitor',  url:'https://monitor.dannygc.cloud',    desc:'Real-time server performance metrics',  cat:'dev'  },
       { icon:'🐳', name:'Portainer',       url:'https://portainer.dannygc.cloud',  desc:'Docker container management UI',        cat:'dev'  },
       { icon:'📈', name:'Grafana',         url:'https://grafana.dannygc.cloud',    desc:'Metrics and analytics dashboards',      cat:'dev'  },
-      { icon:'🌐', name:'Web Browser',      url:'https://kasm.dannyk.online',       desc:'Full browser in the cloud via Kasm',    cat:'dev'  },
+      { icon:'🌐', name:'Web Browser',      url:'https://kasm.dannyk.online/',      desc:'Full cloud browser via Kasm Workspaces',cat:'dev'  },
     ]
   },
   {
     key: 'ai', label: 'AI', glowClass: 'glow-ai', badgeClass: 'ai',
     apps: [
-      { icon:'🤖', name:'Ollama Dashboard',url:'https://ollama.dannygc.cloud',     desc:'Manage and query local AI models',       cat:'ai'   },
+      { icon:'🤖', name:'Ollama Dashboard',url:'https://ai.dannygc.cloud',         desc:'Manage and query local AI models',       cat:'ai'   },
     ]
   },
   {
@@ -1177,13 +1177,7 @@ async function checkOllama() {
   const chatOnline= document.getElementById('chatOnline');
 
   try {
-    // Try HTTPS subdomain first (avoids mixed-content block), fall back to direct port
-    let r;
-    try {
-      r = await fetch('https://ollama.dannygc.cloud/api/tags', { signal: AbortSignal.timeout(4000) });
-    } catch {
-      r = await fetch('http://cloud.dannygc.cloud:11434/api/tags', { signal: AbortSignal.timeout(4000) });
-    }
+    const r = await fetch('https://api.dannygc.cloud/api/tags', { signal: AbortSignal.timeout(5000) });
     if (r.ok) {
       const data = await r.json();
       const model = data.models?.[0]?.name || 'gemma4';
@@ -1281,8 +1275,7 @@ async function sendChat() {
   msgs.scrollTop = msgs.scrollHeight;
   try {
     const model = document.getElementById('modelName').textContent || 'gemma4';
-    const ollamaBase = window.location.protocol === 'https:' ? 'https://ollama.dannygc.cloud' : 'http://cloud.dannygc.cloud:11434';
-    const res = await fetch(ollamaBase + '/api/generate', {
+    const res = await fetch('https://api.dannygc.cloud/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model, prompt: msg, stream: false }),
