@@ -4,12 +4,12 @@
  * via any medium, is strictly prohibited. Proprietary and confidential.
  -->
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="DannyGC Cloud Portal — AI-Powered Server Dashboard">
-  <meta name="theme-color" content="#050d1a">
+  <meta name="theme-color" content="#0a0806">
   <title>DannyGC Cloud Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,33 +19,40 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
+    /* ── BRAND COLOUR SYSTEM ──────────────────────────────────────
+       Primary:  Amber/Orange  #f5a623 / #c47a1e
+       Accent:   Cyan/Electric #00c8ff / #38bdf8
+       Dark bg:  Near-black    #0a0806 / #120e08 / #1c1509
+       Cards:    Dark warm     #1a1208 / #221a0a
+    ─────────────────────────────────────────────────────────────── */
     :root {
-      --bg:          #050d1a;
-      --bg2:         #0a1628;
-      --bg3:         #0f1f3d;
-      --bg4:         #1a2d5a;
-      --card:        #0d1b35;
-      --card-hover:  #132040;
-      --border:      rgba(56,139,253,0.20);
-      --border-bright: rgba(99,160,255,0.45);
-      --blue:        #3b82f6;
-      --blue-bright: #60a5fa;
-      --blue-glow:   rgba(59,130,246,0.20);
-      --indigo:      #6366f1;
-      --indigo-glow: rgba(99,102,241,0.20);
-      --gold:        #f59e0b;
-      --gold-dim:    rgba(245,158,11,0.15);
-      --green:       #10b981;
-      --red:         #ef4444;
-      --purple:      #a855f7;
-      --text:        #e2e8f0;
-      --text-dim:    #94a3b8;
-      --text-muted:  #475569;
-      --radius:      12px;
-      --radius-lg:   18px;
-      --shadow:      0 4px 24px rgba(0,0,0,0.5);
-      --shadow-lg:   0 8px 40px rgba(0,0,0,0.6);
-      --transition:  all 0.22s cubic-bezier(0.23,1,0.32,1);
+      --bg:            #0a0806;
+      --bg2:           #120e08;
+      --bg3:           #1c1509;
+      --bg4:           #261c0c;
+      --card:          #1a1208;
+      --card-hover:    #221a0a;
+      --border:        rgba(245,166,35,0.18);
+      --border-bright: rgba(245,166,35,0.50);
+      --amber:         #f5a623;
+      --amber-dim:     #c47a1e;
+      --amber-glow:    rgba(245,166,35,0.15);
+      --amber-glow2:   rgba(245,166,35,0.08);
+      --cyan:          #00c8ff;
+      --cyan-dim:      #38bdf8;
+      --cyan-glow:     rgba(0,200,255,0.15);
+      --orange:        #f97316;
+      --green:         #22c55e;
+      --red:           #ef4444;
+      --purple:        #a855f7;
+      --text:          #f0e8d8;
+      --text-dim:      #a89070;
+      --text-muted:    #5a4a30;
+      --radius:        12px;
+      --radius-lg:     18px;
+      --shadow:        0 4px 24px rgba(0,0,0,0.6);
+      --shadow-lg:     0 8px 40px rgba(0,0,0,0.7);
+      --transition:    all 0.22s cubic-bezier(0.23,1,0.32,1);
     }
 
     body {
@@ -69,7 +76,7 @@
       background: #000;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
+      transition: opacity 1.2s ease, visibility 1.2s ease;
     }
     #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
@@ -82,124 +89,129 @@
       animation: floatUp linear infinite;
       opacity: 0;
     }
-
     @keyframes floatUp {
       0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-      10%  { opacity: 0.6; }
+      10%  { opacity: 0.7; }
       90%  { opacity: 0.3; }
       100% { transform: translateY(-20vh) scale(1); opacity: 0; }
     }
 
     .splash-logo-wrap {
       text-align: center;
-      margin-bottom: 40px;
-      animation: splashLogoIn 1s ease 0.3s both;
+      margin-bottom: 44px;
+      animation: splashLogoIn 1.4s ease 0.5s both;
     }
     @keyframes splashLogoIn {
-      from { opacity: 0; transform: scale(0.8) translateY(-20px); }
+      from { opacity: 0; transform: scale(0.75) translateY(-30px); }
       to   { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     .splash-logo-icon {
-      width: 80px; height: 80px;
-      background: linear-gradient(135deg, #3b82f6, #6366f1, #f59e0b);
-      border-radius: 20px;
+      width: 110px; height: 110px;
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 40px;
-      margin: 0 auto 16px;
-      box-shadow: 0 0 40px rgba(59,130,246,0.5), 0 0 80px rgba(99,102,241,0.3);
-      animation: iconPulse 2s ease infinite;
+      margin: 0 auto 18px;
+      box-shadow: 0 0 50px rgba(245,166,35,0.5), 0 0 100px rgba(0,200,255,0.25);
+      animation: iconPulse 3s ease infinite;
+      overflow: hidden;
+      background: #1a1208;
+      border: 2px solid rgba(245,166,35,0.4);
+    }
+    .splash-logo-icon img {
+      width: 100%; height: 100%; object-fit: cover;
     }
     @keyframes iconPulse {
-      0%, 100% { box-shadow: 0 0 40px rgba(59,130,246,0.5), 0 0 80px rgba(99,102,241,0.3); }
-      50%       { box-shadow: 0 0 60px rgba(59,130,246,0.8), 0 0 120px rgba(99,102,241,0.5); }
+      0%, 100% { box-shadow: 0 0 50px rgba(245,166,35,0.5), 0 0 100px rgba(0,200,255,0.25); }
+      50%       { box-shadow: 0 0 80px rgba(245,166,35,0.8), 0 0 160px rgba(0,200,255,0.45); }
     }
 
     .splash-title {
       font-family: 'Sora', sans-serif;
-      font-size: 2.2rem; font-weight: 800;
-      background: linear-gradient(135deg, #60a5fa, #818cf8, #f59e0b);
+      font-size: 2.4rem; font-weight: 800;
+      background: linear-gradient(135deg, #c47a1e, #f5a623, #00c8ff);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       letter-spacing: -0.02em;
     }
     .splash-sub {
-      font-size: 0.85rem; color: #475569; letter-spacing: 0.15em;
+      font-size: 0.82rem; color: #5a4a30; letter-spacing: 0.18em;
       text-transform: uppercase; margin-top: 6px;
+    }
+    .splash-version {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: #3a2a10; margin-top: 4px;
     }
 
     /* Terminal window */
     .terminal-window {
-      width: min(600px, 90vw);
-      background: #0d1117;
-      border: 1px solid #21262d;
+      width: min(620px, 90vw);
+      background: #0d0a06;
+      border: 1px solid rgba(245,166,35,0.25);
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-      animation: termIn 0.6s ease 0.8s both;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(245,166,35,0.08);
+      animation: termIn 0.8s ease 1.2s both;
     }
     @keyframes termIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     .terminal-bar {
-      background: #161b22;
+      background: #160f05;
       padding: 10px 14px;
       display: flex; align-items: center; gap: 8px;
-      border-bottom: 1px solid #21262d;
+      border-bottom: 1px solid rgba(245,166,35,0.15);
     }
-    .term-dot {
-      width: 12px; height: 12px; border-radius: 50%;
-    }
-    .term-dot.red   { background: #ff5f57; }
-    .term-dot.yellow{ background: #febc2e; }
-    .term-dot.green { background: #28c840; }
+    .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .term-dot.red    { background: #ff5f57; }
+    .term-dot.yellow { background: #febc2e; }
+    .term-dot.green  { background: #28c840; }
     .terminal-bar span {
       margin-left: 8px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12px; color: #8b949e;
+      font-size: 12px; color: #5a4a30;
     }
 
     .terminal-body {
-      padding: 16px 18px;
+      padding: 18px 20px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 13px; line-height: 1.8;
-      min-height: 160px;
+      font-size: 13px; line-height: 2;
+      min-height: 180px;
     }
-    .term-line { display: flex; align-items: center; gap: 10px; opacity: 0; }
+    .term-line { display: flex; align-items: center; gap: 12px; opacity: 0; transition: opacity 0.3s; }
     .term-line.visible { opacity: 1; }
     .term-ok   { color: #28c840; font-weight: 700; flex-shrink: 0; }
-    .term-text { color: #c9d1d9; }
+    .term-text { color: #a89070; }
     .term-cursor {
-      display: inline-block; width: 8px; height: 14px;
-      background: #3b82f6; animation: blink 1s step-end infinite;
+      display: inline-block; width: 8px; height: 15px;
+      background: var(--amber); animation: blink 1s step-end infinite;
       vertical-align: middle;
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
     .splash-progress-wrap {
-      width: min(600px, 90vw);
-      margin-top: 20px;
-      animation: termIn 0.6s ease 1s both;
+      width: min(620px, 90vw);
+      margin-top: 22px;
+      animation: termIn 0.8s ease 1.4s both;
     }
     .splash-progress-bar {
       height: 3px;
-      background: var(--bg3);
+      background: #1c1509;
       border-radius: 2px;
       overflow: hidden;
     }
     .splash-progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #3b82f6, #6366f1, #f59e0b);
+      background: linear-gradient(90deg, #c47a1e, #f5a623, #00c8ff);
       border-radius: 2px;
       width: 0%;
-      transition: width 0.3s ease;
+      transition: width 0.5s ease;
     }
     .splash-progress-label {
       display: flex; justify-content: space-between;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: #475569;
-      margin-top: 6px;
+      font-size: 11px; color: #5a4a30;
+      margin-top: 8px;
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -210,7 +222,7 @@
 
     /* ─── SIDEBAR ───────────────────────────────────────────────── */
     .sidebar {
-      width: 220px; min-width: 220px;
+      width: 224px; min-width: 224px;
       background: var(--bg2);
       border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
@@ -222,14 +234,16 @@
       display: flex; align-items: center; gap: 10px;
     }
     .logo-icon {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--blue), var(--indigo), var(--gold));
+      width: 38px; height: 38px;
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
+      flex-shrink: 0; overflow: hidden;
+      border: 1px solid rgba(245,166,35,0.3);
+      background: var(--bg3);
     }
+    .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
     .logo-text { font-size: 13px; font-weight: 700; line-height: 1.2; }
-    .logo-text .gold { color: var(--gold); }
+    .logo-text .amber { color: var(--amber); }
     .logo-sub { font-size: 10px; color: var(--text-dim); font-weight: 400; }
 
     .sidebar-nav { flex: 1; padding: 10px 8px; overflow-y: auto; }
@@ -247,7 +261,7 @@
       border: none; background: none; width: 100%; text-align: left;
     }
     .nav-item:hover { background: var(--bg3); color: var(--text); }
-    .nav-item.active { background: var(--blue-glow); color: var(--blue-bright); border: 1px solid var(--border); }
+    .nav-item.active { background: var(--amber-glow); color: var(--amber); border: 1px solid rgba(245,166,35,0.25); }
     .nav-icon { font-size: 15px; width: 20px; text-align: center; }
 
     .sidebar-status {
@@ -257,9 +271,10 @@
     }
     .status-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; color: var(--text-dim); }
     .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
-    .status-dot.blue  { background: var(--blue); box-shadow: 0 0 6px var(--blue); animation: pulse 2s infinite; }
-    .status-dot.red   { background: var(--red); }
+    .status-dot.green  { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+    .status-dot.amber  { background: var(--amber); box-shadow: 0 0 6px var(--amber); animation: pulse 2s infinite; }
+    .status-dot.cyan   { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); animation: pulse 2s infinite; }
+    .status-dot.red    { background: var(--red); }
     @keyframes pulse {
       0%,100% { transform: scale(1); opacity: 1; }
       50%      { transform: scale(1.3); opacity: 0.7; }
@@ -267,10 +282,7 @@
     .status-val { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--green); }
 
     /* ─── MAIN CONTENT ──────────────────────────────────────────── */
-    .main {
-      flex: 1; display: flex; flex-direction: column;
-      overflow: hidden; position: relative;
-    }
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
     /* Topbar */
     .topbar {
@@ -283,18 +295,15 @@
     .topbar-title { font-size: 16px; font-weight: 700; flex: 1; }
     .ticker {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px; color: var(--gold);
-      background: var(--gold-dim);
-      border: 1px solid rgba(245,158,11,0.25);
+      font-size: 11px; color: var(--amber);
+      background: var(--amber-glow2);
+      border: 1px solid rgba(245,166,35,0.2);
       padding: 4px 12px; border-radius: 20px;
       white-space: nowrap;
     }
 
     /* Content area */
-    .content {
-      flex: 1; overflow-y: auto;
-      padding: 24px;
-    }
+    .content { flex: 1; overflow-y: auto; padding: 24px; }
 
     /* Tab panels */
     .tab-panel { display: none; }
@@ -303,7 +312,7 @@
     /* ─── STATS BAR ─────────────────────────────────────────────── */
     .stats-bar {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
       margin-bottom: 28px;
     }
@@ -313,6 +322,7 @@
       border-radius: var(--radius);
       padding: 16px 18px;
       transition: var(--transition);
+      min-width: 0;
     }
     .stat-card:hover { border-color: var(--border-bright); background: var(--card-hover); }
     .stat-label {
@@ -324,44 +334,40 @@
       font-family: 'JetBrains Mono', monospace;
       line-height: 1;
     }
-    .stat-value.blue   { color: var(--blue-bright); }
-    .stat-value.gold   { color: var(--gold); }
+    .stat-value.amber  { color: var(--amber); }
+    .stat-value.cyan   { color: var(--cyan); }
     .stat-value.green  { color: var(--green); }
-    .stat-value.purple { color: var(--purple); }
+    .stat-value.orange { color: var(--orange); }
     .stat-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
-    .stat-indicator {
-      width: 28px; height: 3px; border-radius: 2px; margin-top: 8px;
-    }
-    .stat-indicator.blue   { background: var(--blue); }
-    .stat-indicator.gold   { background: var(--gold); }
+    .stat-indicator { width: 28px; height: 3px; border-radius: 2px; margin-top: 8px; }
+    .stat-indicator.amber  { background: var(--amber); }
+    .stat-indicator.cyan   { background: var(--cyan); }
     .stat-indicator.green  { background: var(--green); }
-    .stat-indicator.purple { background: var(--purple); }
+    .stat-indicator.orange { background: var(--orange); }
 
     /* ─── SECTION HEADER ────────────────────────────────────────── */
     .section-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 16px;
     }
-    .section-title {
-      font-size: 1rem; font-weight: 700;
-    }
-    .section-title .accent { color: var(--gold); }
-    .section-title .accent-blue { color: var(--blue-bright); }
-    .section-title .accent-indigo { color: var(--indigo); }
+    .section-title { font-size: 1rem; font-weight: 700; }
+    .section-title .accent        { color: var(--amber); }
+    .section-title .accent-cyan   { color: var(--cyan); }
+    .section-title .accent-orange { color: var(--orange); }
+    .section-title .accent-green  { color: var(--green); }
     .section-title .accent-purple { color: var(--purple); }
-    .section-title .accent-green { color: var(--green); }
     .manage-btn {
       font-size: 12px; color: var(--text-dim);
       background: none; border: 1px solid var(--border);
       padding: 5px 12px; border-radius: 6px;
       cursor: pointer; transition: var(--transition);
     }
-    .manage-btn:hover { color: var(--text); border-color: var(--border-bright); }
+    .manage-btn:hover { color: var(--amber); border-color: var(--border-bright); }
 
     /* ─── APP GRID ──────────────────────────────────────────────── */
     .app-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
       gap: 14px;
       margin-bottom: 32px;
     }
@@ -376,42 +382,30 @@
       cursor: pointer; position: relative; overflow: hidden;
     }
     .app-card::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(59,130,246,0.05), transparent);
-      opacity: 0; transition: var(--transition);
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(245,166,35,0.04), transparent);
+      opacity: 0; transition: opacity 0.3s;
     }
-    .app-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--border-bright);
-      background: var(--card-hover);
-      box-shadow: 0 8px 30px rgba(59,130,246,0.15);
-    }
+    .app-card:hover { border-color: var(--border-bright); background: var(--card-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,166,35,0.12); }
     .app-card:hover::before { opacity: 1; }
-    .app-card.selected {
-      border-color: var(--blue);
-      background: var(--blue-glow);
-    }
-
-    .app-icon { font-size: 2rem; line-height: 1; margin-bottom: 4px; }
+    .app-icon { font-size: 28px; }
     .app-name { font-size: 14px; font-weight: 700; }
-    .app-desc { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+    .app-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; flex: 1; }
 
-    /* Category badge */
+    /* ─── BADGES ────────────────────────────────────────────────── */
     .badge {
-      display: inline-block;
-      font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 3px 8px; border-radius: 4px;
-      margin-top: 4px; align-self: flex-start;
+      display: inline-block; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 4px; border: 1px solid;
+      align-self: flex-start;
     }
-    .badge.tools    { background: rgba(59,130,246,0.15); color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.3); }
-    .badge.monitor  { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
-    .badge.ai       { background: rgba(168,85,247,0.12); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
-    .badge.dev      { background: rgba(245,158,11,0.12); color: var(--gold); border: 1px solid rgba(245,158,11,0.3); }
-    .badge.cloud    { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
-    .badge.auto     { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-    .badge.workspace{ background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+    .badge.tools     { background: rgba(245,166,35,0.12); color: var(--amber);  border-color: rgba(245,166,35,0.3); }
+    .badge.monitor   { background: rgba(0,200,255,0.10);  color: var(--cyan);   border-color: rgba(0,200,255,0.3); }
+    .badge.ai        { background: rgba(168,85,247,0.12); color: #c084fc;       border-color: rgba(168,85,247,0.3); }
+    .badge.dev       { background: rgba(34,197,94,0.10);  color: var(--green);  border-color: rgba(34,197,94,0.3); }
+    .badge.cloud     { background: rgba(0,200,255,0.10);  color: var(--cyan);   border-color: rgba(0,200,255,0.3); }
+    .badge.auto      { background: rgba(249,115,22,0.12); color: var(--orange); border-color: rgba(249,115,22,0.3); }
+    .badge.workspace { background: rgba(245,166,35,0.10); color: var(--amber);  border-color: rgba(245,166,35,0.25); }
 
     /* ─── LINKS GRID ────────────────────────────────────────────── */
     .links-grid {
@@ -429,75 +423,36 @@
       transition: var(--transition);
       display: flex; flex-direction: column; gap: 6px;
     }
-    .link-card:hover {
-      border-color: var(--border-bright);
-      background: var(--card-hover);
-      transform: translateY(-2px);
-    }
-    .link-icon { font-size: 1.6rem; }
+    .link-card:hover { border-color: var(--border-bright); background: var(--card-hover); transform: translateY(-2px); }
+    .link-icon { font-size: 22px; }
     .link-name { font-size: 13px; font-weight: 700; }
     .link-desc { font-size: 11px; color: var(--text-dim); }
 
-    /* ─── CONCEPT CARDS (original 3) ───────────────────────────── */
-    .concept-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-    .concept-card {
-      background: linear-gradient(135deg, var(--bg3), var(--bg4));
-      border: 1px solid var(--border-bright);
-      border-radius: var(--radius-lg);
-      padding: 24px 22px;
-      display: flex; flex-direction: column; gap: 10px;
-      transition: var(--transition); position: relative; overflow: hidden;
-    }
-    .concept-card::after {
-      content: '';
-      position: absolute; top: -40px; right: -40px;
-      width: 120px; height: 120px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(59,130,246,0.12), transparent 70%);
-    }
-    .concept-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(59,130,246,0.2);
-      border-color: var(--blue);
-    }
-    .concept-icon { font-size: 2.2rem; }
-    .concept-title { font-size: 1.1rem; font-weight: 800; }
-    .concept-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
-
-    /* ─── N8N AUTOMATION CARDS ──────────────────────────────────── */
+    /* ─── N8N AUTOMATION GRID ───────────────────────────────────── */
     .n8n-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 14px;
       margin-bottom: 32px;
     }
     .n8n-card {
-      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(59,130,246,0.05));
-      border: 1px solid rgba(99,102,241,0.3);
+      background: var(--card);
+      border: 1px solid rgba(249,115,22,0.2);
       border-radius: var(--radius-lg);
-      padding: 20px 18px;
-      display: flex; flex-direction: column; gap: 8px;
-      transition: var(--transition); position: relative; overflow: hidden;
+      padding: 20px;
+      transition: var(--transition);
     }
-    .n8n-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--indigo);
-      box-shadow: 0 8px 30px rgba(99,102,241,0.2);
-    }
-    .n8n-card-header { display: flex; align-items: center; gap: 10px; }
+    .n8n-card:hover { border-color: rgba(249,115,22,0.5); background: var(--card-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.1); }
+    .n8n-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
     .n8n-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--indigo), var(--blue));
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(249,115,22,0.12);
+      border: 1px solid rgba(249,115,22,0.25);
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
+      font-size: 20px; flex-shrink: 0;
     }
     .n8n-title { font-size: 14px; font-weight: 700; }
-    .n8n-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+    .n8n-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-bottom: 12px; }
     .n8n-status {
       display: flex; align-items: center; gap: 6px;
       font-size: 11px; color: var(--green);
@@ -505,32 +460,43 @@
     }
     .n8n-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
 
-    /* ─── AI CHAT PANEL ─────────────────────────────────────────── */
-    .chat-panel {
-      display: flex; flex-direction: column; height: 100%;
+    /* ─── CLOUD SERVICES GRID ───────────────────────────────────── */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
     }
+    .concept-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      transition: var(--transition);
+    }
+    .concept-card:hover { border-color: var(--border-bright); background: var(--card-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,166,35,0.1); }
+    .concept-icon { font-size: 32px; margin-bottom: 12px; }
+    .concept-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--amber); }
+    .concept-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+
+    /* ─── AI CHAT PANEL ─────────────────────────────────────────── */
+    .chat-panel { display: flex; flex-direction: column; height: 100%; }
     .chat-header {
       padding: 16px 20px;
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 12px;
     }
     .chat-avatar {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--purple), var(--blue));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
+      width: 40px; height: 40px; border-radius: 10px;
+      overflow: hidden; flex-shrink: 0;
+      border: 1px solid rgba(245,166,35,0.3);
+      background: var(--bg3);
     }
+    .chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .chat-info .chat-name { font-size: 14px; font-weight: 700; }
-    .chat-info .chat-model {
-      font-size: 11px; color: var(--text-dim);
-      font-family: 'JetBrains Mono', monospace;
-    }
+    .chat-info .chat-model { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
     .chat-online { margin-left: auto; display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--green); }
 
-    .chat-messages {
-      flex: 1; overflow-y: auto;
-      padding: 20px; display: flex; flex-direction: column; gap: 16px;
-    }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
     .chat-msg { display: flex; gap: 10px; max-width: 85%; }
     .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
     .chat-bubble {
@@ -539,17 +505,10 @@
       border-radius: 14px; padding: 10px 14px;
       font-size: 13px; line-height: 1.6;
     }
-    .chat-msg.user .chat-bubble {
-      background: var(--blue-glow);
-      border-color: var(--border-bright);
-    }
+    .chat-msg.user .chat-bubble { background: var(--amber-glow); border-color: rgba(245,166,35,0.35); }
     .chat-msg-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
 
-    .chat-input-wrap {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      display: flex; gap: 10px;
-    }
+    .chat-input-wrap { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }
     .chat-input {
       flex: 1; background: var(--card);
       border: 1px solid var(--border);
@@ -557,20 +516,20 @@
       color: var(--text); font-size: 13px; font-family: 'Inter', sans-serif;
       outline: none; transition: var(--transition);
     }
-    .chat-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-glow); }
+    .chat-input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amber-glow); }
     .chat-send {
-      background: linear-gradient(135deg, var(--blue), var(--indigo));
+      background: linear-gradient(135deg, var(--amber-dim), var(--amber));
       border: none; border-radius: 10px;
-      padding: 10px 18px; color: #fff;
-      font-size: 13px; font-weight: 600;
+      padding: 10px 18px; color: #0a0806;
+      font-size: 13px; font-weight: 700;
       cursor: pointer; transition: var(--transition);
     }
     .chat-send:hover { opacity: 0.85; transform: scale(1.03); }
 
-    /* ─── ADD APP MODAL ─────────────────────────────────────────── */
+    /* ─── ADD MODAL ─────────────────────────────────────────────── */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 1000;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
       display: none; align-items: center; justify-content: center;
     }
     .modal-overlay.open { display: flex; }
@@ -581,7 +540,7 @@
       padding: 28px; width: min(480px, 90vw);
       box-shadow: var(--shadow-lg);
     }
-    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; color: var(--amber); }
     .form-group { margin-bottom: 14px; }
     .form-label { font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; display: block; }
     .form-input, .form-select {
@@ -591,7 +550,7 @@
       font-size: 13px; font-family: 'Inter', sans-serif;
       outline: none; transition: var(--transition);
     }
-    .form-input:focus, .form-select:focus { border-color: var(--blue); }
+    .form-input:focus, .form-select:focus { border-color: var(--amber); }
     .form-select option { background: var(--bg3); }
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
     .btn-cancel {
@@ -602,26 +561,24 @@
     }
     .btn-cancel:hover { border-color: var(--border-bright); color: var(--text); }
     .btn-save {
-      background: linear-gradient(135deg, var(--blue), var(--indigo));
+      background: linear-gradient(135deg, var(--amber-dim), var(--amber));
       border: none; padding: 8px 20px; border-radius: 8px;
-      color: #fff; font-size: 13px; font-weight: 600;
+      color: #0a0806; font-size: 13px; font-weight: 700;
       cursor: pointer; transition: var(--transition);
     }
     .btn-save:hover { opacity: 0.85; }
 
-    /* ─── BACKGROUND CLOUDS ─────────────────────────────────────── */
-    .bg-clouds {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-    }
+    /* ─── BACKGROUND ORBS ───────────────────────────────────────── */
+    .bg-clouds { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
     .cloud-orb {
       position: absolute; border-radius: 50%;
-      filter: blur(80px); opacity: 0.04;
+      filter: blur(90px); opacity: 0.035;
       animation: drift linear infinite;
     }
     @keyframes drift {
       0%   { transform: translateX(0) translateY(0); }
-      33%  { transform: translateX(30px) translateY(-20px); }
-      66%  { transform: translateX(-20px) translateY(15px); }
+      33%  { transform: translateX(40px) translateY(-25px); }
+      66%  { transform: translateX(-25px) translateY(20px); }
       100% { transform: translateX(0) translateY(0); }
     }
 
@@ -638,7 +595,7 @@
 </head>
 <body>
 
-<!-- ═══════════════════════ BACKGROUND CLOUDS ═══════════════════════ -->
+<!-- ═══════════════════════ BACKGROUND ORBS ═════════════════════════ -->
 <div class="bg-clouds" id="bgClouds"></div>
 
 <!-- ═══════════════════════ SPLASH SCREEN ═══════════════════════════ -->
@@ -646,9 +603,12 @@
   <div class="splash-particles" id="splashParticles"></div>
 
   <div class="splash-logo-wrap">
-    <div class="splash-logo-icon">🤖</div>
+    <div class="splash-logo-icon">
+      <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='<span style=\'font-size:52px\'>☁️</span>'" alt="DannyGC">
+    </div>
     <div class="splash-title">DannyGC</div>
     <div class="splash-sub">Cloud Services — We Work So You Don't Have To</div>
+    <div class="splash-version">v2.0.0 · Portal Edition</div>
   </div>
 
   <div class="terminal-window">
@@ -679,9 +639,11 @@
   <!-- Sidebar -->
   <nav class="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-icon">🤖</div>
+      <div class="logo-icon">
+        <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='☁️'" alt="DannyGC">
+      </div>
       <div>
-        <div class="logo-text"><span class="gold">Danny</span>GC</div>
+        <div class="logo-text"><span class="amber">Danny</span>GC</div>
         <div class="logo-sub">Cloud Portal</div>
       </div>
     </div>
@@ -704,6 +666,9 @@
         <button class="nav-item" onclick="showTab('links', this)">
           <span class="nav-icon">🔗</span><span>Links</span>
         </button>
+        <button class="nav-item" onclick="showTab('google', this)">
+          <span class="nav-icon">🔵</span><span>Google Workspace</span>
+        </button>
         <button class="nav-item" onclick="showTab('automation', this)">
           <span class="nav-icon">⚡</span><span>Automation</span>
         </button>
@@ -720,9 +685,9 @@
         <span class="status-val" id="ollamaStatus">online</span>
       </div>
       <div class="status-row">
-        <div class="status-dot blue"></div>
+        <div class="status-dot amber"></div>
         <span>Portal</span>
-        <span class="status-val" style="color:var(--blue-bright)">online</span>
+        <span class="status-val" style="color:var(--amber)">online</span>
       </div>
       <div class="status-row" style="margin-top:4px">
         <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)" id="modelName">gemma4</span>
@@ -735,7 +700,7 @@
     <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-title" id="topbarTitle">Dashboard</div>
-      <div class="ticker">WE WORK SO YOU DON'T HAVE TO</div>
+      <div class="ticker">⚡ WE WORK SO YOU DON'T HAVE TO</div>
     </div>
 
     <!-- Content -->
@@ -754,21 +719,21 @@
           </div>
           <div class="stat-card">
             <div class="stat-label">Apps Pinned</div>
-            <div class="stat-value gold" id="statApps">6</div>
+            <div class="stat-value amber" id="statApps">6</div>
             <div class="stat-sub">Click to launch</div>
-            <div class="stat-indicator gold"></div>
+            <div class="stat-indicator amber"></div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Quick Links</div>
-            <div class="stat-value blue" id="statLinks">4</div>
+            <div class="stat-value cyan" id="statLinks">4</div>
             <div class="stat-sub">Saved bookmarks</div>
-            <div class="stat-indicator blue"></div>
+            <div class="stat-indicator cyan"></div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Uptime</div>
-            <div class="stat-value purple" id="statUptime">—</div>
+            <div class="stat-value orange" id="statUptime">—</div>
             <div class="stat-sub">Portal server</div>
-            <div class="stat-indicator purple"></div>
+            <div class="stat-indicator orange"></div>
           </div>
         </div>
 
@@ -777,27 +742,28 @@
           <div class="section-title">Quick <span class="accent">Launch</span></div>
           <button class="manage-btn" onclick="openAddModal()">Manage Apps →</button>
         </div>
-        <div class="app-grid" id="appGrid">
-          <!-- populated by JS -->
-        </div>
+        <div class="app-grid" id="appGrid"></div>
 
         <!-- Quick Links -->
         <div class="section-header">
-          <div class="section-title">Quick <span class="accent-blue">Links</span></div>
+          <div class="section-title">Quick <span class="accent-cyan">Links</span></div>
           <button class="manage-btn" onclick="openAddLinkModal()">Manage Links →</button>
         </div>
-        <div class="links-grid" id="linksGrid">
-          <!-- populated by JS -->
+        <div class="links-grid" id="linksGrid"></div>
+
+        <!-- Google Workspace Preview -->
+        <div class="section-header" style="margin-top:4px">
+          <div class="section-title">🔵 Google <span class="accent-green">Workspace</span></div>
+          <button class="manage-btn" onclick="showTab('google', document.querySelectorAll('.nav-item')[4])">View All →</button>
         </div>
+        <div class="app-grid" id="googlePreviewGrid"></div>
 
         <!-- n8n Automation preview -->
         <div class="section-header">
-          <div class="section-title">⚡ <span class="accent-indigo">Automation</span> Workflows</div>
-          <button class="manage-btn" onclick="showTab('automation', document.querySelector('.nav-item:nth-child(5)'))">View All →</button>
+          <div class="section-title">⚡ <span class="accent-orange">Automation</span> Workflows</div>
+          <button class="manage-btn" onclick="showTab('automation', document.querySelectorAll('.nav-item')[5])">View All →</button>
         </div>
-        <div class="n8n-grid" id="n8nPreview">
-          <!-- populated by JS -->
-        </div>
+        <div class="n8n-grid" id="n8nPreview"></div>
 
       </div>
 
@@ -805,7 +771,9 @@
       <div class="tab-panel" id="tab-chat">
         <div class="chat-panel" style="height:calc(100vh - 100px)">
           <div class="chat-header">
-            <div class="chat-avatar">🤖</div>
+            <div class="chat-avatar">
+              <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='🤖'" alt="DannyGC AI">
+            </div>
             <div class="chat-info">
               <div class="chat-name">DannyGC AI Assistant</div>
               <div class="chat-model" id="chatModel">ollama / gemma4</div>
@@ -817,7 +785,7 @@
           </div>
           <div class="chat-messages" id="chatMessages">
             <div class="chat-msg">
-              <div class="chat-msg-icon">🤖</div>
+              <div class="chat-msg-icon">☁️</div>
               <div class="chat-bubble">Hello! I'm your DannyGC AI assistant powered by Ollama. I can help you manage your server, answer questions, draft emails, and more. What can I do for you today?</div>
             </div>
           </div>
@@ -840,27 +808,52 @@
       <!-- ── LINKS TAB ── -->
       <div class="tab-panel" id="tab-links">
         <div class="section-header">
-          <div class="section-title">🔗 Quick <span class="accent-blue">Links</span></div>
+          <div class="section-title">🔗 Quick <span class="accent-cyan">Links</span></div>
           <button class="manage-btn" onclick="openAddLinkModal()">+ Add Link</button>
         </div>
         <div class="links-grid" id="linksGridFull"></div>
       </div>
 
+      <!-- ── GOOGLE WORKSPACE TAB ── -->
+      <div class="tab-panel" id="tab-google">
+        <div class="section-header">
+          <div class="section-title">🔵 Google <span class="accent-green">Workspace</span></div>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:24px;line-height:1.7">
+          All your Google Workspace apps — email, calendar, documents, storage, and collaboration tools in one place.
+        </p>
+        <div class="app-grid" id="googleAppsGrid"></div>
+        <div class="section-header" style="margin-top:8px">
+          <div class="section-title">🔗 Quick <span class="accent-cyan">Google Links</span></div>
+        </div>
+        <div class="links-grid" id="googleLinksGrid"></div>
+      </div>
+
       <!-- ── AUTOMATION TAB ── -->
       <div class="tab-panel" id="tab-automation">
         <div class="section-header">
-          <div class="section-title">⚡ n8n <span class="accent-indigo">Automation</span> Suite</div>
+          <div class="section-title">⚡ n8n <span class="accent-orange">Automation</span> Suite</div>
         </div>
         <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
-          Your AI personal assistant workflows powered by <strong style="color:var(--indigo)">n8n + Ollama</strong>. These automations handle your email, calendar, reminders, and daily briefings automatically.
+          Your AI personal assistant workflows powered by <strong style="color:var(--amber)">n8n + Ollama</strong>. These automations handle your email,
+          calendar, and daily briefings automatically — drafting replies for your review and alerting you to urgent messages.
         </p>
         <div class="n8n-grid" id="n8nFull"></div>
+        <div style="margin-top:24px;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg)">
+          <div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:10px">📁 Workflow Files</div>
+          <p style="font-size:12px;color:var(--text-dim);line-height:1.8">
+            Import these JSON files into your n8n instance to activate the automations:<br>
+            <code style="color:var(--cyan);font-family:'JetBrains Mono',monospace">n8n_email_triage_workflow.json</code><br>
+            <code style="color:var(--cyan);font-family:'JetBrains Mono',monospace">n8n_calendar_reminders_workflow.json</code><br>
+            <code style="color:var(--cyan);font-family:'JetBrains Mono',monospace">n8n_daily_briefing_workflow.json</code>
+          </p>
+        </div>
       </div>
 
       <!-- ── CLOUD SERVICES TAB ── -->
       <div class="tab-panel" id="tab-cloud">
         <div class="section-header">
-          <div class="section-title">☁️ Cloud <span class="accent-blue">Services</span></div>
+          <div class="section-title">☁️ Cloud <span class="accent-cyan">Services</span></div>
         </div>
         <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
           Your private cloud infrastructure — high-performance, secure, and entirely self-hosted on your own hardware.
@@ -945,7 +938,7 @@
 const defaultApps = [
   { icon:'📁', name:'File Manager',    url:'http://cloud.dannygc.cloud:8080',  desc:'Browse and manage your server files',     cat:'tools'   },
   { icon:'📊', name:'System Monitor',  url:'http://cloud.dannygc.cloud:19999', desc:'Real-time server performance metrics',    cat:'monitor'  },
-  { icon:'🤖', name:'Ollama Dashboard',url:'http://localhost:11434',           desc:'Manage local AI models',                  cat:'ai'       },
+  { icon:'🤖', name:'Ollama Dashboard',url:'http://cloud.dannygc.cloud:11434', desc:'Manage local AI models',                  cat:'ai'       },
   { icon:'🐳', name:'Portainer',       url:'http://cloud.dannygc.cloud:9000',  desc:'Container management UI',                cat:'tools'   },
   { icon:'💻', name:'VS Code Server',  url:'http://cloud.dannygc.cloud:8443',  desc:'Browser-based code editor',              cat:'dev'      },
   { icon:'📈', name:'Grafana',         url:'http://cloud.dannygc.cloud:3001',  desc:'Metrics and analytics dashboards',        cat:'monitor'  },
@@ -956,6 +949,28 @@ const defaultLinks = [
   { icon:'🐙', name:'GitHub',          url:'https://github.com',               desc:'Code repositories'            },
   { icon:'☁️', name:'Cloudflare',      url:'https://dash.cloudflare.com',      desc:'DNS and CDN management'       },
   { icon:'📧', name:'Google Workspace',url:'https://workspace.google.com',     desc:'Email and productivity suite' },
+];
+
+const googleApps = [
+  { icon:'📧', name:'Gmail',          url:'https://mail.google.com',           desc:'Email and inbox management',       cat:'workspace' },
+  { icon:'📅', name:'Google Calendar',url:'https://calendar.google.com',       desc:'Schedule and events',              cat:'workspace' },
+  { icon:'📁', name:'Google Drive',   url:'https://drive.google.com',          desc:'Cloud file storage',               cat:'workspace' },
+  { icon:'📝', name:'Google Docs',    url:'https://docs.google.com',           desc:'Collaborative documents',          cat:'workspace' },
+  { icon:'📊', name:'Google Sheets',  url:'https://sheets.google.com',         desc:'Spreadsheets and data',            cat:'workspace' },
+  { icon:'📽️', name:'Google Slides',  url:'https://slides.google.com',         desc:'Presentations',                    cat:'workspace' },
+  { icon:'🎥', name:'Google Meet',    url:'https://meet.google.com',           desc:'Video conferencing',               cat:'workspace' },
+  { icon:'💬', name:'Google Chat',    url:'https://chat.google.com',           desc:'Team messaging',                   cat:'workspace' },
+  { icon:'▶️', name:'YouTube',        url:'https://youtube.com',               desc:'Video platform',                   cat:'workspace' },
+  { icon:'🗺️', name:'Google Maps',    url:'https://maps.google.com',           desc:'Navigation and maps',              cat:'workspace' },
+  { icon:'🖼️', name:'Google Photos',  url:'https://photos.google.com',         desc:'Photo storage and albums',         cat:'workspace' },
+  { icon:'📌', name:'Google Keep',    url:'https://keep.google.com',           desc:'Notes and reminders',              cat:'workspace' },
+];
+
+const googleLinks = [
+  { icon:'🏠', name:'Google Home',    url:'https://google.com',                desc:'Google homepage'              },
+  { icon:'⚙️', name:'Google Admin',   url:'https://admin.google.com',          desc:'Workspace admin console'      },
+  { icon:'☁️', name:'Google Cloud',   url:'https://console.cloud.google.com',  desc:'Cloud platform console'       },
+  { icon:'💼', name:'Workspace',      url:'https://workspace.google.com',      desc:'Google Workspace portal'      },
 ];
 
 const n8nWorkflows = [
@@ -977,30 +992,12 @@ const n8nWorkflows = [
 ];
 
 const cloudServices = [
-  {
-    icon:'📂', title:'Bespoke Drive',
-    desc:'High-performance secure file vault array natively integrated into your ecosystem storage layers.'
-  },
-  {
-    icon:'📝', title:'Office Matrix',
-    desc:'Collaborative digital canvas for production documents, spreadsheets, and data analytics.'
-  },
-  {
-    icon:'🤖', title:'Gemma AI Engine',
-    desc:'Private enterprise context agent reading your localised directories natively over bare-metal GPU.'
-  },
-  {
-    icon:'🔒', title:'Vault Security',
-    desc:'End-to-end encrypted credential management and secrets storage for all your services.'
-  },
-  {
-    icon:'🌐', title:'Edge Network',
-    desc:'Cloudflare-powered edge routing with zero-trust access control and DDoS protection.'
-  },
-  {
-    icon:'⚡', title:'Nexus Core',
-    desc:'The central orchestration layer connecting all your cloud services, automations, and AI agents.'
-  },
+  { icon:'📂', title:'Bespoke Drive',   desc:'High-performance secure file vault array natively integrated into your ecosystem storage layers.' },
+  { icon:'📝', title:'Office Matrix',   desc:'Collaborative digital canvas for production documents, spreadsheets, and data analytics.' },
+  { icon:'🤖', title:'Gemma AI Engine', desc:'Private enterprise context agent reading your localised directories natively over bare-metal GPU.' },
+  { icon:'🔒', title:'Vault Security',  desc:'End-to-end encrypted credential management and secrets storage for all your services.' },
+  { icon:'🌐', title:'Edge Network',    desc:'Cloudflare-powered edge routing with zero-trust access control and DDoS protection.' },
+  { icon:'⚡', title:'Nexus Core',      desc:'The central orchestration layer connecting all your cloud services, automations, and AI agents.' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1011,14 +1008,15 @@ const bootLines = [
   'Loading secure authentication modules...',
   'Mounting cloud storage subsystems...',
   'Starting AI inference engine (Ollama)...',
-  'Connecting n8n automation workflows...',
+  'Connecting Google Workspace APIs...',
+  'Loading n8n automation workflows...',
   'Launching portal dashboard...',
 ];
 
 function createParticles() {
   const container = document.getElementById('splashParticles');
-  const colours = ['#3b82f6','#6366f1','#f59e0b','#10b981','#a855f7'];
-  for (let i = 0; i < 25; i++) {
+  const colours = ['#f5a623','#c47a1e','#00c8ff','#38bdf8','#f97316'];
+  for (let i = 0; i < 30; i++) {
     const p = document.createElement('div');
     p.className = 'splash-particle';
     const size = Math.random() * 6 + 2;
@@ -1026,8 +1024,8 @@ function createParticles() {
       width:${size}px; height:${size}px;
       left:${Math.random()*100}%;
       background:${colours[Math.floor(Math.random()*colours.length)]};
-      animation-duration:${Math.random()*8+6}s;
-      animation-delay:${Math.random()*4}s;
+      animation-duration:${Math.random()*10+8}s;
+      animation-delay:${Math.random()*5}s;
     `;
     container.appendChild(p);
   }
@@ -1036,10 +1034,10 @@ function createParticles() {
 function createBgClouds() {
   const container = document.getElementById('bgClouds');
   const orbs = [
-    { size:400, top:'10%', left:'5%',  color:'#3b82f6', dur:'20s' },
-    { size:300, top:'60%', left:'70%', color:'#6366f1', dur:'25s' },
-    { size:250, top:'30%', left:'50%', color:'#f59e0b', dur:'18s' },
-    { size:350, top:'80%', left:'20%', color:'#10b981', dur:'22s' },
+    { size:500, top:'5%',  left:'2%',  color:'#f5a623', dur:'22s' },
+    { size:350, top:'55%', left:'65%', color:'#00c8ff', dur:'28s' },
+    { size:280, top:'25%', left:'45%', color:'#c47a1e', dur:'19s' },
+    { size:400, top:'75%', left:'15%', color:'#f97316', dur:'24s' },
   ];
   orbs.forEach(o => {
     const el = document.createElement('div');
@@ -1058,8 +1056,11 @@ async function runBootSequence() {
   const label = document.getElementById('progressLabel');
   const pct = document.getElementById('progressPct');
 
+  // Wait for logo to animate in
+  await sleep(1800);
+
   for (let i = 0; i < bootLines.length; i++) {
-    await sleep(380);
+    await sleep(950);
     const line = document.createElement('div');
     line.className = 'term-line visible';
     line.innerHTML = `<span class="term-ok">[ OK ]</span><span class="term-text">${bootLines[i]}</span>`;
@@ -1070,10 +1071,11 @@ async function runBootSequence() {
     pct.textContent = progress + '%';
   }
 
-  await sleep(600);
-  label.textContent = 'Portal ready.';
+  await sleep(1200);
+  label.textContent = 'Portal ready — Welcome back, Danny.';
+  pct.textContent = '100%';
 
-  await sleep(400);
+  await sleep(1000);
   document.getElementById('splash').classList.add('hidden');
   const app = document.getElementById('app');
   app.classList.add('visible');
@@ -1088,6 +1090,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function initApp() {
   loadApps();
   loadLinks();
+  loadGoogle();
   loadN8n();
   loadCloud();
   startUptime();
@@ -1137,6 +1140,15 @@ function loadLinks() {
   document.getElementById('linksGrid').innerHTML = links.map(renderLinkCard).join('');
   document.getElementById('linksGridFull').innerHTML = links.map(renderLinkCard).join('');
   document.getElementById('statLinks').textContent = links.length;
+}
+
+/* ─── GOOGLE WORKSPACE ───────────────────────────────────────────── */
+function loadGoogle() {
+  // Show first 6 on dashboard preview
+  document.getElementById('googlePreviewGrid').innerHTML = googleApps.slice(0,6).map(renderAppCard).join('');
+  // Full list on Google tab
+  document.getElementById('googleAppsGrid').innerHTML = googleApps.map(renderAppCard).join('');
+  document.getElementById('googleLinksGrid').innerHTML = googleLinks.map(renderLinkCard).join('');
 }
 
 /* ─── N8N ────────────────────────────────────────────────────────── */
@@ -1196,6 +1208,7 @@ async function checkOllama() {
     }
   } catch {
     document.getElementById('statAI').textContent = 'Offline';
+    document.getElementById('statAI').className = 'stat-value red';
     document.getElementById('ollamaStatus').textContent = '—';
   }
 }
@@ -1203,7 +1216,8 @@ async function checkOllama() {
 /* ─── TABS ───────────────────────────────────────────────────────── */
 const tabTitles = {
   dashboard:'Dashboard', chat:'AI Chat', apps:'Apps',
-  links:'Quick Links', automation:'Automation', cloud:'Cloud Services'
+  links:'Quick Links', google:'Google Workspace',
+  automation:'Automation', cloud:'Cloud Services'
 };
 
 function showTab(name, btn) {
@@ -1261,7 +1275,7 @@ async function sendChat() {
 
   const thinking = document.createElement('div');
   thinking.className = 'chat-msg';
-  thinking.innerHTML = `<div class="chat-msg-icon">🤖</div><div class="chat-bubble" id="thinkingBubble"><span class="term-cursor"></span> Thinking...</div>`;
+  thinking.innerHTML = `<div class="chat-msg-icon">☁️</div><div class="chat-bubble" id="thinkingBubble"><span class="term-cursor"></span> Thinking...</div>`;
   msgs.appendChild(thinking);
   msgs.scrollTop = msgs.scrollHeight;
 
