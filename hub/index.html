@@ -1390,7 +1390,7 @@ function initLiveCodePreview(lang) {
   const wrap = document.getElementById('preview-frame-wrap');
   if (gemmaCodingTimer) { clearTimeout(gemmaCodingTimer); gemmaCodingTimer = null; }
   wrap.innerHTML = `
-    <div style="width:100%;height:100%;display:flex;flex-direction:column;background:#020a18;font-family:'JetBrains Mono',monospace;overflow:hidden">
+    <div id="gemma-code-panel" style="width:100%;height:100%;display:flex;flex-direction:column;background:#020a18;font-family:'JetBrains Mono',monospace;overflow:hidden">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(0,5,16,0.95);border-bottom:1px solid rgba(0,200,255,0.15);flex-shrink:0">
         <div style="display:flex;align-items:center;gap:10px">
           <img src="avatar_v2.png" onerror="this.src='avatar.png'" style="width:22px;height:22px;border-radius:5px;border:1px solid rgba(0,200,255,0.4)">
@@ -1446,15 +1446,30 @@ function setRenderMode(mode) {
   currentRenderMode = mode;
   document.getElementById('btn-code-view').classList.toggle('active', mode === 'code');
   document.getElementById('btn-live-render').classList.toggle('active', mode === 'render');
-  if (mode === 'render' && lastRenderedCode) {
-    applyLiveRender(lastRenderedCode, lastRenderedLang);
-  } else if (mode === 'code' && liveCodeEl) {
-    // Restore code view
-    const wrap = document.getElementById('preview-frame-wrap');
-    // Re-show the code panel if it was replaced by render frame
-    const renderFrame = document.getElementById('live-render-frame');
-    if (renderFrame) renderFrame.style.display = 'none';
-    if (liveCodeEl) liveCodeEl.closest('div[style]') && (liveCodeEl.closest('div[style]').style.display = '');
+
+  const wrap = document.getElementById('preview-frame-wrap');
+  const codePanel = document.getElementById('gemma-code-panel');
+  const renderPanel = document.getElementById('gemma-render-panel');
+
+  if (mode === 'render') {
+    if (codePanel) codePanel.style.display = 'none';
+    if (lastRenderedCode) {
+      applyLiveRender(lastRenderedCode, lastRenderedLang);
+    } else {
+      // Show placeholder if no code yet
+      let rp = renderPanel || document.createElement('div');
+      rp.id = 'gemma-render-panel';
+      rp.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a;flex-direction:column;gap:10px';
+      rp.innerHTML = `<div style="font-size:2.5rem">&#9670;</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:rgba(0,200,255,0.6)">Waiting for Gemma to generate SVG or HTML...</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:rgba(0,200,255,0.3)">Try: "draw me an SVG circuit" or "write an HTML dashboard"</div>`;
+      if (!renderPanel) wrap.appendChild(rp);
+      rp.style.display = 'flex';
+    }
+  } else {
+    // Code View — hide render panel, show code panel
+    if (renderPanel) renderPanel.style.display = 'none';
+    if (codePanel) codePanel.style.display = 'flex';
   }
 }
 
@@ -1464,66 +1479,52 @@ function applyLiveRender(code, lang) {
   const wrap = document.getElementById('preview-frame-wrap');
   const lowerLang = (lang || '').toLowerCase();
 
+  // Hide code panel
+  const codePanel = document.getElementById('gemma-code-panel');
+  if (codePanel) codePanel.style.display = 'none';
+
+  // Get or create render panel
+  let rp = document.getElementById('gemma-render-panel');
+  if (!rp) {
+    rp = document.createElement('div');
+    rp.id = 'gemma-render-panel';
+    rp.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a;overflow:hidden';
+    wrap.appendChild(rp);
+  }
+  rp.style.display = 'flex';
+  rp.innerHTML = ''; // clear previous render
+
   // Detect SVG
-  const isSvg = lowerLang === 'svg' || code.trim().startsWith('<svg') || code.includes('</svg>');
+  const isSvg = lowerLang === 'svg' || code.trim().startsWith('<svg') || /<svg[\s>]/i.test(code);
   // Detect HTML
-  const isHtml = lowerLang === 'html' || code.trim().startsWith('<!') || code.includes('</div>') || code.includes('</body>');
+  const isHtml = lowerLang === 'html' || /<!doctype|<html|<body|<div|<section/i.test(code);
   // Detect image URL
-  const imgMatch = code.match(/https?:\/\/[^\s"']+\.(?:png|jpg|jpeg|gif|webp|svg)/i);
+  const imgMatch = code.match(/https?:\/\/[^\s"'<>]+\.(?:png|jpg|jpeg|gif|webp|svg)/i);
 
   if (isSvg) {
-    // Render SVG directly
-    let existing = document.getElementById('live-render-frame');
-    if (!existing) {
-      existing = document.createElement('div');
-      existing.id = 'live-render-frame';
-      existing.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a;overflow:auto;padding:16px;box-sizing:border-box';
-      wrap.appendChild(existing);
+    rp.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a;overflow:auto;padding:16px;box-sizing:border-box';
+    rp.innerHTML = code;
+    const svgEl = rp.querySelector('svg');
+    if (svgEl) {
+      svgEl.style.maxWidth = '100%';
+      svgEl.style.maxHeight = '100%';
+      svgEl.style.filter = 'drop-shadow(0 0 16px rgba(0,200,255,0.4))';
     }
-    existing.style.display = 'flex';
-    existing.innerHTML = code;
-    // Style SVG to fit
-    const svgEl = existing.querySelector('svg');
-    if (svgEl) { svgEl.style.maxWidth = '100%'; svgEl.style.maxHeight = '100%'; svgEl.style.filter = 'drop-shadow(0 0 12px rgba(0,200,255,0.3))'; }
   } else if (isHtml) {
-    // Render HTML in sandboxed iframe
-    let iframe = document.getElementById('live-render-frame');
-    if (!iframe || iframe.tagName !== 'IFRAME') {
-      wrap.querySelectorAll('#live-render-frame').forEach(e=>e.remove());
-      iframe = document.createElement('iframe');
-      iframe.id = 'live-render-frame';
-      iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:4px;background:#fff';
-      iframe.sandbox = 'allow-scripts allow-same-origin';
-      wrap.appendChild(iframe);
-    }
-    iframe.style.display = 'block';
+    rp.style.cssText = 'width:100%;height:100%;display:block;background:#fff;overflow:hidden';
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'width:100%;height:100%;border:none';
+    iframe.sandbox = 'allow-scripts allow-same-origin';
+    rp.appendChild(iframe);
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open(); doc.write(code); doc.close();
   } else if (imgMatch) {
-    // Render image URL
-    let existing = document.getElementById('live-render-frame');
-    if (!existing) {
-      existing = document.createElement('div');
-      existing.id = 'live-render-frame';
-      existing.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a;overflow:hidden';
-      wrap.appendChild(existing);
-    }
-    existing.style.display = 'flex';
-    existing.innerHTML = `<img src="${imgMatch[0]}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 0 20px rgba(0,200,255,0.2)" onerror="this.parentElement.innerHTML='<span style=color:#ef4444;font-family:monospace;font-size:0.75rem>Image failed to load</span>'">`;
+    rp.innerHTML = `<img src="${imgMatch[0]}" style="max-width:90%;max-height:90%;object-fit:contain;border-radius:8px;box-shadow:0 0 24px rgba(0,200,255,0.25)" onerror="this.parentElement.innerHTML='<span style=color:#ef4444;font-family:monospace;font-size:0.75rem>Image failed to load: ${imgMatch[0]}</span>'">`;
   } else {
-    // Fallback: show a styled message
-    let existing = document.getElementById('live-render-frame');
-    if (!existing) {
-      existing = document.createElement('div');
-      existing.id = 'live-render-frame';
-      existing.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a';
-      wrap.appendChild(existing);
-    }
-    existing.style.display = 'flex';
-    existing.innerHTML = `<div style="text-align:center;font-family:'JetBrains Mono',monospace">
-      <div style="font-size:2rem;margin-bottom:10px">&#9670;</div>
-      <div style="font-size:0.72rem;color:rgba(0,200,255,0.6);margin-bottom:6px">No renderable output detected</div>
-      <div style="font-size:0.62rem;color:rgba(0,200,255,0.3)">Ask Gemma to write SVG, HTML, or share an image URL</div>
+    rp.innerHTML = `<div style="text-align:center;font-family:'JetBrains Mono',monospace;padding:20px">
+      <div style="font-size:2.5rem;margin-bottom:12px">&#9670;</div>
+      <div style="font-size:0.72rem;color:rgba(0,200,255,0.6);margin-bottom:8px">No renderable output detected</div>
+      <div style="font-size:0.62rem;color:rgba(0,200,255,0.3);line-height:1.6">Ask Gemma to generate SVG graphics,<br>HTML layouts, or share an image URL</div>
     </div>`;
   }
 }
