@@ -1,0 +1,38 @@
+<!--
+ * Copyright (C) 2026 DannyGC Cloud Services - All Rights Reserved
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>DannyGC Cloud — Offline</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0806; color: #f0e8d8;
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 24px;
+    }
+    .logo { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; margin: 0 auto 24px; border: 2px solid rgba(245,166,35,0.4); box-shadow: 0 0 40px rgba(245,166,35,0.3); }
+    .logo img { width: 100%; height: 100%; object-fit: cover; }
+    h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #c47a1e, #f5a623); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }
+    p { font-size: 14px; color: #a89070; line-height: 1.7; max-width: 320px; margin: 0 auto 28px; }
+    .code { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #00c8ff; background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.2); padding: 12px 20px; border-radius: 8px; margin-bottom: 28px; }
+    button { background: linear-gradient(135deg, #c47a1e, #f5a623); border: none; padding: 12px 28px; border-radius: 10px; color: #0a0806; font-size: 14px; font-weight: 700; cursor: pointer; }
+    button:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <div class="logo"><img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='☁️'" alt="DannyGC"></div>
+  <h1>You're Offline</h1>
+  <p>The DannyGC Cloud Portal couldn't connect to the server. Check your internet connection and try again.</p>
+  <div class="code">[ NETWORK ] Connection to cloud.dannygc.cloud lost</div>
+  <button onclick="location.reload()">Retry Connection →</button>
+</body>
+</html>

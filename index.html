@@ -11,6 +11,45 @@
   <meta name="description" content="DannyGC Cloud Portal — AI-Powered Server Dashboard">
   <meta name="theme-color" content="#0a0806">
   <title>DannyGC Cloud Portal</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DannyGC">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="DannyGC Cloud">
+  <meta name="msapplication-TileColor" content="#0a0806">
+  <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-180x180.png">
+  <link rel="apple-touch-icon" sizes="57x57"   href="/icons/icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60"   href="/icons/icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72"   href="/icons/icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76"   href="/icons/icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/icons/icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png">
+
+  <!-- Apple Splash Screens -->
+  <link rel="apple-touch-startup-image" media="(device-width:1024px) and (device-height:1366px) and (-webkit-device-pixel-ratio:2)" href="/splash/splash-2048x2732.png">
+  <link rel="apple-touch-startup-image" media="(device-width:834px)  and (device-height:1194px) and (-webkit-device-pixel-ratio:2)" href="/splash/splash-1668x2388.png">
+  <link rel="apple-touch-startup-image" media="(device-width:768px)  and (device-height:1024px) and (-webkit-device-pixel-ratio:2)" href="/splash/splash-1536x2048.png">
+  <link rel="apple-touch-startup-image" media="(device-width:375px)  and (device-height:812px)  and (-webkit-device-pixel-ratio:3)" href="/splash/splash-1125x2436.png">
+  <link rel="apple-touch-startup-image" media="(device-width:414px)  and (device-height:896px)  and (-webkit-device-pixel-ratio:3)" href="/splash/splash-1242x2688.png">
+  <link rel="apple-touch-startup-image" media="(device-width:414px)  and (device-height:896px)  and (-webkit-device-pixel-ratio:2)" href="/splash/splash-828x1792.png">
+  <link rel="apple-touch-startup-image" media="(device-width:375px)  and (device-height:667px)  and (-webkit-device-pixel-ratio:2)" href="/splash/splash-750x1334.png">
+  <link rel="apple-touch-startup-image" media="(device-width:320px)  and (device-height:568px)  and (-webkit-device-pixel-ratio:2)" href="/splash/splash-640x1136.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+  <link rel="shortcut icon" href="/icons/icon-192x192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1296,6 +1335,24 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
 
 /* ─── BOOT ───────────────────────────────────────────────────────── */
 runBootSequence();
+
+/* ─── SERVICE WORKER (PWA) ───────────────────────────────────────── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(r => console.log('[DannyGC PWA] SW registered:', r.scope))
+      .catch(e => console.warn('[DannyGC PWA] SW failed:', e));
+  });
+}
+
+/* ─── PWA SHORTCUT TAB ROUTING ───────────────────────────────────── */
+(function() {
+  const tab = new URLSearchParams(window.location.search).get('tab');
+  if (tab) {
+    const btn = document.querySelector(".nav-item[onclick*='" + tab + "']");
+    if (btn) showTab(tab, btn);
+  }
+})();
 </script>
 </body>
 </html>
