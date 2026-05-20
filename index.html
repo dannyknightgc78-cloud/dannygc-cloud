@@ -145,6 +145,68 @@
       from { opacity: 0; transform: scale(0.75) translateY(-30px); }
       to   { opacity: 1; transform: scale(1) translateY(0); }
     }
+    /* Avatar animated eyes overlay */
+    .splash-avatar-wrap {
+      position: relative; width: 200px; height: 200px;
+      margin: 0 auto 18px;
+      animation: avatarFloat 3s ease-in-out infinite;
+    }
+    @keyframes avatarFloat {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-8px); }
+    }
+    .splash-avatar-img {
+      width: 200px; height: 200px; border-radius: 28px;
+      display: block;
+      filter: drop-shadow(0 0 30px rgba(0,200,255,0.6)) drop-shadow(0 0 60px rgba(0,200,255,0.3));
+      animation: avatarGlow 2s ease-in-out infinite;
+    }
+    @keyframes avatarGlow {
+      0%,100% { filter: drop-shadow(0 0 25px rgba(0,200,255,0.5)) drop-shadow(0 0 50px rgba(0,200,255,0.25)); }
+      50%      { filter: drop-shadow(0 0 45px rgba(0,200,255,0.9)) drop-shadow(0 0 90px rgba(0,200,255,0.5)); }
+    }
+    /* Eye blink overlay — positioned over the avatar's eyes */
+    .eye-blink-overlay {
+      position: absolute;
+      top: 44%; left: 50%; transform: translate(-50%, -50%);
+      width: 54%; display: flex; justify-content: space-between;
+      pointer-events: none;
+    }
+    .eye-lid {
+      width: 28%; height: 0;
+      background: #0a0d1a;
+      border-radius: 50%;
+      animation: eyeBlink 4s ease-in-out infinite;
+    }
+    .eye-lid:nth-child(2) { animation-delay: 0.05s; }
+    @keyframes eyeBlink {
+      0%,88%,100% { height: 0; }
+      92%,96%     { height: 22px; margin-top: -11px; }
+    }
+    /* Pupil tracking — subtle left/right movement */
+    .eye-pupil-wrap {
+      position: absolute;
+      top: 44%; left: 50%; transform: translate(-50%, -50%);
+      width: 54%; display: flex; justify-content: space-between;
+      pointer-events: none;
+    }
+    .eye-pupil {
+      width: 28%; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .eye-pupil-inner {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #fff;
+      animation: eyeMove 5s ease-in-out infinite;
+      box-shadow: 0 0 6px rgba(255,255,255,0.8);
+    }
+    .eye-pupil:nth-child(2) .eye-pupil-inner { animation-delay: 0s; }
+    @keyframes eyeMove {
+      0%,100% { transform: translateX(0); }
+      25%     { transform: translateX(-4px); }
+      75%     { transform: translateX(4px); }
+    }
+
     .splash-logo-icon {
       width: 110px; height: 110px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -514,10 +576,27 @@
 <div id="splash">
   <div class="splash-particles" id="splashParticles"></div>
   <div class="splash-logo-wrap">
-    <div class="splash-logo-icon">
-      <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='<span style=\'font-size:52px\'>☁️</span>'" alt="DannyGC">
+    <!-- Avatar with animated blinking eyes -->
+    <div class="splash-avatar-wrap">
+      <img class="splash-avatar-img" src="avatar.png" onerror="this.style.display='none'" alt="DannyGC AI">
+      <!-- Blink overlay -->
+      <div class="eye-blink-overlay">
+        <div class="eye-lid"></div>
+        <div class="eye-lid"></div>
+      </div>
+      <!-- Pupil movement overlay -->
+      <div class="eye-pupil-wrap">
+        <div class="eye-pupil"><div class="eye-pupil-inner"></div></div>
+        <div class="eye-pupil"><div class="eye-pupil-inner"></div></div>
+      </div>
     </div>
-    <div class="splash-title">DannyGC</div>
+    <!-- DannyGC logo sits below the avatar, smaller and centred -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;">
+      <div class="splash-logo-icon" style="width:48px;height:48px;margin:0;">
+        <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='<span style=\'font-size:22px\'>☁️</span>'" alt="DannyGC">
+      </div>
+      <div class="splash-title" style="font-size:1.9rem;margin-bottom:0;">DannyGC</div>
+    </div>
     <div class="splash-sub">Cloud Services — We Work So You Don't Have To</div>
     <div class="splash-version">v2.0.0 · Portal Edition</div>
   </div>
