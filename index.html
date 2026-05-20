@@ -354,7 +354,7 @@
     .app-card.glow-ai:hover   { border-color: rgba(168,85,247,0.6); box-shadow: 0 6px 24px rgba(168,85,247,0.18); transform: translateY(-2px); }
     .app-card.glow-prod:hover { border-color: rgba(34,197,94,0.6);  box-shadow: 0 6px 24px rgba(34,197,94,0.18);  transform: translateY(-2px); }
     .app-card:hover::before { opacity: 1; }
-    .app-icon { font-size: 26px; }
+    .app-icon { font-size: 36px; }
     .app-name { font-size: 13px; font-weight: 700; }
     .app-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; flex: 1; }
 
@@ -388,7 +388,7 @@
       backdrop-filter: blur(6px);
     }
     .link-card:hover { border-color: var(--border-bright); background: rgba(34,26,10,0.9); transform: translateY(-2px); }
-    .link-icon { font-size: 22px; }
+    .link-icon { font-size: 28px; }
     .link-name { font-size: 13px; font-weight: 700; }
     .link-desc { font-size: 11px; color: var(--text-dim); }
 
@@ -401,7 +401,7 @@
     }
     .n8n-card:hover { border-color: rgba(249,115,22,0.5); background: rgba(34,26,10,0.9); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.1); }
     .n8n-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .n8n-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.25); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .n8n-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.25); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
     .n8n-title { font-size: 14px; font-weight: 700; }
     .n8n-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-bottom: 12px; }
     .n8n-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--green); font-family: 'JetBrains Mono', monospace; }
@@ -415,7 +415,7 @@
       padding: 24px 20px; transition: var(--transition); backdrop-filter: blur(6px);
     }
     .concept-card:hover { border-color: var(--border-bright); background: rgba(34,26,10,0.9); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,166,35,0.1); }
-    .concept-icon { font-size: 32px; margin-bottom: 12px; }
+    .concept-icon { font-size: 40px; margin-bottom: 12px; }
     .concept-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--amber); }
     .concept-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
 
@@ -553,7 +553,7 @@
         <span class="status-val" id="ollamaStatus">checking...</span>
       </div>
       <div class="status-row">
-        <div class="status-dot amber"></div>
+        <div class="status-dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber);animation:pulse 2s infinite"></div>
         <span>Portal</span>
         <span class="status-val" style="color:var(--amber)">online</span>
       </div>
@@ -893,29 +893,29 @@ const launcherGroups = [
   {
     key: 'auto', label: 'Automation', glowClass: 'glow-auto', badgeClass: 'auto',
     apps: [
-      { icon:'⚡', name:'n8n',            url:'http://cloud.dannygc.cloud:5678',  desc:'Workflow automation platform',          cat:'auto' },
+      { icon:'⚡', name:'n8n',            url:'https://n8n.dannygc.cloud',        desc:'Workflow automation platform',          cat:'auto' },
     ]
   },
   {
     key: 'dev', label: 'Dev Tools', glowClass: 'glow-dev', badgeClass: 'dev',
     apps: [
-      { icon:'💻', name:'VS Code Server',  url:'http://cloud.dannygc.cloud:8443',  desc:'Browser-based code editor',             cat:'dev'  },
-      { icon:'📁', name:'File Manager',    url:'http://cloud.dannygc.cloud:8080',  desc:'Browse and manage your server files',   cat:'dev'  },
-      { icon:'📊', name:'System Monitor',  url:'http://cloud.dannygc.cloud:19999', desc:'Real-time server performance metrics',  cat:'dev'  },
-      { icon:'🐳', name:'Portainer',       url:'http://cloud.dannygc.cloud:9000',  desc:'Docker container management UI',        cat:'dev'  },
-      { icon:'📈', name:'Grafana',         url:'http://cloud.dannygc.cloud:3001',  desc:'Metrics and analytics dashboards',      cat:'dev'  },
+      { icon:'💻', name:'VS Code Server',  url:'https://code.dannygc.cloud',       desc:'Browser-based code editor',             cat:'dev'  },
+      { icon:'📁', name:'File Manager',    url:'https://files.dannygc.cloud',      desc:'Browse and manage your server files',   cat:'dev'  },
+      { icon:'📊', name:'System Monitor',  url:'https://monitor.dannygc.cloud',    desc:'Real-time server performance metrics',  cat:'dev'  },
+      { icon:'🐳', name:'Portainer',       url:'https://portainer.dannygc.cloud',  desc:'Docker container management UI',        cat:'dev'  },
+      { icon:'📈', name:'Grafana',         url:'https://grafana.dannygc.cloud',    desc:'Metrics and analytics dashboards',      cat:'dev'  },
     ]
   },
   {
     key: 'ai', label: 'AI', glowClass: 'glow-ai', badgeClass: 'ai',
     apps: [
-      { icon:'🤖', name:'Ollama Dashboard',url:'http://cloud.dannygc.cloud:11434', desc:'Manage and query local AI models',       cat:'ai'   },
+      { icon:'🤖', name:'Ollama Dashboard',url:'https://ollama.dannygc.cloud',     desc:'Manage and query local AI models',       cat:'ai'   },
     ]
   },
   {
     key: 'prod', label: 'Productivity', glowClass: 'glow-prod', badgeClass: 'prod',
     apps: [
-      { icon:'📝', name:'OnlyOffice',      url:'http://cloud.dannygc.cloud:8081',  desc:'Self-hosted office suite (Docs/Sheets)', cat:'prod' },
+      { icon:'📝', name:'OnlyOffice',      url:'https://office.dannygc.cloud',     desc:'Self-hosted office suite (Docs/Sheets)', cat:'prod' },
     ]
   },
 ];
@@ -1175,9 +1175,13 @@ async function checkOllama() {
   const chatOnline= document.getElementById('chatOnline');
 
   try {
-    const r = await fetch('http://cloud.dannygc.cloud:11434/api/tags', {
-      signal: AbortSignal.timeout(4000)
-    });
+    // Try HTTPS subdomain first (avoids mixed-content block), fall back to direct port
+    let r;
+    try {
+      r = await fetch('https://ollama.dannygc.cloud/api/tags', { signal: AbortSignal.timeout(4000) });
+    } catch {
+      r = await fetch('http://cloud.dannygc.cloud:11434/api/tags', { signal: AbortSignal.timeout(4000) });
+    }
     if (r.ok) {
       const data = await r.json();
       const model = data.models?.[0]?.name || 'gemma4';
@@ -1275,7 +1279,8 @@ async function sendChat() {
   msgs.scrollTop = msgs.scrollHeight;
   try {
     const model = document.getElementById('modelName').textContent || 'gemma4';
-    const res = await fetch('http://cloud.dannygc.cloud:11434/api/generate', {
+    const ollamaBase = window.location.protocol === 'https:' ? 'https://ollama.dannygc.cloud' : 'http://cloud.dannygc.cloud:11434';
+    const res = await fetch(ollamaBase + '/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model, prompt: msg, stream: false }),
