@@ -1,35 +1,1287 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DannyGC Cloud Console</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: radial-gradient(circle at center, #111827 0%, #030712 100%); color: #f9fafb; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
-        .portal-header { text-align: center; margin-bottom: 3rem; }
-        .brand-logo { font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.3)); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
-        .system-status { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.2em; color: #9ca3af; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
-        .pulse-dot { width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; animation: pulse 2s infinite; }
-        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; width: 100%; max-width: 950px; padding: 0 2rem; }
-        .console-card { background: rgba(17, 24, 39, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px rgba(255, 255, 255, 0.05) solid; border-radius: 1.25rem; padding: 2rem; text-decoration: none; color: #f9fafb; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; justify-content: space-between; height: 220px; }
-        .console-card:hover { transform: translateY(-5px); background: rgba(17, 24, 39, 0.6); border-color: rgba(0, 242, 254, 0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(0, 242, 254, 0.1); }
-        .card-icon { font-size: 2rem; margin-bottom: 1rem; }
-        .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .card-desc { font-size: 0.875rem; color: #9ca3af; line-height: 1.5; }
-        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } .console-card { height: 180px; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DannyGC Cloud Portal — AI-Powered Server Dashboard">
+  <meta name="theme-color" content="#050d1a">
+  <title>DannyGC Cloud Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ─── RESET & ROOT ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg:          #050d1a;
+      --bg2:         #0a1628;
+      --bg3:         #0f1f3d;
+      --bg4:         #1a2d5a;
+      --card:        #0d1b35;
+      --card-hover:  #132040;
+      --border:      rgba(56,139,253,0.20);
+      --border-bright: rgba(99,160,255,0.45);
+      --blue:        #3b82f6;
+      --blue-bright: #60a5fa;
+      --blue-glow:   rgba(59,130,246,0.20);
+      --indigo:      #6366f1;
+      --indigo-glow: rgba(99,102,241,0.20);
+      --gold:        #f59e0b;
+      --gold-dim:    rgba(245,158,11,0.15);
+      --green:       #10b981;
+      --red:         #ef4444;
+      --purple:      #a855f7;
+      --text:        #e2e8f0;
+      --text-dim:    #94a3b8;
+      --text-muted:  #475569;
+      --radius:      12px;
+      --radius-lg:   18px;
+      --shadow:      0 4px 24px rgba(0,0,0,0.5);
+      --shadow-lg:   0 8px 40px rgba(0,0,0,0.6);
+      --transition:  all 0.22s cubic-bezier(0.23,1,0.32,1);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLLBAR ─────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SPLASH SCREEN
+    ═══════════════════════════════════════════════════════════════ */
+    #splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #000;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .splash-particles {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .splash-particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.3; }
+      100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+    }
+
+    .splash-logo-wrap {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: splashLogoIn 1s ease 0.3s both;
+    }
+    @keyframes splashLogoIn {
+      from { opacity: 0; transform: scale(0.8) translateY(-20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .splash-logo-icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1, #f59e0b);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+      margin: 0 auto 16px;
+      box-shadow: 0 0 40px rgba(59,130,246,0.5), 0 0 80px rgba(99,102,241,0.3);
+      animation: iconPulse 2s ease infinite;
+    }
+    @keyframes iconPulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(59,130,246,0.5), 0 0 80px rgba(99,102,241,0.3); }
+      50%       { box-shadow: 0 0 60px rgba(59,130,246,0.8), 0 0 120px rgba(99,102,241,0.5); }
+    }
+
+    .splash-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 2.2rem; font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa, #818cf8, #f59e0b);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+    .splash-sub {
+      font-size: 0.85rem; color: #475569; letter-spacing: 0.15em;
+      text-transform: uppercase; margin-top: 6px;
+    }
+
+    /* Terminal window */
+    .terminal-window {
+      width: min(600px, 90vw);
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      animation: termIn 0.6s ease 0.8s both;
+    }
+    @keyframes termIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .terminal-bar {
+      background: #161b22;
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid #21262d;
+    }
+    .term-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .term-dot.red   { background: #ff5f57; }
+    .term-dot.yellow{ background: #febc2e; }
+    .term-dot.green { background: #28c840; }
+    .terminal-bar span {
+      margin-left: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; color: #8b949e;
+    }
+
+    .terminal-body {
+      padding: 16px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; line-height: 1.8;
+      min-height: 160px;
+    }
+    .term-line { display: flex; align-items: center; gap: 10px; opacity: 0; }
+    .term-line.visible { opacity: 1; }
+    .term-ok   { color: #28c840; font-weight: 700; flex-shrink: 0; }
+    .term-text { color: #c9d1d9; }
+    .term-cursor {
+      display: inline-block; width: 8px; height: 14px;
+      background: #3b82f6; animation: blink 1s step-end infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .splash-progress-wrap {
+      width: min(600px, 90vw);
+      margin-top: 20px;
+      animation: termIn 0.6s ease 1s both;
+    }
+    .splash-progress-bar {
+      height: 3px;
+      background: var(--bg3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .splash-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #6366f1, #f59e0b);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .splash-progress-label {
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: #475569;
+      margin-top: 6px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MAIN LAYOUT
+    ═══════════════════════════════════════════════════════════════ */
+    #app { display: none; }
+    #app.visible { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ───────────────────────────────────────────────── */
+    .sidebar {
+      width: 220px; min-width: 220px;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 10;
+    }
+    .sidebar-logo {
+      padding: 18px 16px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--blue), var(--indigo), var(--gold));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .logo-text { font-size: 13px; font-weight: 700; line-height: 1.2; }
+    .logo-text .gold { color: var(--gold); }
+    .logo-sub { font-size: 10px; color: var(--text-dim); font-weight: 400; }
+
+    .sidebar-nav { flex: 1; padding: 10px 8px; overflow-y: auto; }
+    .nav-section { margin-bottom: 18px; }
+    .nav-label {
+      font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
+      color: var(--text-muted); text-transform: uppercase;
+      padding: 0 10px; margin-bottom: 5px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 8px;
+      cursor: pointer; font-size: 13px; font-weight: 500;
+      color: var(--text-dim); transition: var(--transition);
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-item:hover { background: var(--bg3); color: var(--text); }
+    .nav-item.active { background: var(--blue-glow); color: var(--blue-bright); border: 1px solid var(--border); }
+    .nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+    .sidebar-status {
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+    }
+    .status-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; color: var(--text-dim); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+    .status-dot.blue  { background: var(--blue); box-shadow: 0 0 6px var(--blue); animation: pulse 2s infinite; }
+    .status-dot.red   { background: var(--red); }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.3); opacity: 0.7; }
+    }
+    .status-val { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--green); }
+
+    /* ─── MAIN CONTENT ──────────────────────────────────────────── */
+    .main {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; position: relative;
+    }
+
+    /* Topbar */
+    .topbar {
+      height: 52px; min-height: 52px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 24px; gap: 16px;
+    }
+    .topbar-title { font-size: 16px; font-weight: 700; flex: 1; }
+    .ticker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--gold);
+      background: var(--gold-dim);
+      border: 1px solid rgba(245,158,11,0.25);
+      padding: 4px 12px; border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Content area */
+    .content {
+      flex: 1; overflow-y: auto;
+      padding: 24px;
+    }
+
+    /* Tab panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ─── STATS BAR ─────────────────────────────────────────────── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      transition: var(--transition);
+    }
+    .stat-card:hover { border-color: var(--border-bright); background: var(--card-hover); }
+    .stat-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 1.7rem; font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+    }
+    .stat-value.blue   { color: var(--blue-bright); }
+    .stat-value.gold   { color: var(--gold); }
+    .stat-value.green  { color: var(--green); }
+    .stat-value.purple { color: var(--purple); }
+    .stat-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+    .stat-indicator {
+      width: 28px; height: 3px; border-radius: 2px; margin-top: 8px;
+    }
+    .stat-indicator.blue   { background: var(--blue); }
+    .stat-indicator.gold   { background: var(--gold); }
+    .stat-indicator.green  { background: var(--green); }
+    .stat-indicator.purple { background: var(--purple); }
+
+    /* ─── SECTION HEADER ────────────────────────────────────────── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 1rem; font-weight: 700;
+    }
+    .section-title .accent { color: var(--gold); }
+    .section-title .accent-blue { color: var(--blue-bright); }
+    .section-title .accent-indigo { color: var(--indigo); }
+    .section-title .accent-purple { color: var(--purple); }
+    .section-title .accent-green { color: var(--green); }
+    .manage-btn {
+      font-size: 12px; color: var(--text-dim);
+      background: none; border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 6px;
+      cursor: pointer; transition: var(--transition);
+    }
+    .manage-btn:hover { color: var(--text); border-color: var(--border-bright); }
+
+    /* ─── APP GRID ──────────────────────────────────────────────── */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .app-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px 16px;
+      text-decoration: none; color: var(--text);
+      transition: var(--transition);
+      display: flex; flex-direction: column; gap: 8px;
+      cursor: pointer; position: relative; overflow: hidden;
+    }
+    .app-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(59,130,246,0.05), transparent);
+      opacity: 0; transition: var(--transition);
+    }
+    .app-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-bright);
+      background: var(--card-hover);
+      box-shadow: 0 8px 30px rgba(59,130,246,0.15);
+    }
+    .app-card:hover::before { opacity: 1; }
+    .app-card.selected {
+      border-color: var(--blue);
+      background: var(--blue-glow);
+    }
+
+    .app-icon { font-size: 2rem; line-height: 1; margin-bottom: 4px; }
+    .app-name { font-size: 14px; font-weight: 700; }
+    .app-desc { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
+
+    /* Category badge */
+    .badge {
+      display: inline-block;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px; border-radius: 4px;
+      margin-top: 4px; align-self: flex-start;
+    }
+    .badge.tools    { background: rgba(59,130,246,0.15); color: var(--blue-bright); border: 1px solid rgba(59,130,246,0.3); }
+    .badge.monitor  { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+    .badge.ai       { background: rgba(168,85,247,0.12); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
+    .badge.dev      { background: rgba(245,158,11,0.12); color: var(--gold); border: 1px solid rgba(245,158,11,0.3); }
+    .badge.cloud    { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+    .badge.auto     { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .badge.workspace{ background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+
+    /* ─── LINKS GRID ────────────────────────────────────────────── */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .link-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-decoration: none; color: var(--text);
+      transition: var(--transition);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .link-card:hover {
+      border-color: var(--border-bright);
+      background: var(--card-hover);
+      transform: translateY(-2px);
+    }
+    .link-icon { font-size: 1.6rem; }
+    .link-name { font-size: 13px; font-weight: 700; }
+    .link-desc { font-size: 11px; color: var(--text-dim); }
+
+    /* ─── CONCEPT CARDS (original 3) ───────────────────────────── */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .concept-card {
+      background: linear-gradient(135deg, var(--bg3), var(--bg4));
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      padding: 24px 22px;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: var(--transition); position: relative; overflow: hidden;
+    }
+    .concept-card::after {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59,130,246,0.12), transparent 70%);
+    }
+    .concept-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(59,130,246,0.2);
+      border-color: var(--blue);
+    }
+    .concept-icon { font-size: 2.2rem; }
+    .concept-title { font-size: 1.1rem; font-weight: 800; }
+    .concept-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+    /* ─── N8N AUTOMATION CARDS ──────────────────────────────────── */
+    .n8n-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .n8n-card {
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(59,130,246,0.05));
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: var(--radius-lg);
+      padding: 20px 18px;
+      display: flex; flex-direction: column; gap: 8px;
+      transition: var(--transition); position: relative; overflow: hidden;
+    }
+    .n8n-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--indigo);
+      box-shadow: 0 8px 30px rgba(99,102,241,0.2);
+    }
+    .n8n-card-header { display: flex; align-items: center; gap: 10px; }
+    .n8n-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--indigo), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .n8n-title { font-size: 14px; font-weight: 700; }
+    .n8n-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+    .n8n-status {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .n8n-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+
+    /* ─── AI CHAT PANEL ─────────────────────────────────────────── */
+    .chat-panel {
+      display: flex; flex-direction: column; height: 100%;
+    }
+    .chat-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .chat-avatar {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .chat-info .chat-name { font-size: 14px; font-weight: 700; }
+    .chat-info .chat-model {
+      font-size: 11px; color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .chat-online { margin-left: auto; display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--green); }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto;
+      padding: 20px; display: flex; flex-direction: column; gap: 16px;
+    }
+    .chat-msg { display: flex; gap: 10px; max-width: 85%; }
+    .chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }
+    .chat-bubble {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 10px 14px;
+      font-size: 13px; line-height: 1.6;
+    }
+    .chat-msg.user .chat-bubble {
+      background: var(--blue-glow);
+      border-color: var(--border-bright);
+    }
+    .chat-msg-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+
+    .chat-input-wrap {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px;
+    }
+    .chat-input {
+      flex: 1; background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px;
+      color: var(--text); font-size: 13px; font-family: 'Inter', sans-serif;
+      outline: none; transition: var(--transition);
+    }
+    .chat-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-glow); }
+    .chat-send {
+      background: linear-gradient(135deg, var(--blue), var(--indigo));
+      border: none; border-radius: 10px;
+      padding: 10px 18px; color: #fff;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+    }
+    .chat-send:hover { opacity: 0.85; transform: scale(1.03); }
+
+    /* ─── ADD APP MODAL ─────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px; width: min(480px, 90vw);
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; display: block; }
+    .form-input, .form-select {
+      width: 100%; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 9px 12px; color: var(--text);
+      font-size: 13px; font-family: 'Inter', sans-serif;
+      outline: none; transition: var(--transition);
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--blue); }
+    .form-select option { background: var(--bg3); }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    .btn-cancel {
+      background: none; border: 1px solid var(--border);
+      padding: 8px 18px; border-radius: 8px;
+      color: var(--text-dim); cursor: pointer; font-size: 13px;
+      transition: var(--transition);
+    }
+    .btn-cancel:hover { border-color: var(--border-bright); color: var(--text); }
+    .btn-save {
+      background: linear-gradient(135deg, var(--blue), var(--indigo));
+      border: none; padding: 8px 20px; border-radius: 8px;
+      color: #fff; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+    }
+    .btn-save:hover { opacity: 0.85; }
+
+    /* ─── BACKGROUND CLOUDS ─────────────────────────────────────── */
+    .bg-clouds {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .cloud-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.04;
+      animation: drift linear infinite;
+    }
+    @keyframes drift {
+      0%   { transform: translateX(0) translateY(0); }
+      33%  { transform: translateX(30px) translateY(-20px); }
+      66%  { transform: translateX(-20px) translateY(15px); }
+      100% { transform: translateX(0) translateY(0); }
+    }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; min-width: 60px; }
+      .logo-text, .logo-sub, .nav-label, .nav-item span { display: none; }
+      .nav-item { justify-content: center; padding: 10px; }
+      .stats-bar { grid-template-columns: repeat(2,1fr); }
+      .app-grid { grid-template-columns: repeat(2,1fr); }
+      .sidebar-status .status-row span:not(.status-dot) { display: none; }
+    }
+  </style>
 </head>
 <body>
-    <div class="portal-header">
-        <h1 class="brand-logo">DANNYGC CLOUD</h1>
-        <div class="system-status"><div class="pulse-dot"></div>Nexus Core Operational</div>
+
+<!-- ═══════════════════════ BACKGROUND CLOUDS ═══════════════════════ -->
+<div class="bg-clouds" id="bgClouds"></div>
+
+<!-- ═══════════════════════ SPLASH SCREEN ═══════════════════════════ -->
+<div id="splash">
+  <div class="splash-particles" id="splashParticles"></div>
+
+  <div class="splash-logo-wrap">
+    <div class="splash-logo-icon">🤖</div>
+    <div class="splash-title">DannyGC</div>
+    <div class="splash-sub">Cloud Services — We Work So You Don't Have To</div>
+  </div>
+
+  <div class="terminal-window">
+    <div class="terminal-bar">
+      <div class="term-dot red"></div>
+      <div class="term-dot yellow"></div>
+      <div class="term-dot green"></div>
+      <span>dannygc-portal — boot sequence</span>
     </div>
-    <div class="grid-container">
-        <div class="console-card"><div><div class="card-icon">📂</div><h2 class="card-title">Bespoke Drive</h2></div><p class="card-desc">High-performance secure file vault array natively integrated into your ecosystem storage layers.</p></div>
-        <div class="console-card"><div><div class="card-icon">📝</div><h2 class="card-title">Office Matrix</h2></div><p class="card-desc">Collaborative digital canvas for production documents, spreadsheets, and data analytics.</p></div>
-        <div class="console-card"><div><div class="card-icon">🤖</div><h2 class="card-title">Gemma AI Engine</h2></div><p class="card-desc">Private enterprise context agent reading your localized directories natively over bare-metal GPU.</p></div>
+    <div class="terminal-body" id="termBody">
+      <div class="term-cursor" id="termCursor"></div>
     </div>
+  </div>
+
+  <div class="splash-progress-wrap">
+    <div class="splash-progress-bar">
+      <div class="splash-progress-fill" id="progressFill"></div>
+    </div>
+    <div class="splash-progress-label">
+      <span id="progressLabel">Initializing...</span>
+      <span id="progressPct">0%</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ MAIN APP ════════════════════════════════ -->
+<div id="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🤖</div>
+      <div>
+        <div class="logo-text"><span class="gold">Danny</span>GC</div>
+        <div class="logo-sub">Cloud Portal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-label">Main</div>
+        <button class="nav-item active" onclick="showTab('dashboard', this)">
+          <span class="nav-icon">🏠</span><span>Dashboard</span>
+        </button>
+        <button class="nav-item" onclick="showTab('chat', this)">
+          <span class="nav-icon">🤖</span><span>AI Chat</span>
+        </button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Launcher</div>
+        <button class="nav-item" onclick="showTab('apps', this)">
+          <span class="nav-icon">📦</span><span>Apps</span>
+        </button>
+        <button class="nav-item" onclick="showTab('links', this)">
+          <span class="nav-icon">🔗</span><span>Links</span>
+        </button>
+        <button class="nav-item" onclick="showTab('automation', this)">
+          <span class="nav-icon">⚡</span><span>Automation</span>
+        </button>
+        <button class="nav-item" onclick="showTab('cloud', this)">
+          <span class="nav-icon">☁️</span><span>Cloud Services</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-status">
+      <div class="status-row">
+        <div class="status-dot green"></div>
+        <span>Ollama</span>
+        <span class="status-val" id="ollamaStatus">online</span>
+      </div>
+      <div class="status-row">
+        <div class="status-dot blue"></div>
+        <span>Portal</span>
+        <span class="status-val" style="color:var(--blue-bright)">online</span>
+      </div>
+      <div class="status-row" style="margin-top:4px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)" id="modelName">gemma4</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="ticker">WE WORK SO YOU DON'T HAVE TO</div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- ── DASHBOARD TAB ── -->
+      <div class="tab-panel active" id="tab-dashboard">
+
+        <!-- Stats -->
+        <div class="stats-bar">
+          <div class="stat-card">
+            <div class="stat-label">AI Status</div>
+            <div class="stat-value green" id="statAI">Online</div>
+            <div class="stat-sub" id="statModel">gemma4</div>
+            <div class="stat-indicator green"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Apps Pinned</div>
+            <div class="stat-value gold" id="statApps">6</div>
+            <div class="stat-sub">Click to launch</div>
+            <div class="stat-indicator gold"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Quick Links</div>
+            <div class="stat-value blue" id="statLinks">4</div>
+            <div class="stat-sub">Saved bookmarks</div>
+            <div class="stat-indicator blue"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Uptime</div>
+            <div class="stat-value purple" id="statUptime">—</div>
+            <div class="stat-sub">Portal server</div>
+            <div class="stat-indicator purple"></div>
+          </div>
+        </div>
+
+        <!-- Quick Launch -->
+        <div class="section-header">
+          <div class="section-title">Quick <span class="accent">Launch</span></div>
+          <button class="manage-btn" onclick="openAddModal()">Manage Apps →</button>
+        </div>
+        <div class="app-grid" id="appGrid">
+          <!-- populated by JS -->
+        </div>
+
+        <!-- Quick Links -->
+        <div class="section-header">
+          <div class="section-title">Quick <span class="accent-blue">Links</span></div>
+          <button class="manage-btn" onclick="openAddLinkModal()">Manage Links →</button>
+        </div>
+        <div class="links-grid" id="linksGrid">
+          <!-- populated by JS -->
+        </div>
+
+        <!-- n8n Automation preview -->
+        <div class="section-header">
+          <div class="section-title">⚡ <span class="accent-indigo">Automation</span> Workflows</div>
+          <button class="manage-btn" onclick="showTab('automation', document.querySelector('.nav-item:nth-child(5)'))">View All →</button>
+        </div>
+        <div class="n8n-grid" id="n8nPreview">
+          <!-- populated by JS -->
+        </div>
+
+      </div>
+
+      <!-- ── AI CHAT TAB ── -->
+      <div class="tab-panel" id="tab-chat">
+        <div class="chat-panel" style="height:calc(100vh - 100px)">
+          <div class="chat-header">
+            <div class="chat-avatar">🤖</div>
+            <div class="chat-info">
+              <div class="chat-name">DannyGC AI Assistant</div>
+              <div class="chat-model" id="chatModel">ollama / gemma4</div>
+            </div>
+            <div class="chat-online">
+              <div class="status-dot green"></div>
+              Online
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg">
+              <div class="chat-msg-icon">🤖</div>
+              <div class="chat-bubble">Hello! I'm your DannyGC AI assistant powered by Ollama. I can help you manage your server, answer questions, draft emails, and more. What can I do for you today?</div>
+            </div>
+          </div>
+          <div class="chat-input-wrap">
+            <input class="chat-input" id="chatInput" placeholder="Ask your AI assistant anything..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-send" onclick="sendChat()">Send →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── APPS TAB ── -->
+      <div class="tab-panel" id="tab-apps">
+        <div class="section-header">
+          <div class="section-title">📦 All <span class="accent">Apps</span></div>
+          <button class="manage-btn" onclick="openAddModal()">+ Add App</button>
+        </div>
+        <div class="app-grid" id="appGridFull"></div>
+      </div>
+
+      <!-- ── LINKS TAB ── -->
+      <div class="tab-panel" id="tab-links">
+        <div class="section-header">
+          <div class="section-title">🔗 Quick <span class="accent-blue">Links</span></div>
+          <button class="manage-btn" onclick="openAddLinkModal()">+ Add Link</button>
+        </div>
+        <div class="links-grid" id="linksGridFull"></div>
+      </div>
+
+      <!-- ── AUTOMATION TAB ── -->
+      <div class="tab-panel" id="tab-automation">
+        <div class="section-header">
+          <div class="section-title">⚡ n8n <span class="accent-indigo">Automation</span> Suite</div>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
+          Your AI personal assistant workflows powered by <strong style="color:var(--indigo)">n8n + Ollama</strong>. These automations handle your email, calendar, reminders, and daily briefings automatically.
+        </p>
+        <div class="n8n-grid" id="n8nFull"></div>
+      </div>
+
+      <!-- ── CLOUD SERVICES TAB ── -->
+      <div class="tab-panel" id="tab-cloud">
+        <div class="section-header">
+          <div class="section-title">☁️ Cloud <span class="accent-blue">Services</span></div>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
+          Your private cloud infrastructure — high-performance, secure, and entirely self-hosted on your own hardware.
+        </p>
+        <div class="concept-grid" id="conceptGrid"></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ═══════════════════════ ADD APP MODAL ═══════════════════════════ -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">Add App</div>
+    <div class="form-group">
+      <label class="form-label">Icon (emoji)</label>
+      <input class="form-input" id="newIcon" placeholder="e.g. 🚀" maxlength="4">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Name *</label>
+      <input class="form-input" id="newName" placeholder="App name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL *</label>
+      <input class="form-input" id="newUrl" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input class="form-input" id="newDesc" placeholder="Short description">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="newCat">
+        <option value="tools">Tools</option>
+        <option value="monitor">Monitoring</option>
+        <option value="ai">AI</option>
+        <option value="dev">Dev</option>
+        <option value="cloud">Cloud</option>
+        <option value="auto">Automation</option>
+        <option value="workspace">Workspace</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('addModal')">Cancel</button>
+      <button class="btn-save" onclick="saveApp()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ADD LINK MODAL ══════════════════════════ -->
+<div class="modal-overlay" id="addLinkModal">
+  <div class="modal">
+    <div class="modal-title">Add Quick Link</div>
+    <div class="form-group">
+      <label class="form-label">Icon (emoji)</label>
+      <input class="form-input" id="newLinkIcon" placeholder="e.g. 🌐" maxlength="4">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Name *</label>
+      <input class="form-input" id="newLinkName" placeholder="Link name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL *</label>
+      <input class="form-input" id="newLinkUrl" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input class="form-input" id="newLinkDesc" placeholder="Short description">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('addLinkModal')">Cancel</button>
+      <button class="btn-save" onclick="saveLink()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════════════════════ */
+const defaultApps = [
+  { icon:'📁', name:'File Manager',    url:'http://cloud.dannygc.cloud:8080',  desc:'Browse and manage your server files',     cat:'tools'   },
+  { icon:'📊', name:'System Monitor',  url:'http://cloud.dannygc.cloud:19999', desc:'Real-time server performance metrics',    cat:'monitor'  },
+  { icon:'🤖', name:'Ollama Dashboard',url:'http://localhost:11434',           desc:'Manage local AI models',                  cat:'ai'       },
+  { icon:'🐳', name:'Portainer',       url:'http://cloud.dannygc.cloud:9000',  desc:'Container management UI',                cat:'tools'   },
+  { icon:'💻', name:'VS Code Server',  url:'http://cloud.dannygc.cloud:8443',  desc:'Browser-based code editor',              cat:'dev'      },
+  { icon:'📈', name:'Grafana',         url:'http://cloud.dannygc.cloud:3001',  desc:'Metrics and analytics dashboards',        cat:'monitor'  },
+];
+
+const defaultLinks = [
+  { icon:'🌐', name:'DannyGC Website', url:'https://dannygc.cloud',            desc:'Main company website'         },
+  { icon:'🐙', name:'GitHub',          url:'https://github.com',               desc:'Code repositories'            },
+  { icon:'☁️', name:'Cloudflare',      url:'https://dash.cloudflare.com',      desc:'DNS and CDN management'       },
+  { icon:'📧', name:'Google Workspace',url:'https://workspace.google.com',     desc:'Email and productivity suite' },
+];
+
+const n8nWorkflows = [
+  {
+    icon:'📧', title:'Email Triage & Drafting',
+    desc:'AI reads every new email, drafts a reply for your review, and sends you an SMS if it\'s urgent.',
+    status:'Active', file:'n8n_email_triage_workflow.json'
+  },
+  {
+    icon:'📅', title:'Calendar & Reminders',
+    desc:'Detects meeting details in emails, auto-creates Google Calendar events, and sends hourly SMS reminders.',
+    status:'Active', file:'n8n_calendar_reminders_workflow.json'
+  },
+  {
+    icon:'🌅', title:'Daily Briefing',
+    desc:'Every morning at 8 AM: gathers your calendar + unread emails and sends an AI-generated briefing to your phone.',
+    status:'Active', file:'n8n_daily_briefing_workflow.json'
+  },
+];
+
+const cloudServices = [
+  {
+    icon:'📂', title:'Bespoke Drive',
+    desc:'High-performance secure file vault array natively integrated into your ecosystem storage layers.'
+  },
+  {
+    icon:'📝', title:'Office Matrix',
+    desc:'Collaborative digital canvas for production documents, spreadsheets, and data analytics.'
+  },
+  {
+    icon:'🤖', title:'Gemma AI Engine',
+    desc:'Private enterprise context agent reading your localised directories natively over bare-metal GPU.'
+  },
+  {
+    icon:'🔒', title:'Vault Security',
+    desc:'End-to-end encrypted credential management and secrets storage for all your services.'
+  },
+  {
+    icon:'🌐', title:'Edge Network',
+    desc:'Cloudflare-powered edge routing with zero-trust access control and DDoS protection.'
+  },
+  {
+    icon:'⚡', title:'Nexus Core',
+    desc:'The central orchestration layer connecting all your cloud services, automations, and AI agents.'
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+   SPLASH SCREEN
+═══════════════════════════════════════════════════════════════════ */
+const bootLines = [
+  'Initializing DannyGC Cloud Services kernel...',
+  'Loading secure authentication modules...',
+  'Mounting cloud storage subsystems...',
+  'Starting AI inference engine (Ollama)...',
+  'Connecting n8n automation workflows...',
+  'Launching portal dashboard...',
+];
+
+function createParticles() {
+  const container = document.getElementById('splashParticles');
+  const colours = ['#3b82f6','#6366f1','#f59e0b','#10b981','#a855f7'];
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'splash-particle';
+    const size = Math.random() * 6 + 2;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colours[Math.floor(Math.random()*colours.length)]};
+      animation-duration:${Math.random()*8+6}s;
+      animation-delay:${Math.random()*4}s;
+    `;
+    container.appendChild(p);
+  }
+}
+
+function createBgClouds() {
+  const container = document.getElementById('bgClouds');
+  const orbs = [
+    { size:400, top:'10%', left:'5%',  color:'#3b82f6', dur:'20s' },
+    { size:300, top:'60%', left:'70%', color:'#6366f1', dur:'25s' },
+    { size:250, top:'30%', left:'50%', color:'#f59e0b', dur:'18s' },
+    { size:350, top:'80%', left:'20%', color:'#10b981', dur:'22s' },
+  ];
+  orbs.forEach(o => {
+    const el = document.createElement('div');
+    el.className = 'cloud-orb';
+    el.style.cssText = `width:${o.size}px;height:${o.size}px;top:${o.top};left:${o.left};background:${o.color};animation-duration:${o.dur};`;
+    container.appendChild(el);
+  });
+}
+
+async function runBootSequence() {
+  createParticles();
+  createBgClouds();
+  const body = document.getElementById('termBody');
+  const cursor = document.getElementById('termCursor');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  const pct = document.getElementById('progressPct');
+
+  for (let i = 0; i < bootLines.length; i++) {
+    await sleep(380);
+    const line = document.createElement('div');
+    line.className = 'term-line visible';
+    line.innerHTML = `<span class="term-ok">[ OK ]</span><span class="term-text">${bootLines[i]}</span>`;
+    body.insertBefore(line, cursor);
+    const progress = Math.round(((i+1)/bootLines.length)*100);
+    fill.style.width = progress + '%';
+    label.textContent = bootLines[i];
+    pct.textContent = progress + '%';
+  }
+
+  await sleep(600);
+  label.textContent = 'Portal ready.';
+
+  await sleep(400);
+  document.getElementById('splash').classList.add('hidden');
+  const app = document.getElementById('app');
+  app.classList.add('visible');
+  initApp();
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   APP INIT
+═══════════════════════════════════════════════════════════════════ */
+function initApp() {
+  loadApps();
+  loadLinks();
+  loadN8n();
+  loadCloud();
+  startUptime();
+  checkOllama();
+}
+
+/* ─── APPS ──────────────────────────────────────────────────────── */
+function getApps() {
+  try { return JSON.parse(localStorage.getItem('dgc_apps')) || defaultApps; }
+  catch { return defaultApps; }
+}
+function saveApps(apps) { localStorage.setItem('dgc_apps', JSON.stringify(apps)); }
+
+function renderAppCard(app) {
+  return `<a class="app-card" href="${app.url}" target="_blank">
+    <div class="app-icon">${app.icon}</div>
+    <div class="app-name">${app.name}</div>
+    <div class="app-desc">${app.desc}</div>
+    <span class="badge ${app.cat}">${app.cat}</span>
+  </a>`;
+}
+
+function loadApps() {
+  const apps = getApps();
+  document.getElementById('appGrid').innerHTML = apps.map(renderAppCard).join('');
+  document.getElementById('appGridFull').innerHTML = apps.map(renderAppCard).join('');
+  document.getElementById('statApps').textContent = apps.length;
+}
+
+/* ─── LINKS ─────────────────────────────────────────────────────── */
+function getLinks() {
+  try { return JSON.parse(localStorage.getItem('dgc_links')) || defaultLinks; }
+  catch { return defaultLinks; }
+}
+function saveLinks(links) { localStorage.setItem('dgc_links', JSON.stringify(links)); }
+
+function renderLinkCard(link) {
+  return `<a class="link-card" href="${link.url}" target="_blank">
+    <div class="link-icon">${link.icon}</div>
+    <div class="link-name">${link.name}</div>
+    <div class="link-desc">${link.desc}</div>
+  </a>`;
+}
+
+function loadLinks() {
+  const links = getLinks();
+  document.getElementById('linksGrid').innerHTML = links.map(renderLinkCard).join('');
+  document.getElementById('linksGridFull').innerHTML = links.map(renderLinkCard).join('');
+  document.getElementById('statLinks').textContent = links.length;
+}
+
+/* ─── N8N ────────────────────────────────────────────────────────── */
+function renderN8nCard(wf) {
+  return `<div class="n8n-card">
+    <div class="n8n-card-header">
+      <div class="n8n-icon">${wf.icon}</div>
+      <div class="n8n-title">${wf.title}</div>
+    </div>
+    <div class="n8n-desc">${wf.desc}</div>
+    <div class="n8n-status">
+      <div class="n8n-status-dot"></div>
+      ${wf.status} · <span style="color:var(--text-dim)">${wf.file}</span>
+    </div>
+  </div>`;
+}
+
+function loadN8n() {
+  document.getElementById('n8nPreview').innerHTML = n8nWorkflows.map(renderN8nCard).join('');
+  document.getElementById('n8nFull').innerHTML = n8nWorkflows.map(renderN8nCard).join('');
+}
+
+/* ─── CLOUD SERVICES ─────────────────────────────────────────────── */
+function loadCloud() {
+  document.getElementById('conceptGrid').innerHTML = cloudServices.map(s => `
+    <div class="concept-card">
+      <div class="concept-icon">${s.icon}</div>
+      <div class="concept-title">${s.title}</div>
+      <div class="concept-desc">${s.desc}</div>
+    </div>
+  `).join('');
+}
+
+/* ─── UPTIME ─────────────────────────────────────────────────────── */
+let uptimeStart = Date.now();
+function startUptime() {
+  setInterval(() => {
+    const s = Math.floor((Date.now() - uptimeStart) / 1000);
+    const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+    const str = h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${sec}s` : `${sec}s`;
+    document.getElementById('statUptime').textContent = str;
+  }, 1000);
+}
+
+/* ─── OLLAMA CHECK ───────────────────────────────────────────────── */
+async function checkOllama() {
+  try {
+    const r = await fetch('http://cloud.dannygc.cloud:11434/api/tags', { signal: AbortSignal.timeout(3000) });
+    if (r.ok) {
+      const data = await r.json();
+      const model = data.models?.[0]?.name || 'gemma4';
+      document.getElementById('statModel').textContent = model;
+      document.getElementById('modelName').textContent = model;
+      document.getElementById('chatModel').textContent = `ollama / ${model}`;
+      document.getElementById('statAI').textContent = 'Online';
+      document.getElementById('ollamaStatus').textContent = 'online';
+    }
+  } catch {
+    document.getElementById('statAI').textContent = 'Offline';
+    document.getElementById('ollamaStatus').textContent = '—';
+  }
+}
+
+/* ─── TABS ───────────────────────────────────────────────────────── */
+const tabTitles = {
+  dashboard:'Dashboard', chat:'AI Chat', apps:'Apps',
+  links:'Quick Links', automation:'Automation', cloud:'Cloud Services'
+};
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent = tabTitles[name] || name;
+}
+
+/* ─── MODALS ─────────────────────────────────────────────────────── */
+function openAddModal() { document.getElementById('addModal').classList.add('open'); }
+function openAddLinkModal() { document.getElementById('addLinkModal').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function saveApp() {
+  const icon = document.getElementById('newIcon').value || '🔗';
+  const name = document.getElementById('newName').value.trim();
+  const url  = document.getElementById('newUrl').value.trim();
+  const desc = document.getElementById('newDesc').value.trim();
+  const cat  = document.getElementById('newCat').value;
+  if (!name || !url) return alert('Name and URL are required.');
+  const apps = getApps();
+  apps.push({ icon, name, url, desc, cat });
+  saveApps(apps);
+  loadApps();
+  closeModal('addModal');
+  ['newIcon','newName','newUrl','newDesc'].forEach(id => document.getElementById(id).value = '');
+}
+
+function saveLink() {
+  const icon = document.getElementById('newLinkIcon').value || '🔗';
+  const name = document.getElementById('newLinkName').value.trim();
+  const url  = document.getElementById('newLinkUrl').value.trim();
+  const desc = document.getElementById('newLinkDesc').value.trim();
+  if (!name || !url) return alert('Name and URL are required.');
+  const links = getLinks();
+  links.push({ icon, name, url, desc });
+  saveLinks(links);
+  loadLinks();
+  closeModal('addLinkModal');
+  ['newLinkIcon','newLinkName','newLinkUrl','newLinkDesc'].forEach(id => document.getElementById(id).value = '');
+}
+
+/* ─── AI CHAT ────────────────────────────────────────────────────── */
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML += `<div class="chat-msg user"><div class="chat-msg-icon">👤</div><div class="chat-bubble">${msg}</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const thinking = document.createElement('div');
+  thinking.className = 'chat-msg';
+  thinking.innerHTML = `<div class="chat-msg-icon">🤖</div><div class="chat-bubble" id="thinkingBubble"><span class="term-cursor"></span> Thinking...</div>`;
+  msgs.appendChild(thinking);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  try {
+    const res = await fetch('http://cloud.dannygc.cloud:11434/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: document.getElementById('modelName').textContent || 'gemma4', prompt: msg, stream: false }),
+      signal: AbortSignal.timeout(30000)
+    });
+    const data = await res.json();
+    document.getElementById('thinkingBubble').textContent = data.response || 'No response.';
+  } catch (e) {
+    document.getElementById('thinkingBubble').textContent = 'Could not reach Ollama. Make sure it is running on your server.';
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+/* ─── CLOSE MODALS ON OVERLAY CLICK ─────────────────────────────── */
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+/* ─── BOOT ───────────────────────────────────────────────────────── */
+runBootSequence();
+</script>
 </body>
 </html>
