@@ -114,16 +114,36 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════
-       SPLASH SCREEN
+       SPLASH SCREEN — FUTURISTIC
     ═══════════════════════════════════════════════════════════════ */
     #splash {
       position: fixed; inset: 0; z-index: 9999;
-      background: #000;
+      background: radial-gradient(ellipse at 50% 40%, #050d1a 0%, #000508 60%, #000 100%);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
+      overflow: hidden;
       transition: opacity 1.2s ease, visibility 1.2s ease;
     }
     #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    /* Hex grid background */
+    #splash::before {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridDrift 20s linear infinite;
+    }
+    @keyframes gridDrift { from{background-position:0 0} to{background-position:40px 40px} }
+
+    /* Scanline overlay */
+    #splash::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,200,255,0.015) 3px, rgba(0,200,255,0.015) 4px);
+      animation: scanMove 8s linear infinite;
+    }
+    @keyframes scanMove { from{background-position:0 0} to{background-position:0 100px} }
 
     .splash-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
     .splash-particle {
@@ -132,102 +152,134 @@
     }
     @keyframes floatUp {
       0%   { transform: translateY(100vh) scale(0); opacity: 0; }
-      10%  { opacity: 0.7; }
-      90%  { opacity: 0.3; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.2; }
       100% { transform: translateY(-20vh) scale(1); opacity: 0; }
     }
 
+    /* Horizontal scan beam */
+    .splash-scan-beam {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,200,255,0.6) 40%, rgba(245,166,35,0.8) 50%, rgba(0,200,255,0.6) 60%, transparent 100%);
+      box-shadow: 0 0 20px rgba(0,200,255,0.5);
+      animation: scanBeam 4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes scanBeam {
+      0%   { top: -10px; opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
     .splash-logo-wrap {
-      text-align: center; margin-bottom: 32px;
+      text-align: center; margin-bottom: 24px; position: relative; z-index: 2;
       animation: splashLogoIn 1.4s ease 0.5s both;
-    }
-    .splash-top-brand {
-      display: flex; align-items: center; justify-content: center; gap: 12px;
-      margin-bottom: 22px;
-    }
-    .splash-top-brand-icon {
-      width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
-      border: 2px solid rgba(245,166,35,0.5);
-      box-shadow: 0 0 20px rgba(245,166,35,0.4);
-    }
-    .splash-top-brand-icon img { width: 100%; height: 100%; object-fit: cover; }
-    .splash-top-brand-name {
-      font-family: "Sora", sans-serif; font-size: 1.5rem; font-weight: 800;
-      background: linear-gradient(135deg, #c47a1e, #f5a623, #00c8ff);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     @keyframes splashLogoIn {
       from { opacity: 0; transform: scale(0.75) translateY(-30px); }
       to   { opacity: 1; transform: scale(1) translateY(0); }
     }
-    /* Avatar animated eyes overlay */
+
+    /* Avatar with orbit rings */
     .splash-avatar-wrap {
-      position: relative; width: 150px; height: 150px;
-      margin: 0 auto 14px;
+      position: relative; width: 130px; height: 130px;
+      margin: 0 auto 16px;
       animation: avatarFloat 3s ease-in-out infinite;
     }
     @keyframes avatarFloat {
       0%,100% { transform: translateY(0px); }
-      50%      { transform: translateY(-8px); }
+      50%      { transform: translateY(-7px); }
     }
+
+    /* Orbit rings around avatar */
+    .splash-avatar-wrap::before,
+    .splash-avatar-wrap::after {
+      content: ''; position: absolute;
+      border-radius: 50%; border: 1px solid;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+    }
+    .splash-avatar-wrap::before {
+      width: 170px; height: 170px;
+      border-color: rgba(0,200,255,0.35);
+      animation: orbitSpin 6s linear infinite;
+      box-shadow: 0 0 12px rgba(0,200,255,0.2);
+    }
+    .splash-avatar-wrap::after {
+      width: 210px; height: 210px;
+      border-color: rgba(245,166,35,0.2);
+      animation: orbitSpin 10s linear infinite reverse;
+    }
+    @keyframes orbitSpin { from{transform:translate(-50%,-50%) rotate(0deg)} to{transform:translate(-50%,-50%) rotate(360deg)} }
+
+    /* Orbit dot on the ring */
+    .orbit-dot {
+      position: absolute; width: 8px; height: 8px; border-radius: 50%;
+      background: #00c8ff; box-shadow: 0 0 12px #00c8ff, 0 0 24px rgba(0,200,255,0.5);
+      top: 50%; left: 50%;
+      transform-origin: 0 0;
+      animation: orbitDot 6s linear infinite;
+    }
+    .orbit-dot-2 {
+      position: absolute; width: 6px; height: 6px; border-radius: 50%;
+      background: #f5a623; box-shadow: 0 0 10px #f5a623;
+      top: 50%; left: 50%;
+      transform-origin: 0 0;
+      animation: orbitDot2 10s linear infinite reverse;
+    }
+    @keyframes orbitDot  { from{transform:translate(-85px,-4px) rotate(0deg)   translateX(85px)} to{transform:translate(-85px,-4px) rotate(360deg) translateX(85px)} }
+    @keyframes orbitDot2 { from{transform:translate(-105px,-3px) rotate(0deg)  translateX(105px)} to{transform:translate(-105px,-3px) rotate(360deg) translateX(105px)} }
+
     .splash-avatar-img {
-      width: 150px; height: 150px; border-radius: 22px;
-      display: block;
-      filter: drop-shadow(0 0 30px rgba(0,200,255,0.6)) drop-shadow(0 0 60px rgba(0,200,255,0.3));
+      width: 130px; height: 130px; border-radius: 20px;
+      display: block; position: relative; z-index: 1;
+      filter: drop-shadow(0 0 20px rgba(0,200,255,0.7)) drop-shadow(0 0 40px rgba(0,200,255,0.3));
       animation: avatarGlow 2s ease-in-out infinite;
     }
     @keyframes avatarGlow {
-      0%,100% { filter: drop-shadow(0 0 25px rgba(0,200,255,0.5)) drop-shadow(0 0 50px rgba(0,200,255,0.25)); }
-      50%      { filter: drop-shadow(0 0 45px rgba(0,200,255,0.9)) drop-shadow(0 0 90px rgba(0,200,255,0.5)); }
+      0%,100% { filter: drop-shadow(0 0 18px rgba(0,200,255,0.6)) drop-shadow(0 0 36px rgba(0,200,255,0.25)); }
+      50%      { filter: drop-shadow(0 0 32px rgba(0,200,255,1.0)) drop-shadow(0 0 64px rgba(0,200,255,0.5)); }
     }
+
     /* Eye blink overlay — blink removed, overlay kept for structure */
     .eye-blink-overlay { display: none; }
-    /* Pupil tracking — subtle left/right movement */
-    .eye-pupil-wrap {
-      position: absolute; inset: 0;
-      pointer-events: none;
-    }
-    .eye-pupil {
-      position: absolute;
-      display: flex; align-items: center; justify-content: center;
-    }
+    /* Pupil tracking */
+    .eye-pupil-wrap { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+    .eye-pupil { position: absolute; display: flex; align-items: center; justify-content: center; }
     .eye-pupil:nth-child(1) { left: 39%; top: 56.8%; transform: translate(-50%,-50%); }
     .eye-pupil:nth-child(2) { left: 60.7%; top: 56.8%; transform: translate(-50%,-50%); }
     .eye-pupil-inner {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: rgba(255,255,255,0.9);
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.95);
       animation: eyeMove 5s ease-in-out infinite;
-      box-shadow: 0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(0,200,255,0.5);
+      box-shadow: 0 0 6px rgba(255,255,255,0.9), 0 0 12px rgba(0,200,255,0.6);
     }
     .eye-pupil:nth-child(2) .eye-pupil-inner { animation-delay: 0.15s; }
     @keyframes eyeMove {
       0%,100% { transform: translate(0,0); }
-      20%     { transform: translate(-5px, 2px); }
-      50%     { transform: translate(5px, -2px); }
+      20%     { transform: translate(-4px, 2px); }
+      50%     { transform: translate(4px, -2px); }
       80%     { transform: translate(-3px, -3px); }
     }
 
-    .splash-logo-icon {
-      width: 110px; height: 110px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 18px; overflow: hidden;
-      background: #1a1208; border: 2px solid rgba(245,166,35,0.4);
-      box-shadow: 0 0 50px rgba(245,166,35,0.5), 0 0 100px rgba(0,200,255,0.25);
-      animation: iconPulse 3s ease infinite;
-    }
-    .splash-logo-icon img { width: 100%; height: 100%; object-fit: cover; }
-    @keyframes iconPulse {
-      0%,100% { box-shadow: 0 0 50px rgba(245,166,35,0.5), 0 0 100px rgba(0,200,255,0.25); }
-      50%     { box-shadow: 0 0 80px rgba(245,166,35,0.8), 0 0 160px rgba(0,200,255,0.45); }
+    .splash-brand-row {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-bottom: 4px;
     }
     .splash-title {
-      font-family: 'Sora', sans-serif; font-size: 2.4rem; font-weight: 800;
+      font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800;
       background: linear-gradient(135deg, #c47a1e, #f5a623, #00c8ff);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      letter-spacing: -0.02em;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-shadow: none;
+      animation: titleGlow 3s ease-in-out infinite;
     }
-    .splash-sub  { font-size: 0.82rem; color: #5a4a30; letter-spacing: 0.18em; text-transform: uppercase; margin-top: 6px; }
-    .splash-version { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #3a2a10; margin-top: 4px; }
+    @keyframes titleGlow {
+      0%,100% { filter: brightness(1); }
+      50%     { filter: brightness(1.3) drop-shadow(0 0 12px rgba(245,166,35,0.6)); }
+    }
+    .splash-sub  { font-size: 0.72rem; color: rgba(0,200,255,0.5); letter-spacing: 0.22em; text-transform: uppercase; margin-top: 6px; }
+    .splash-version { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(245,166,35,0.3); margin-top: 4px; }
 
     .terminal-window {
       width: min(620px, 90vw); background: #0d0a06;
@@ -281,10 +333,11 @@
       display: flex; align-items: center; gap: 10px;
     }
     .logo-icon {
-      width: 38px; height: 38px; border-radius: 8px;
+      width: 52px; height: 52px; border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; overflow: hidden;
-      border: 1px solid rgba(245,166,35,0.3); background: var(--bg3);
+      border: 1px solid rgba(0,200,255,0.4); background: var(--bg3);
+      box-shadow: 0 0 16px rgba(0,200,255,0.25);
     }
     .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
     .logo-text { font-size: 13px; font-weight: 700; line-height: 1.2; }
@@ -461,7 +514,13 @@
     .app-card.glow-ai:hover   { border-color: rgba(168,85,247,0.6); box-shadow: 0 6px 24px rgba(168,85,247,0.18); transform: translateY(-2px); }
     .app-card.glow-prod:hover { border-color: rgba(34,197,94,0.6);  box-shadow: 0 6px 24px rgba(34,197,94,0.18);  transform: translateY(-2px); }
     .app-card:hover::before { opacity: 1; }
-    .app-icon { font-size: 36px; }
+    .app-icon { font-size: 28px; margin-bottom: 8px; line-height: 1; display:flex; align-items:center; justify-content:center; width:52px; height:52px; border-radius:14px; overflow:hidden; }
+    .app-icon img { width:100%; height:100%; object-fit:contain; border-radius:12px; display:block; }
+    .app-icon .icon-emoji { font-size:30px; line-height:52px; text-align:center; width:52px; height:52px; display:block; }
+    .app-icon.hd { font-size: 0; margin-bottom: 8px; }
+    .app-icon.hd img { width: 44px; height: 44px; border-radius: 10px; object-fit: contain; display: block; margin: 0 auto; }
+    .link-icon.hd { font-size: 0; margin-bottom: 6px; }
+    .link-icon.hd img { width: 36px; height: 36px; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto; }
     .app-name { font-size: 13px; font-weight: 700; }
     .app-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; flex: 1; }
 
@@ -502,7 +561,7 @@
       background: linear-gradient(90deg, transparent, rgba(245,166,35,0.25), transparent);
     }
     .link-card:hover { border-color: var(--border-bright); background: rgba(34,26,10,0.9); transform: translateY(-2px); }
-    .link-icon { font-size: 28px; }
+    .link-icon { font-size: 28px; margin-bottom: 6px; }
     .link-name { font-size: 13px; font-weight: 700; }
     .link-desc { font-size: 11px; color: var(--text-dim); }
 
@@ -600,16 +659,12 @@
 <!-- ═══════════════════════ SPLASH SCREEN ═══════════════════════════ -->
 <div id="splash">
   <div class="splash-particles" id="splashParticles"></div>
+  <div class="splash-scan-beam"></div>
   <div class="splash-logo-wrap">
-    <!-- Brand name at top -->
-    <div class="splash-top-brand">
-      <div class="splash-top-brand-icon">
-        <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='&#9729;'" alt="DannyGC">
-      </div>
-      <div class="splash-top-brand-name">DannyGC Cloud</div>
-    </div>
-    <!-- Avatar with animated blinking eyes -->
+    <!-- Avatar IS the logo — smaller, centred, animated with orbit rings -->
     <div class="splash-avatar-wrap">
+      <div class="orbit-dot"></div>
+      <div class="orbit-dot-2"></div>
       <img class="splash-avatar-img" src="avatar_v2.png" onerror="this.src='avatar.png'" alt="DannyGC AI">
       <!-- Blink overlay -->
       <div class="eye-blink-overlay">
@@ -622,7 +677,10 @@
         <div class="eye-pupil"><div class="eye-pupil-inner"></div></div>
       </div>
     </div>
-    <!-- Tagline below avatar -->
+    <!-- Brand name below avatar -->
+    <div class="splash-brand-row">
+      <div class="splash-title">DannyGC Cloud</div>
+    </div>
     <div class="splash-sub">Cloud Services — We Work So You Don't Have To</div>
     <div class="splash-version">v2.0.0 · Portal Edition</div>
   </div>
@@ -1044,31 +1102,32 @@ const launcherGroups = [
   {
     key: 'auto', label: 'Automation', glowClass: 'glow-auto', badgeClass: 'auto',
     apps: [
-      { icon:'⚡', name:'n8n',            url:'https://n8n.dannygc.cloud',        desc:'Workflow automation platform',          cat:'auto' },
+      { icon:'⚡', name:'n8n',           url:'https://n8n.dannygc.cloud',        desc:'Workflow automation platform',          cat:'auto' },
     ]
   },
   {
     key: 'dev', label: 'Dev Tools', glowClass: 'glow-dev', badgeClass: 'dev',
     apps: [
-      { icon:'💻', name:'VS Code Server',  url:'https://code.dannygc.cloud',       desc:'Browser-based code editor',             cat:'dev'  },
-      { icon:'📁', name:'File Manager',    url:'https://files.dannygc.cloud',      desc:'Browse and manage your server files',   cat:'dev'  },
-      { icon:'📊', name:'System Monitor',  url:'https://monitor.dannygc.cloud',    desc:'Real-time server performance metrics',  cat:'dev'  },
-      { icon:'🐳', name:'Portainer',       url:'https://portainer.dannygc.cloud',  desc:'Docker container management UI',        cat:'dev'  },
-      { icon:'📈', name:'Grafana',         url:'https://grafana.dannygc.cloud',    desc:'Metrics and analytics dashboards',      cat:'dev'  },
-      { icon:'🌐', name:'Web Browser',      url:'https://kasm.dannyk.online/',      desc:'Full cloud browser via Kasm Workspaces',cat:'dev'  },
+      { icon:'💻', name:'VS Code Server', url:'https://code.dannygc.cloud',       desc:'Browser-based code editor',             cat:'dev'  },
+      { icon:'📁', name:'File Manager',   url:'https://files.dannygc.cloud',      desc:'Browse and manage your server files',   cat:'dev'  },
+      { icon:'📊', name:'System Monitor', url:'https://monitor.dannygc.cloud',    desc:'Real-time server performance metrics',  cat:'dev'  },
+      { icon:'🐳', name:'Portainer',      url:'https://portainer.dannygc.cloud',  desc:'Docker container management UI',        cat:'dev'  },
+      { icon:'📈', name:'Grafana',        url:'https://grafana.dannygc.cloud',    desc:'Metrics and analytics dashboards',      cat:'dev'  },
+      { icon:'🌐', name:'Web Browser',    url:'https://kasm.dannyk.online/',      desc:'Full cloud browser via Kasm Workspaces',cat:'dev'  },
     ]
   },
   {
     key: 'ai', label: 'AI', glowClass: 'glow-ai', badgeClass: 'ai',
     apps: [
-      { icon:'🤖', name:'Ollama Dashboard',url:'https://ai.dannygc.cloud',         desc:'Manage and query local AI models',       cat:'ai'   },
+      { icon:'🤖', name:'Ollama Dashboard',url:'https://ai.dannygc.cloud',        desc:'Manage and query local AI models',      cat:'ai'   },
     ]
   },
   {
     key: 'prod', label: 'Productivity', glowClass: 'glow-prod', badgeClass: 'prod',
     apps: [
-      { icon:'📝', name:'OnlyOffice',      url:'https://office.dannygc.cloud',     desc:'Self-hosted office suite (Docs/Sheets)', cat:'prod' },
-      { icon:'📸', name:'Photo Booth',      url:'https://photos.dannygc.cloud',     desc:'Photo library and media manager',        cat:'prod' },
+      { icon:'📝', name:'OnlyOffice',     url:'https://office.dannygc.cloud',     desc:'Self-hosted office suite',              cat:'prod' },
+      { icon:'📸', name:'Photo Booth',    url:'https://photos.dannygc.cloud',     desc:'Photo library and media manager',       cat:'prod' },
+      { icon:'📄', name:'LibreOffice',    url:'https://libre.dannygc.cloud',      desc:'Open-source office suite',              cat:'prod' },
     ]
   },
 ];
@@ -1077,25 +1136,25 @@ const launcherGroups = [
 const defaultApps = launcherGroups.flatMap(g => g.apps);
 
 const defaultLinks = [
-  { icon:'🌐', name:'DannyGC Website', url:'https://dannygc.cloud',            desc:'Main company website'         },
-  { icon:'🐙', name:'GitHub',          url:'https://github.com',               desc:'Code repositories'            },
-  { icon:'☁️', name:'Cloudflare',      url:'https://dash.cloudflare.com',      desc:'DNS and CDN management'       },
-  { icon:'📧', name:'Google Workspace',url:'https://workspace.google.com',     desc:'Email and productivity suite' },
+  { icon:'🏠', name:'DannyGC Website', url:'https://dannygc.cloud',           desc:'Main company website'         },
+  { icon:'🐙', name:'GitHub',          url:'https://github.com',              desc:'Code repositories'            },
+  { icon:'☁️', name:'Cloudflare',      url:'https://dash.cloudflare.com',     desc:'DNS and CDN management'       },
+  { icon:'🔷', name:'Google Workspace',url:'https://workspace.google.com',    desc:'Email and productivity suite' },
 ];
 
 const googleApps = [
-  { icon:'📧', name:'Gmail',          url:'https://mail.google.com',           desc:'Email and inbox management',       cat:'workspace' },
-  { icon:'📅', name:'Google Calendar',url:'https://calendar.google.com',       desc:'Schedule and events',              cat:'workspace' },
-  { icon:'📁', name:'Google Drive',   url:'https://drive.google.com',          desc:'Cloud file storage',               cat:'workspace' },
-  { icon:'📝', name:'Google Docs',    url:'https://docs.google.com',           desc:'Collaborative documents',          cat:'workspace' },
-  { icon:'📊', name:'Google Sheets',  url:'https://sheets.google.com',         desc:'Spreadsheets and data',            cat:'workspace' },
-  { icon:'📽️', name:'Google Slides',  url:'https://slides.google.com',         desc:'Presentations',                    cat:'workspace' },
-  { icon:'🎥', name:'Google Meet',    url:'https://meet.google.com',           desc:'Video conferencing',               cat:'workspace' },
-  { icon:'💬', name:'Google Chat',    url:'https://chat.google.com',           desc:'Team messaging',                   cat:'workspace' },
-  { icon:'▶️', name:'YouTube',        url:'https://youtube.com',               desc:'Video platform',                   cat:'workspace' },
-  { icon:'🗺️', name:'Google Maps',    url:'https://maps.google.com',           desc:'Navigation and maps',              cat:'workspace' },
-  { icon:'🖼️', name:'Google Photos',  url:'https://photos.google.com',         desc:'Photo storage and albums',         cat:'workspace' },
-  { icon:'📌', name:'Google Keep',    url:'https://keep.google.com',           desc:'Notes and reminders',              cat:'workspace' },
+  { icon:'✉️',  name:'Gmail',           url:'https://mail.google.com',     desc:'Email and inbox management',  cat:'workspace' },
+  { icon:'📅',  name:'Google Calendar', url:'https://calendar.google.com', desc:'Schedule and events',          cat:'workspace' },
+  { icon:'💾',  name:'Google Drive',    url:'https://drive.google.com',    desc:'Cloud file storage',           cat:'workspace' },
+  { icon:'📄',  name:'Google Docs',     url:'https://docs.google.com',     desc:'Collaborative documents',      cat:'workspace' },
+  { icon:'📊',  name:'Google Sheets',   url:'https://sheets.google.com',   desc:'Spreadsheets and data',        cat:'workspace' },
+  { icon:'🎞️', name:'Google Slides',   url:'https://slides.google.com',   desc:'Presentations',                cat:'workspace' },
+  { icon:'📹',  name:'Google Meet',     url:'https://meet.google.com',     desc:'Video conferencing',           cat:'workspace' },
+  { icon:'💬',  name:'Google Chat',     url:'https://chat.google.com',     desc:'Team messaging',               cat:'workspace' },
+  { icon:'▶️',  name:'YouTube',         url:'https://youtube.com',         desc:'Video platform',               cat:'workspace' },
+  { icon:'🗺️', name:'Google Maps',     url:'https://maps.google.com',     desc:'Navigation and maps',          cat:'workspace' },
+  { icon:'🖼️', name:'Google Photos',   url:'https://photos.google.com',   desc:'Photo storage and albums',     cat:'workspace' },
+  { icon:'📌',  name:'Google Keep',     url:'https://keep.google.com',     desc:'Notes and reminders',          cat:'workspace' },
 ];
 
 const googleLinks = [
@@ -1197,8 +1256,11 @@ function initApp() {
 function renderAppCard(app) {
   const glowClass = {auto:'glow-auto', dev:'glow-dev', ai:'glow-ai', prod:'glow-prod', monitor:'glow-dev', tools:'glow-auto', cloud:'glow-dev', workspace:'glow-prod'}[app.cat] || 'glow-auto';
   const badgeClass = {auto:'auto', dev:'dev', ai:'ai', prod:'prod', monitor:'monitor', tools:'tools', cloud:'cloud', workspace:'workspace'}[app.cat] || 'tools';
+  const iconHtml = (app.icon && (app.icon.startsWith('http') || app.icon.startsWith('/')))
+    ? `<img src="${app.icon}" alt="${app.name}" onerror="this.parentElement.innerHTML='<span class=icon-emoji>${app.emoji||'🔧'}</span>'">`
+    : `<span class="icon-emoji">${app.icon || app.emoji || '🔧'}</span>`;
   return `<a class="app-card ${glowClass}" href="${app.url}" target="_blank" rel="noopener">
-    <div class="app-icon">${app.icon}</div>
+    <div class="app-icon">${iconHtml}</div>
     <div class="app-name">${app.name}</div>
     <div class="app-desc">${app.desc}</div>
     <span class="badge ${badgeClass}">${app.cat}</span>
@@ -1454,6 +1516,30 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
 
 /* ─── BOOT ───────────────────────────────────────────────────────── */
 runBootSequence();
+
+/* ═══════════════════════════════════════════════════════════════════
+   CODE PROTECTION
+   Copyright (C) 2026 DannyGC Cloud Services - All Rights Reserved
+═══════════════════════════════════════════════════════════════════ */
+(function(){
+  document.addEventListener('contextmenu',function(e){e.preventDefault();return false;});
+  document.addEventListener('keydown',function(e){
+    if((e.ctrlKey||e.metaKey)&&(e.key==='u'||e.key==='U'||e.key==='s'||e.key==='S')){e.preventDefault();return false;}
+    if(e.key==='F12'){e.preventDefault();return false;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&'IJCijc'.includes(e.key)){e.preventDefault();return false;}
+  });
+  let _devOpen=false;
+  setInterval(function(){
+    // Only trigger if the difference is very large (>400px) to avoid false positives on mobile/iframe
+    const w=window.outerWidth-window.innerWidth>400;
+    const h=window.outerHeight-window.innerHeight>400;
+    if((w||h)&&!_devOpen){_devOpen=true;document.body.style.filter='blur(20px)';document.body.style.pointerEvents='none';}
+    else if(!w&&!h&&_devOpen){_devOpen=false;document.body.style.filter='';document.body.style.pointerEvents='';}
+  },1000);
+  const wm=document.createElement('meta');
+  wm.name='copyright';wm.content='Copyright (C) 2026 DannyGC Cloud Services. All Rights Reserved. Unauthorised copying or reproduction is strictly prohibited.';
+  document.head.appendChild(wm);
+})();
 
 /* ─── SERVICE WORKER (PWA) ───────────────────────────────────────── */
 if ('serviceWorker' in navigator) {
