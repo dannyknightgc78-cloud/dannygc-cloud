@@ -110,7 +110,7 @@
     ═══════════════════════════════════════════════════════════════ */
     #techCanvas {
       position: fixed; inset: 0; z-index: 0;
-      pointer-events: none; opacity: 0.35;
+      pointer-events: none; opacity: 0.55;
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -138,8 +138,23 @@
     }
 
     .splash-logo-wrap {
-      text-align: center; margin-bottom: 44px;
+      text-align: center; margin-bottom: 32px;
       animation: splashLogoIn 1.4s ease 0.5s both;
+    }
+    .splash-top-brand {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin-bottom: 22px;
+    }
+    .splash-top-brand-icon {
+      width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
+      border: 2px solid rgba(245,166,35,0.5);
+      box-shadow: 0 0 20px rgba(245,166,35,0.4);
+    }
+    .splash-top-brand-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .splash-top-brand-name {
+      font-family: "Sora", sans-serif; font-size: 1.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #c47a1e, #f5a623, #00c8ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     @keyframes splashLogoIn {
       from { opacity: 0; transform: scale(0.75) translateY(-30px); }
@@ -147,8 +162,8 @@
     }
     /* Avatar animated eyes overlay */
     .splash-avatar-wrap {
-      position: relative; width: 200px; height: 200px;
-      margin: 0 auto 18px;
+      position: relative; width: 150px; height: 150px;
+      margin: 0 auto 14px;
       animation: avatarFloat 3s ease-in-out infinite;
     }
     @keyframes avatarFloat {
@@ -156,7 +171,7 @@
       50%      { transform: translateY(-8px); }
     }
     .splash-avatar-img {
-      width: 200px; height: 200px; border-radius: 28px;
+      width: 150px; height: 150px; border-radius: 22px;
       display: block;
       filter: drop-shadow(0 0 30px rgba(0,200,255,0.6)) drop-shadow(0 0 60px rgba(0,200,255,0.3));
       animation: avatarGlow 2s ease-in-out infinite;
@@ -165,46 +180,31 @@
       0%,100% { filter: drop-shadow(0 0 25px rgba(0,200,255,0.5)) drop-shadow(0 0 50px rgba(0,200,255,0.25)); }
       50%      { filter: drop-shadow(0 0 45px rgba(0,200,255,0.9)) drop-shadow(0 0 90px rgba(0,200,255,0.5)); }
     }
-    /* Eye blink overlay — positioned over the avatar's eyes */
-    .eye-blink-overlay {
-      position: absolute;
-      top: 44%; left: 50%; transform: translate(-50%, -50%);
-      width: 54%; display: flex; justify-content: space-between;
-      pointer-events: none;
-    }
-    .eye-lid {
-      width: 28%; height: 0;
-      background: #0a0d1a;
-      border-radius: 50%;
-      animation: eyeBlink 4s ease-in-out infinite;
-    }
-    .eye-lid:nth-child(2) { animation-delay: 0.05s; }
-    @keyframes eyeBlink {
-      0%,88%,100% { height: 0; }
-      92%,96%     { height: 22px; margin-top: -11px; }
-    }
+    /* Eye blink overlay — blink removed, overlay kept for structure */
+    .eye-blink-overlay { display: none; }
     /* Pupil tracking — subtle left/right movement */
     .eye-pupil-wrap {
-      position: absolute;
-      top: 44%; left: 50%; transform: translate(-50%, -50%);
-      width: 54%; display: flex; justify-content: space-between;
+      position: absolute; inset: 0;
       pointer-events: none;
     }
     .eye-pupil {
-      width: 28%; height: 22px;
+      position: absolute;
       display: flex; align-items: center; justify-content: center;
     }
+    .eye-pupil:nth-child(1) { left: 39%; top: 56.8%; transform: translate(-50%,-50%); }
+    .eye-pupil:nth-child(2) { left: 60.7%; top: 56.8%; transform: translate(-50%,-50%); }
     .eye-pupil-inner {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #fff;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,0.9);
       animation: eyeMove 5s ease-in-out infinite;
-      box-shadow: 0 0 6px rgba(255,255,255,0.8);
+      box-shadow: 0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(0,200,255,0.5);
     }
-    .eye-pupil:nth-child(2) .eye-pupil-inner { animation-delay: 0s; }
+    .eye-pupil:nth-child(2) .eye-pupil-inner { animation-delay: 0.15s; }
     @keyframes eyeMove {
-      0%,100% { transform: translateX(0); }
-      25%     { transform: translateX(-4px); }
-      75%     { transform: translateX(4px); }
+      0%,100% { transform: translate(0,0); }
+      20%     { transform: translate(-5px, 2px); }
+      50%     { transform: translate(5px, -2px); }
+      80%     { transform: translate(-3px, -3px); }
     }
 
     .splash-logo-icon {
@@ -435,19 +435,25 @@
       gap: 12px;
     }
     .app-card {
-      background: rgba(26,18,8,0.85);
-      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(30,22,10,0.92), rgba(18,12,4,0.96));
+      border: 1px solid rgba(245,166,35,0.18);
+      border-radius: var(--radius-lg);
       padding: 18px 16px 14px;
       text-decoration: none; color: var(--text);
       transition: var(--transition);
       display: flex; flex-direction: column; gap: 7px;
       cursor: pointer; position: relative; overflow: hidden;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
     }
     .app-card::before {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(245,166,35,0.04), transparent);
+      background: linear-gradient(135deg, rgba(245,166,35,0.07) 0%, transparent 60%);
       opacity: 0; transition: opacity 0.3s;
+    }
+    .app-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(245,166,35,0.3), transparent);
     }
     /* Category glow on hover */
     .app-card.glow-auto:hover { border-color: rgba(249,115,22,0.6); box-shadow: 0 6px 24px rgba(249,115,22,0.18); transform: translateY(-2px); }
@@ -481,12 +487,19 @@
       gap: 12px; margin-bottom: 32px;
     }
     .link-card {
-      background: rgba(26,18,8,0.85);
-      border: 1px solid var(--border); border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(30,22,10,0.92), rgba(18,12,4,0.96));
+      border: 1px solid rgba(245,166,35,0.15);
+      border-radius: var(--radius);
       padding: 16px; text-decoration: none; color: var(--text);
       transition: var(--transition);
       display: flex; flex-direction: column; gap: 6px;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+      position: relative; overflow: hidden;
+    }
+    .link-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(245,166,35,0.25), transparent);
     }
     .link-card:hover { border-color: var(--border-bright); background: rgba(34,26,10,0.9); transform: translateY(-2px); }
     .link-icon { font-size: 28px; }
@@ -496,24 +509,36 @@
     /* ─── N8N AUTOMATION GRID ───────────────────────────────────── */
     .n8n-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-bottom: 32px; }
     .n8n-card {
-      background: rgba(26,18,8,0.85);
-      border: 1px solid rgba(249,115,22,0.2); border-radius: var(--radius-lg);
-      padding: 20px; transition: var(--transition); backdrop-filter: blur(6px);
+      background: linear-gradient(145deg, rgba(30,18,6,0.94), rgba(18,10,2,0.97));
+      border: 1px solid rgba(249,115,22,0.22); border-radius: var(--radius-lg);
+      padding: 20px; transition: var(--transition); backdrop-filter: blur(14px);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.55), inset 0 1px 0 rgba(249,115,22,0.08);
+      position: relative; overflow: hidden;
+    }
+    .n8n-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(249,115,22,0.4), transparent);
     }
     .n8n-card:hover { border-color: rgba(249,115,22,0.5); background: rgba(34,26,10,0.9); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.1); }
     .n8n-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
     .n8n-icon { width: 48px; height: 48px; border-radius: 10px; background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.25); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
     .n8n-title { font-size: 14px; font-weight: 700; }
     .n8n-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-bottom: 12px; }
-    .n8n-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--green); font-family: 'JetBrains Mono', monospace; }
+    .n8n-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--green); font-family: 'JetBrains Mono', monospace; flex-wrap: wrap; overflow: hidden; }
     .n8n-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
 
     /* ─── CLOUD SERVICES GRID ───────────────────────────────────── */
     .concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
     .concept-card {
-      background: rgba(26,18,8,0.85);
-      border: 1px solid var(--border); border-radius: var(--radius-lg);
-      padding: 24px 20px; transition: var(--transition); backdrop-filter: blur(6px);
+      background: linear-gradient(145deg, rgba(30,22,10,0.94), rgba(18,12,4,0.97));
+      border: 1px solid rgba(245,166,35,0.18); border-radius: var(--radius-lg);
+      padding: 24px 20px; transition: var(--transition); backdrop-filter: blur(14px);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04);
+      position: relative; overflow: hidden;
+    }
+    .concept-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(245,166,35,0.3), transparent);
     }
     .concept-card:hover { border-color: var(--border-bright); background: rgba(34,26,10,0.9); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,166,35,0.1); }
     .concept-icon { font-size: 40px; margin-bottom: 12px; }
@@ -576,9 +601,16 @@
 <div id="splash">
   <div class="splash-particles" id="splashParticles"></div>
   <div class="splash-logo-wrap">
+    <!-- Brand name at top -->
+    <div class="splash-top-brand">
+      <div class="splash-top-brand-icon">
+        <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='&#9729;'" alt="DannyGC">
+      </div>
+      <div class="splash-top-brand-name">DannyGC Cloud</div>
+    </div>
     <!-- Avatar with animated blinking eyes -->
     <div class="splash-avatar-wrap">
-      <img class="splash-avatar-img" src="avatar.png" onerror="this.style.display='none'" alt="DannyGC AI">
+      <img class="splash-avatar-img" src="avatar_v2.png" onerror="this.src='avatar.png'" alt="DannyGC AI">
       <!-- Blink overlay -->
       <div class="eye-blink-overlay">
         <div class="eye-lid"></div>
@@ -590,13 +622,7 @@
         <div class="eye-pupil"><div class="eye-pupil-inner"></div></div>
       </div>
     </div>
-    <!-- DannyGC logo sits below the avatar, smaller and centred -->
-    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;">
-      <div class="splash-logo-icon" style="width:48px;height:48px;margin:0;">
-        <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='<span style=\'font-size:22px\'>☁️</span>'" alt="DannyGC">
-      </div>
-      <div class="splash-title" style="font-size:1.9rem;margin-bottom:0;">DannyGC</div>
-    </div>
+    <!-- Tagline below avatar -->
     <div class="splash-sub">Cloud Services — We Work So You Don't Have To</div>
     <div class="splash-version">v2.0.0 · Portal Edition</div>
   </div>
@@ -626,7 +652,7 @@
   <nav class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">
-        <img src="dannygc-logo.png" onerror="this.parentElement.innerHTML='☁️'" alt="DannyGC">
+        <img src="avatar_v2.png" onerror="this.src='avatar.png'" alt="DannyGC AI">
       </div>
       <div>
         <div class="logo-text"><span class="amber">Danny</span>GC</div>
@@ -751,6 +777,13 @@
           <button class="manage-btn" onclick="showTab('automation', document.querySelectorAll('.nav-item')[5])">View All →</button>
         </div>
         <div class="n8n-grid" id="n8nPreview"></div>
+
+        <!-- Cloud Services Preview -->
+        <div class="section-header" style="margin-top:8px">
+          <div class="section-title">☁️ <span class="accent">Cloud</span> Services</div>
+          <button class="manage-btn" onclick="showTab('cloud', document.querySelectorAll('.nav-item')[6])">View All →</button>
+        </div>
+        <div class="concept-grid" id="cloudPreviewGrid" style="margin-bottom:32px"></div>
 
       </div>
 
@@ -1190,6 +1223,13 @@ function loadDashboard() {
   document.getElementById('statLinks').textContent = links.length;
   document.getElementById('googlePreviewGrid').innerHTML = googleApps.slice(0,6).map(renderAppCard).join('');
   document.getElementById('n8nPreview').innerHTML = n8nWorkflows.map(renderN8nCard).join('');
+  document.getElementById('cloudPreviewGrid').innerHTML = cloudServices.slice(0,3).map(s => `
+    <div class="concept-card">
+      <div class="concept-icon">${s.icon}</div>
+      <div class="concept-title">${s.title}</div>
+      <div class="concept-desc">${s.desc}</div>
+    </div>
+  `).join('');
 }
 
 /* ─── GROUPED LAUNCHER ───────────────────────────────────────────── */
@@ -1220,8 +1260,8 @@ function loadGroupedLauncher() {
 
 /* ─── LINKS ─────────────────────────────────────────────────────── */
 function getApps() {
-  try { const s = localStorage.getItem('dgc_apps'); return s ? JSON.parse(s) : []; }
-  catch { return []; }
+  try { const s = localStorage.getItem('dgc_apps'); const saved = s ? JSON.parse(s) : null; return (saved && saved.length) ? saved : defaultApps; }
+  catch { return defaultApps; }
 }
 function saveApps(apps) { localStorage.setItem('dgc_apps', JSON.stringify(apps)); }
 
