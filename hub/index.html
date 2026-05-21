@@ -700,6 +700,7 @@
       <div class="status-pill"><div class="status-dot cyan" id="gemma-dot"></div><span id="gemma-status-text">Gemma 4</span></div>
       <div class="status-pill"><div class="status-dot gold"></div><span>Portal</span></div>
       <div class="status-pill"><div class="status-dot green"></div><span>Hub</span></div>
+      <button id="cloud-pa-btn" onclick="toggleCloudPA()" style="background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.35);border-radius:8px;padding:5px 14px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--cyan);cursor:pointer;letter-spacing:0.06em;transition:all 0.2s;backdrop-filter:blur(8px)" onmouseover="this.style.background='rgba(0,200,255,0.2)';this.style.boxShadow='0 0 12px rgba(0,200,255,0.3)'" onmouseout="this.style.background='rgba(0,200,255,0.08)';this.style.boxShadow='none'">[ Cloud PA ]</button>
       <div class="gpu-chip">⚡ RTX A6000</div>
     </div>
   </header>
@@ -722,7 +723,19 @@
         <div class="avatar-model" id="model-name-display">gemma4:latest</div>
         <div class="avatar-gpu-badge">⚡ RTX A6000 · GPU</div>
       </div>
-      <div class="chat-section">
+      <!-- Cloud PA iframe container (hidden by default) -->
+      <div id="cloud-pa-container" style="display:none;flex:1;flex-direction:column;overflow:hidden;border-top:1px solid rgba(0,200,255,0.15)">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:rgba(0,5,16,0.8);flex-shrink:0;border-bottom:1px solid rgba(0,200,255,0.1)">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--cyan);letter-spacing:0.08em">CLOUD PA</span>
+            <span style="width:5px;height:5px;border-radius:50%;background:#22c55e;box-shadow:0 0 5px #22c55e;display:inline-block"></span>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:rgba(0,200,255,0.4)">38.247.186.142:8090</span>
+        </div>
+        <iframe src="http://38.247.186.142:8090" style="flex:1;width:100%;height:100%;border:none;background:#0a0f1a" allow="fullscreen"></iframe>
+      </div>
+
+      <div class="chat-section" id="gemma-chat-section">
         <div class="chat-messages" id="chat-messages">
           <div class="msg ai">
             <div class="msg-av"><img src="avatar_v2.png" onerror="this.src='avatar.png'" alt="AI"></div>
@@ -739,8 +752,8 @@
           <textarea class="chat-input" id="chat-input" placeholder="Ask Gemma 4..." rows="1"></textarea>
           <button class="chat-send" id="chat-send">&#9658;</button>
         </div>
-      </div>
-    </div>
+      </div><!-- end chat-section -->
+    </div><!-- end left-panel -->
 
     <!-- Centre: Visual preview window -->
     <div class="panel centre-panel">
@@ -835,6 +848,8 @@ const SERVICES = [
   { id:'n8n',       name:'n8n Automation',  icon:'⚡', desc:'Workflow automation',           url:'https://n8n.dannygc.cloud',      badge:'AUTO',    badgeClass:'gold',   canIframe: false },
   { id:'office',    name:'LibreOffice',     icon:'📝', desc:'Online documents & sheets',     url:'https://www.libreoffice.org/download/libreoffice-online/', badge:'PROD', badgeClass:'green', canIframe: false },
   { id:'kasm',      name:'Web Browser',     icon:'🌍', desc:'Kasm cloud browser',            url:'https://kasm.dannyk.online',     badge:'DEV',     badgeClass:'',       canIframe: false },
+  { id:'cloud',      name:'Cloud',           icon:'☁️',  desc:'Agent Zero cloud search',       url:'/cloud-search/',                 badge:'CLOUD',   badgeClass:'purple', canIframe: true  },
+  { id:'terminal',   name:'Terminal',        icon:'⌨️',  desc:'Built-in web terminal',          url:'',                               badge:'DEV',     badgeClass:'',       canIframe: false },
 ];
 
 // Mock dashboard data for services that block iframes
@@ -1065,6 +1080,10 @@ function loadPreview(service) {
   // Use mock dashboard if available, otherwise show clean service card
   if (service.id === 'ollama') {
     showGemmaCodingPreview(wrap);
+  } else if (service.id === 'terminal') {
+    showTerminalPreview(wrap);
+  } else if (service.id === 'cloud') {
+    showCloudPreview(wrap, service);
   } else if (MOCK_DASHBOARDS[service.id]) {
     showMockDashboard(wrap, service);
   } else {
@@ -1526,6 +1545,183 @@ function applyLiveRender(code, lang) {
       <div style="font-size:0.72rem;color:rgba(0,200,255,0.6);margin-bottom:8px">No renderable output detected</div>
       <div style="font-size:0.62rem;color:rgba(0,200,255,0.3);line-height:1.6">Ask Gemma to generate SVG graphics,<br>HTML layouts, or share an image URL</div>
     </div>`;
+  }
+}
+
+// ═══ CLOUD PREVIEW ═══
+function showCloudPreview(wrap, service) {
+  wrap.innerHTML = `
+    <div style="width:100%;height:100%;display:flex;flex-direction:column;background:#020a18;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:rgba(0,5,16,0.95);border-bottom:1px solid rgba(168,85,247,0.2);flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:1rem">☁️</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#a855f7;font-weight:700;letter-spacing:0.08em">CLOUD SEARCH</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:rgba(0,200,255,0.4)">Agent Zero</span>
+        </div>
+        <span style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:4px;padding:2px 8px;font-size:0.6rem;color:#a855f7;font-family:'JetBrains Mono',monospace">CLOUD</span>
+      </div>
+      <iframe src="/cloud-search/" style="flex:1;width:100%;border:none;background:#fff" allow="fullscreen"
+        onerror="this.parentElement.innerHTML+='<div style=position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:monospace;font-size:0.65rem;color:#ef4444;background:rgba(0,0,0,0.7);padding:6px 12px;border-radius:6px>Cloud search not found at /cloud-search/</div>'"
+      ></iframe>
+    </div>`;
+}
+
+// ═══ BUILT-IN TERMINAL ═══
+let termHistory = [];
+let termHistIdx = -1;
+let termCwd = '~';
+
+function showTerminalPreview(wrap) {
+  wrap.innerHTML = `
+    <div style="width:100%;height:100%;display:flex;flex-direction:column;background:#020a18;font-family:'JetBrains Mono',monospace;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:rgba(0,5,16,0.95);border-bottom:1px solid rgba(0,200,255,0.15);flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:0.9rem">⌨️</span>
+          <span style="color:var(--cyan);font-size:0.68rem;font-weight:700;letter-spacing:0.08em">TERMINAL</span>
+          <span style="color:rgba(0,200,255,0.4);font-size:0.6rem">hub.dannygc.cloud</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <span style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block"></span>
+          <span style="width:10px;height:10px;border-radius:50%;background:#f5a623;display:inline-block"></span>
+          <span style="width:10px;height:10px;border-radius:50%;background:#22c55e;display:inline-block"></span>
+        </div>
+      </div>
+      <div id="term-output" style="flex:1;overflow-y:auto;padding:10px 14px;font-size:0.72rem;line-height:1.6;color:#c8e8ff;scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.15) transparent">
+        <div style="color:rgba(0,200,255,0.5);margin-bottom:6px">DannyGC Hub Terminal v1.0 &mdash; Type <span style="color:#22c55e">help</span> for commands</div>
+      </div>
+      <div style="display:flex;align-items:center;padding:8px 14px;border-top:1px solid rgba(0,200,255,0.12);background:rgba(0,5,16,0.9);flex-shrink:0;gap:8px">
+        <span style="color:#22c55e;font-size:0.7rem;white-space:nowrap" id="term-prompt">danny@hub:<span id="term-cwd">~</span>$</span>
+        <input id="term-input" type="text" autocomplete="off" spellcheck="false"
+          style="flex:1;background:transparent;border:none;outline:none;color:#c8e8ff;font-family:'JetBrains Mono',monospace;font-size:0.72rem;caret-color:var(--cyan)"
+          placeholder="enter command...">
+      </div>
+    </div>`;
+
+  const output = document.getElementById('term-output');
+  const input = document.getElementById('term-input');
+  const cwdEl = document.getElementById('term-cwd');
+
+  const COMMANDS = {
+    help: () => [
+      '<span style="color:#a855f7">Available commands:</span>',
+      '  <span style="color:#22c55e">help</span>        &mdash; show this help',
+      '  <span style="color:#22c55e">clear</span>       &mdash; clear terminal',
+      '  <span style="color:#22c55e">date</span>        &mdash; show current date/time',
+      '  <span style="color:#22c55e">whoami</span>      &mdash; current user',
+      '  <span style="color:#22c55e">hostname</span>    &mdash; server hostname',
+      '  <span style="color:#22c55e">uptime</span>      &mdash; simulated uptime',
+      '  <span style="color:#22c55e">ls</span>          &mdash; list directory',
+      '  <span style="color:#22c55e">pwd</span>         &mdash; print working directory',
+      '  <span style="color:#22c55e">echo [text]</span> &mdash; print text',
+      '  <span style="color:#22c55e">services</span>    &mdash; list Hub services',
+      '  <span style="color:#22c55e">status</span>      &mdash; system status',
+      '  <span style="color:#22c55e">gemma [msg]</span> &mdash; ask Gemma AI',
+    ],
+    clear: () => { output.innerHTML = ''; return []; },
+    date: () => [new Date().toString()],
+    whoami: () => ['<span style="color:#22c55e">danny</span>'],
+    hostname: () => ['hub.dannygc.cloud'],
+    uptime: () => ['up 99 days, 4:20, 1 user, load average: 0.12, 0.08, 0.05'],
+    pwd: () => [termCwd === '~' ? '/home/danny' : termCwd],
+    ls: () => ['<span style="color:#00c8ff">services/</span>  <span style="color:#00c8ff">logs/</span>  <span style="color:#22c55e">config.yml</span>  <span style="color:#22c55e">README.md</span>  <span style="color:#a855f7">.env</span>'],
+    services: () => SERVICES.map(s => `  <span style="color:#00c8ff">${s.icon}</span> <span style="color:#22c55e">${s.name}</span> &mdash; ${s.url||'built-in'}`),
+    status: () => [
+      '<span style="color:#a855f7">System Status:</span>',
+      `  GPU: <span style="color:#f5a623">⚡ RTX A6000 · 49GB VRAM</span>`,
+      `  AI:  <span style="color:${gemmaOnline?'#22c55e':'#ef4444'}">${gemmaOnline?'Gemma 4 Online':'Gemma 4 Offline'}</span>`,
+      `  Hub: <span style="color:#22c55e">Online</span>`,
+      `  Services: <span style="color:#22c55e">${SERVICES.length} registered</span>`,
+    ],
+  };
+
+  function termPrint(lines, cmdText) {
+    if (cmdText !== undefined) {
+      const promptLine = document.createElement('div');
+      promptLine.innerHTML = `<span style="color:#22c55e">danny@hub:${termCwd}$</span> <span style="color:#c8e8ff">${cmdText.replace(/</g,'&lt;')}</span>`;
+      output.appendChild(promptLine);
+    }
+    lines.forEach(l => {
+      const d = document.createElement('div');
+      d.innerHTML = l;
+      output.appendChild(d);
+    });
+    output.scrollTop = output.scrollHeight;
+  }
+
+  input.addEventListener('keydown', async function(e) {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (termHistIdx < termHistory.length - 1) termHistIdx++;
+      input.value = termHistory[termHistory.length - 1 - termHistIdx] || '';
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (termHistIdx > 0) termHistIdx--;
+      else { termHistIdx = -1; input.value = ''; return; }
+      input.value = termHistory[termHistory.length - 1 - termHistIdx] || '';
+    } else if (e.key === 'Enter') {
+      const raw = input.value.trim();
+      input.value = '';
+      termHistIdx = -1;
+      if (!raw) return;
+      termHistory.push(raw);
+      const [cmd, ...args] = raw.split(' ');
+      const rest = args.join(' ');
+
+      if (cmd === 'echo') {
+        termPrint([rest || ''], raw);
+      } else if (cmd === 'gemma') {
+        termPrint([`<span style="color:rgba(0,200,255,0.5)">Sending to Gemma...</span>`], raw);
+        if (!gemmaOnline) {
+          termPrint(['<span style="color:#ef4444">Gemma is offline. Fix CORS first.</span>']);
+        } else {
+          try {
+            const res = await fetch(OLLAMA_BASE + '/api/chat', {
+              method: 'POST', headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({model:'gemma4', messages:[{role:'user',content:rest}], stream:false})
+            });
+            const j = await res.json();
+            const reply = j.message?.content || 'No response';
+            termPrint(reply.split('\n').map(l => `<span style="color:#c8e8ff">${l.replace(/</g,'&lt;')}</span>`));
+          } catch { termPrint(['<span style="color:#ef4444">Connection error.</span>']); }
+        }
+      } else if (COMMANDS[cmd]) {
+        const result = COMMANDS[cmd]();
+        if (result && result.length) termPrint(result, raw);
+        else if (cmd !== 'clear') termPrint([], raw);
+      } else {
+        termPrint([`<span style="color:#ef4444">command not found: ${cmd.replace(/</g,'&lt;')}</span><span style="color:rgba(0,200,255,0.4)"> &mdash; type 'help' for commands</span>`], raw);
+      }
+    }
+  });
+
+  setTimeout(() => input.focus(), 100);
+}
+
+// ═══ CLOUD PA TOGGLE ═══
+let cloudPAActive = false;
+function toggleCloudPA() {
+  cloudPAActive = !cloudPAActive;
+  const paContainer = document.getElementById('cloud-pa-container');
+  const chatSection = document.getElementById('gemma-chat-section');
+  const btn = document.getElementById('cloud-pa-btn');
+  const avatarSection = document.querySelector('.avatar-section');
+
+  if (cloudPAActive) {
+    paContainer.style.display = 'flex';
+    chatSection.style.display = 'none';
+    if (avatarSection) avatarSection.style.display = 'none';
+    btn.textContent = '[ Gemma AI ]';
+    btn.style.color = '#a855f7';
+    btn.style.borderColor = 'rgba(168,85,247,0.4)';
+    btn.style.background = 'rgba(168,85,247,0.08)';
+  } else {
+    paContainer.style.display = 'none';
+    chatSection.style.display = 'flex';
+    if (avatarSection) avatarSection.style.display = '';
+    btn.textContent = '[ Cloud PA ]';
+    btn.style.color = 'var(--cyan)';
+    btn.style.borderColor = 'rgba(0,200,255,0.35)';
+    btn.style.background = 'rgba(0,200,255,0.08)';
   }
 }
 
