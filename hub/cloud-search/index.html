@@ -351,9 +351,9 @@
 
         // Three depth layers: back (dim, slow), mid, front (bright, fast)
         const LAYERS = [
-            { count: 180, sizeMin: 0.4, sizeMax: 1.2, speedMul: 0.012, alphaMul: 0.35, wobble: 0.8,  color: [80, 160, 255]  },
-            { count: 250, sizeMin: 0.8, sizeMax: 2.0, speedMul: 0.022, alphaMul: 0.65, wobble: 1.4,  color: [0,  229, 255]  },
-            { count: 120, sizeMin: 1.4, sizeMax: 3.2, speedMul: 0.034, alphaMul: 0.9,  wobble: 2.0,  color: [160, 80, 255]  },
+            { count: 200, sizeMin: 1.2, sizeMax: 2.8, speedMul: 0.005, alphaMul: 0.7,  wobble: 0.5,  color: [80, 160, 255]  },
+            { count: 280, sizeMin: 1.8, sizeMax: 3.8, speedMul: 0.008, alphaMul: 0.9,  wobble: 0.8,  color: [0,  229, 255]  },
+            { count: 140, sizeMin: 2.5, sizeMax: 5.0, speedMul: 0.011, alphaMul: 1.0,  wobble: 1.0,  color: [160, 80, 255]  },
         ];
 
         class CloudParticle {
@@ -369,19 +369,28 @@
                 this.drift = (Math.random() - 0.5) * 0.15; // gentle horizontal drift
             }
             update() {
-                this.pulse += 0.018 + this.speed * 0.3;
+                this.pulse += 0.008 + this.speed * 0.15;
                 const wobble = Math.sin(this.pulse) * this.layer.wobble;
                 this.vx += (this.tx - this.x + wobble + this.drift) * this.speed;
-                this.vy += (this.ty - this.y + Math.cos(this.pulse) * this.layer.wobble * 0.5) * this.speed;
-                this.vx *= 0.88; this.vy *= 0.88;
+                this.vy += (this.ty - this.y + Math.cos(this.pulse) * this.layer.wobble * 0.4) * this.speed;
+                this.vx *= 0.92; this.vy *= 0.92;
                 this.x += this.vx; this.y += this.vy;
             }
             draw(breathe) {
-                const alpha = this.layer.alphaMul * (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(this.pulse))) * breathe;
+                const alpha = this.layer.alphaMul * (0.55 + 0.45 * (0.5 + 0.5 * Math.sin(this.pulse))) * breathe;
                 const [r, g, b] = this.layer.color;
+                // Glow effect: draw a larger soft halo behind each particle
+                const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 3);
+                grad.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
+                grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+                // Bright core dot
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+                ctx.fillStyle = `rgba(${r},${g},${b},${Math.min(alpha * 1.4, 1)})`;
                 ctx.fill();
             }
         }
