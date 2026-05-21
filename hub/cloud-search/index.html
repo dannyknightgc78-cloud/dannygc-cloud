@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLOUD | Sovereign Search</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: #020a12; color: #fff; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        #cloud-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .search-container {
+            position: relative; z-index: 10;
+            background: rgba(0, 10, 20, 0.5);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 229, 255, 0.18);
+            border-radius: 24px; padding: 44px 50px; text-align: center;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 0 30px rgba(0,229,255,0.04), 0 0 60px rgba(0,229,255,0.06);
+            max-width: 680px; width: 90%;
+        }
+        h1 {
+            font-size: 4.5rem; font-weight: 900; letter-spacing: 10px; margin-bottom: 4px;
+            background: linear-gradient(135deg, #ffffff 0%, #00e5ff 60%, #0080ff 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(0,229,255,0.5));
+        }
+        .tagline { font-size: 0.95rem; color: rgba(0,229,255,0.55); margin-bottom: 36px; font-style: italic; letter-spacing: 2px; font-family: 'Courier New', monospace; }
+        .search-bar {
+            width: 100%; padding: 16px 24px; font-size: 1.05rem; color: #fff;
+            background: rgba(0,0,0,0.45); border: 1px solid rgba(0,229,255,0.25);
+            border-radius: 50px; outline: none; transition: all 0.3s;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5); margin-bottom: 24px;
+        }
+        .search-bar:focus { border-color: #00e5ff; box-shadow: 0 0 24px rgba(0,229,255,0.35), inset 0 2px 10px rgba(0,0,0,0.5); background: rgba(0,10,20,0.65); }
+        .search-bar::placeholder { color: rgba(0,229,255,0.3); }
+        .button-group { display: flex; gap: 16px; justify-content: center; }
+        .glass-btn {
+            background: rgba(0,229,255,0.08); backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,229,255,0.3); color: #00e5ff;
+            padding: 11px 28px; font-size: 0.9rem; font-weight: 700;
+            border-radius: 50px; cursor: pointer; transition: all 0.3s;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .glass-btn:hover { background: rgba(0,229,255,0.18); box-shadow: 0 0 20px rgba(0,229,255,0.4); transform: translateY(-2px); }
+        .btn-cloudit { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
+        .btn-cloudit:hover { background: rgba(255,255,255,0.1); box-shadow: 0 0 15px rgba(255,255,255,0.15); }
+    </style>
+</head>
+<body>
+    <canvas id="cloud-canvas"></canvas>
+    <div class="search-container">
+        <h1>CLOUD</h1>
+        <p class="tagline">Why Google me when you can Cloud me?</p>
+        <input type="text" id="search-input" class="search-bar" placeholder="Initiate sovereign query..." autocomplete="off">
+        <div class="button-group">
+            <button class="glass-btn" onclick="doSearch('google')">Cloud Me</button>
+            <button class="glass-btn btn-cloudit" onclick="doSearch('cloudit')">CloudIt</button>
+        </div>
+    </div>
+    <script>
+        function doSearch(engine) {
+            const q = document.getElementById('search-input').value.trim();
+            if (!q) return;
+            const url = engine === 'cloudit'
+                ? 'https://cloudit.dannygc.cloud/search?q=' + encodeURIComponent(q)
+                : 'https://www.google.com/search?q=' + encodeURIComponent(q);
+            window.open(url, '_blank');
+        }
+        document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch('google'); });
+
+        // ═══ CLOUD-SHAPED PARTICLE SYSTEM ═══
+        const canvas = document.getElementById('cloud-canvas');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+
+        // Generate points that form a cloud silhouette using overlapping circles
+        function cloudShape(cx, cy, scale) {
+            const points = [];
+            // Cloud is made of 5 overlapping "bumps"
+            const bumps = [
+                { x: 0,    y: 0,    r: 110 },  // main center
+                { x: -100, y: 20,   r: 80  },  // left
+                { x: 100,  y: 20,   r: 80  },  // right
+                { x: -55,  y: -55,  r: 70  },  // top-left
+                { x: 55,   y: -55,  r: 70  },  // top-right
+                { x: -160, y: 50,   r: 55  },  // far left
+                { x: 160,  y: 50,   r: 55  },  // far right
+            ];
+            const n = Math.floor(600 * scale);
+            let attempts = 0;
+            while (points.length < n && attempts < n * 20) {
+                attempts++;
+                // Pick a random bump to spawn near
+                const bump = bumps[Math.floor(Math.random() * bumps.length)];
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * bump.r * scale;
+                const px = cx + (bump.x * scale) + Math.cos(angle) * dist;
+                const py = cy + (bump.y * scale) + Math.sin(angle) * dist;
+                // Accept if inside any bump
+                const inside = bumps.some(b => {
+                    const dx = px - (cx + b.x * scale);
+                    const dy = py - (cy + b.y * scale);
+                    return Math.sqrt(dx*dx + dy*dy) < b.r * scale;
+                });
+                if (inside) points.push({ x: px, y: py });
+            }
+            return points;
+        }
+
+        class Particle {
+            constructor(tx, ty) {
+                this.tx = tx; this.ty = ty;           // target (cloud shape)
+                this.x = Math.random() * W;
+                this.y = Math.random() * H;
+                this.vx = 0; this.vy = 0;
+                this.size = Math.random() * 1.8 + 0.4;
+                this.alpha = Math.random() * 0.6 + 0.3;
+                this.pulse = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 0.04 + 0.02;
+            }
+            update() {
+                this.pulse += 0.025;
+                // Drift toward target with slight wobble
+                const wobble = Math.sin(this.pulse) * 1.2;
+                this.vx += (this.tx - this.x + wobble) * this.speed;
+                this.vy += (this.ty - this.y + wobble) * this.speed;
+                this.vx *= 0.88; this.vy *= 0.88;
+                this.x += this.vx; this.y += this.vy;
+                this.alpha = 0.3 + 0.5 * (0.5 + 0.5 * Math.sin(this.pulse));
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0,229,255,${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        let particles = [];
+        let cloudPoints = [];
+
+        function buildCloud() {
+            const scale = Math.min(W, H) / 700;
+            cloudPoints = cloudShape(W / 2, H / 2 - 20 * scale, scale);
+            // Rebuild or reuse particles
+            if (particles.length === 0) {
+                particles = cloudPoints.map(p => new Particle(p.x, p.y));
+            } else {
+                // Reassign targets
+                particles.forEach((p, i) => {
+                    const t = cloudPoints[i % cloudPoints.length];
+                    p.tx = t.x; p.ty = t.y;
+                });
+            }
+        }
+
+        function connect() {
+            const maxDist = 38;
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a + 1; b < particles.length; b++) {
+                    const dx = particles[a].x - particles[b].x;
+                    const dy = particles[a].y - particles[b].y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d < maxDist) {
+                        const op = (1 - d / maxDist) * 0.35;
+                        ctx.strokeStyle = `rgba(0,229,255,${op})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // Outer glow pulse
+        let glowPhase = 0;
+        function drawGlow() {
+            glowPhase += 0.012;
+            const scale = Math.min(W, H) / 700;
+            const cx = W / 2, cy = H / 2 - 20 * scale;
+            const r = 230 * scale + Math.sin(glowPhase) * 18 * scale;
+            const grad = ctx.createRadialGradient(cx, cy, r * 0.3, cx, cy, r);
+            grad.addColorStop(0, `rgba(0,229,255,${0.04 + 0.02 * Math.sin(glowPhase)})`);
+            grad.addColorStop(1, 'rgba(0,229,255,0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, W, H);
+            drawGlow();
+            connect();
+            particles.forEach(p => { p.update(); p.draw(); });
+        }
+
+        window.addEventListener('resize', () => {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+            buildCloud();
+        });
+
+        buildCloud();
+        animate();
+    </script>
+</body>
+</html>
