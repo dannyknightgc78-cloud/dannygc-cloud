@@ -967,7 +967,7 @@ const MOCK_DASHBOARDS = {
   // Boot sequence
   const bootLines = [
     ['OK', 'Initialising <span>DannyGC Hub</span> v1.0'],
-    ['OK', 'Connecting to <span>api.dannygc.cloud</span>'],
+    ['OK', 'Connecting to <span>ollama.dannygc.cloud</span>'],
     ['OK', 'Loading <span>Gemma 4</span> model — RTX A6000 GPU'],
     ['OK', 'CUDA 12.6 acceleration <span>enabled</span>'],
     ['OK', 'Mounting <span>8 services</span> — all operational'],
@@ -1358,7 +1358,7 @@ function showMockDashboard(wrap, service) {
 }
 
 // Gemma status
-const OLLAMA_BASE = 'https://api.dannygc.cloud';
+const OLLAMA_BASE = 'https://ollama.dannygc.cloud';
 let gemmaOnline = false;
 async function checkGemmaStatus() {
   try {
@@ -1495,7 +1495,7 @@ function initLiveCodePreview(lang) {
   document.querySelectorAll('.snav-btn').forEach(b => b.classList.toggle('active', b.dataset.id === 'ollama'));
   document.getElementById('preview-status-badge').textContent = 'Gemma 4 — Live Coding';
   document.getElementById('preview-service-name').textContent = 'GEMMA 4 — LIVE CODE';
-  document.getElementById('preview-service-url').textContent = 'api.dannygc.cloud — streaming';
+  document.getElementById('preview-service-url').textContent = 'ollama.dannygc.cloud — streaming';
   document.getElementById('preview-open-btn').href = 'https://ai.dannygc.cloud';
 }
 
