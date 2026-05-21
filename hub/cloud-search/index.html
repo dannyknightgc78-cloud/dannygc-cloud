@@ -60,10 +60,11 @@
         function doSearch(engine) {
             const q = document.getElementById('search-input').value.trim();
             if (!q) return;
+            // Both buttons open in a new tab
             const url = engine === 'cloudit'
-                ? 'https://cloudit.dannygc.cloud/search?q=' + encodeURIComponent(q)
+                ? 'https://www.google.com/search?q=' + encodeURIComponent(q) + '&as_sitesearch=dannygc.cloud'
                 : 'https://www.google.com/search?q=' + encodeURIComponent(q);
-            window.open(url, '_blank');
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
         document.getElementById('search-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch('google'); });
 
