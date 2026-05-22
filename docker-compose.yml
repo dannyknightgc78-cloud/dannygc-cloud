@@ -1,0 +1,8 @@
+services:
+  portal:
+    image: nginx:alpine
+    volumes:
+      - ./:/usr/share/nginx/html
+    ports:
+      - "80"
+    restart: unless-stopped
