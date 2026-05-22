@@ -1,1922 +1,275 @@
-<!--
- * Copyright (C) 2026 DannyGC Cloud Services - All Rights Reserved
- * Unauthorized copying, transferring, or reproduction of this file,
- * via any medium, is strictly prohibited. Proprietary and confidential.
- * hub.dannygc.cloud
- -->
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>DannyGC Hub — Command Centre</title>
-  <meta name="theme-color" content="#000510">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --gold:    #f5a623;
-      --gold-dk: #c47a1e;
-      --gold-lt: #ffd060;
-      --cyan:    #00c8ff;
-      --cyan-dk: #0088bb;
-      --bg:      #000510;
-      --bg2:     #020a18;
-      --bg3:     #041020;
-      --panel:   rgba(2,10,24,0.92);
-      --border:  rgba(0,200,255,0.2);
-      --border-gold: rgba(245,166,35,0.25);
-      --text:    #c8e8ff;
-      --text-dim:#4a7090;
-      --radius:  10px;
-      --radius-lg:16px;
-      --glow-cyan: 0 0 20px rgba(0,200,255,0.4), 0 0 40px rgba(0,200,255,0.15);
-      --glow-gold: 0 0 20px rgba(245,166,35,0.4), 0 0 40px rgba(245,166,35,0.15);
-    }
-    html, body { height: 100%; overflow: hidden; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
-
-    /* ═══════════════════════════════════════
-       SPLASH SCREEN
-    ═══════════════════════════════════════ */
-    #splash {
-      position: fixed; inset: 0; z-index: 9999;
-      background: #000510;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    #splash-canvas { position: absolute; inset: 0; z-index: 0; }
-
-    /* Light streaks */
-    .light-streak {
-      position: absolute; z-index: 1;
-      height: 1px; width: 40%;
-      background: linear-gradient(90deg, transparent, rgba(0,200,255,0.6), transparent);
-      animation: streakMove 4s ease-in-out infinite;
-      pointer-events: none;
-    }
-    .light-streak:nth-child(1) { top: 30%; animation-delay: 0s; }
-    .light-streak:nth-child(2) { top: 55%; width: 30%; animation-delay: 1.5s; }
-    .light-streak:nth-child(3) { top: 70%; width: 50%; animation-delay: 0.8s; }
-    @keyframes streakMove {
-      0%   { left: -50%; opacity: 0; }
-      20%  { opacity: 1; }
-      80%  { opacity: 0.6; }
-      100% { left: 110%; opacity: 0; }
-    }
-
-    /* Lens flare */
-    .lens-flare {
-      position: absolute; z-index: 2;
-      top: 18%; right: 28%;
-      width: 120px; height: 120px;
-      background: radial-gradient(circle, rgba(255,220,100,0.9) 0%, rgba(245,166,35,0.5) 20%, rgba(0,200,255,0.2) 50%, transparent 70%);
-      border-radius: 50%;
-      animation: flarePulse 2s ease-in-out infinite;
-      pointer-events: none;
-    }
-    @keyframes flarePulse {
-      0%,100% { transform: scale(1); opacity: 0.8; }
-      50%      { transform: scale(1.3); opacity: 1; }
-    }
-    .lens-flare::after {
-      content: '';
-      position: absolute; top: 50%; left: 50%;
-      width: 4px; height: 200px;
-      background: linear-gradient(180deg, rgba(255,220,100,0.8), transparent);
-      transform: translate(-50%, -50%) rotate(45deg);
-    }
-
-    /* Splash content */
-    .splash-content {
-      position: relative; z-index: 10;
-      display: flex; flex-direction: column;
-      align-items: center; text-align: center;
-      animation: splashContentIn 1.2s ease forwards;
-      opacity: 0;
-    }
-    @keyframes splashContentIn {
-      0%   { opacity: 0; transform: scale(0.85) translateY(20px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    /* Logo icon */
-    .splash-logo-icon {
-      width: 140px; height: 140px; position: relative; margin-bottom: 24px;
-      animation: logoFloat 3s ease-in-out infinite 1.2s;
-    }
-    @keyframes logoFloat {
-      0%,100% { transform: translateY(0) scale(1); }
-      50%      { transform: translateY(-10px) scale(1.02); }
-    }
-    .splash-logo-icon img {
-      width: 100%; height: 100%; border-radius: 28px; display: block;
-      filter: drop-shadow(0 0 30px rgba(0,200,255,0.8)) drop-shadow(0 0 60px rgba(0,200,255,0.4)) drop-shadow(0 0 100px rgba(245,166,35,0.3));
-      animation: logoGlow 2s ease-in-out infinite;
-    }
-    @keyframes logoGlow {
-      0%,100% { filter: drop-shadow(0 0 25px rgba(0,200,255,0.7)) drop-shadow(0 0 50px rgba(0,200,255,0.35)) drop-shadow(0 0 80px rgba(245,166,35,0.25)); }
-      50%      { filter: drop-shadow(0 0 45px rgba(0,200,255,1)) drop-shadow(0 0 90px rgba(0,200,255,0.6)) drop-shadow(0 0 130px rgba(245,166,35,0.5)); }
-    }
-    /* Eye pupils on splash avatar */
-    .splash-pupils { position: absolute; inset: 0; pointer-events: none; border-radius: 28px; overflow: hidden; }
-    .splash-pupil {
-      position: absolute; width: 13px; height: 13px; border-radius: 50%;
-      background: rgba(255,255,255,0.95);
-      box-shadow: 0 0 10px rgba(255,255,255,0.9), 0 0 20px rgba(0,200,255,0.7);
-      animation: splashEyeMove 5s ease-in-out infinite;
-    }
-    .splash-pupil:nth-child(1) { left: 39%; top: 56.8%; transform: translate(-50%,-50%); }
-    .splash-pupil:nth-child(2) { left: 60.7%; top: 56.8%; transform: translate(-50%,-50%); animation-delay: 0.15s; }
-    @keyframes splashEyeMove {
-      0%,100% { transform: translate(-50%,-50%); }
-      20%     { transform: translate(calc(-50% - 5px), calc(-50% + 2px)); }
-      50%     { transform: translate(calc(-50% + 5px), calc(-50% - 2px)); }
-      80%     { transform: translate(calc(-50% - 3px), calc(-50% - 3px)); }
-    }
-
-    /* Title */
-    .splash-title {
-      font-family: 'Orbitron', sans-serif; font-weight: 900;
-      font-size: clamp(1.6rem, 4vw, 2.8rem);
-      background: linear-gradient(135deg, var(--gold-dk) 0%, var(--gold-lt) 40%, var(--gold) 60%, var(--cyan) 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      text-shadow: none;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
-      animation: titleShimmer 3s ease-in-out infinite;
-    }
-    @keyframes titleShimmer {
-      0%,100% { filter: brightness(1); }
-      50%      { filter: brightness(1.2); }
-    }
-    .splash-subtitle {
-      font-family: 'Orbitron', sans-serif; font-size: clamp(0.7rem, 1.5vw, 0.95rem);
-      color: rgba(200,232,255,0.7); letter-spacing: 0.25em; text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    .splash-tagline {
-      font-family: 'Inter', sans-serif; font-style: italic;
-      font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-      color: rgba(255,255,255,0.6); letter-spacing: 0.05em;
-      margin-bottom: 32px;
-    }
-
-    /* Boot sequence */
-    .splash-boot {
-      width: min(460px, 90vw);
-      background: rgba(0,5,16,0.85);
-      border: 1px solid rgba(0,200,255,0.2);
-      border-radius: 10px; padding: 16px 20px;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
-      text-align: left; margin-bottom: 20px;
-      box-shadow: inset 0 0 30px rgba(0,200,255,0.05), 0 0 30px rgba(0,200,255,0.1);
-    }
-    .boot-line {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 5px; opacity: 0;
-      animation: bootLineIn 0.4s ease forwards;
-    }
-    .boot-ok { color: #22c55e; font-weight: 700; flex-shrink: 0; }
-    .boot-text { color: var(--text-dim); }
-    .boot-text span { color: var(--cyan); }
-    @keyframes bootLineIn {
-      from { opacity: 0; transform: translateX(-8px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    /* Progress bar */
-    .splash-progress-wrap {
-      width: min(460px, 90vw);
-    }
-    .splash-progress-label {
-      display: flex; justify-content: space-between;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-      color: var(--text-dim); margin-bottom: 6px;
-    }
-    .splash-progress-bar {
-      height: 4px; background: rgba(0,200,255,0.1);
-      border-radius: 2px; overflow: hidden;
-    }
-    .splash-progress-fill {
-      height: 100%; width: 0%; border-radius: 2px;
-      background: linear-gradient(90deg, var(--gold-dk), var(--gold), var(--cyan));
-      box-shadow: 0 0 10px rgba(0,200,255,0.6);
-      transition: width 0.4s ease;
-    }
-
-    /* Splash exit */
-    #splash.exiting {
-      animation: splashExit 0.8s ease forwards;
-    }
-    @keyframes splashExit {
-      0%   { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(1.05); pointer-events: none; }
-    }
-
-    /* ═══════════════════════════════════════
-       MAIN APP
-    ═══════════════════════════════════════ */
-    #app { height: 100%; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.6s ease; }
-    #app.visible { opacity: 1; }
-
-    /* Scanline overlay */
-    #app::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 1000; pointer-events: none;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-    }
-
-    /* Background canvas */
-    #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; }
-
-    /* ── Topbar ── */
-    .topbar {
-      position: relative; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 20px;
-      background: rgba(0,5,16,0.95);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(16px);
-      flex-shrink: 0;
-    }
-    .topbar::after {
-      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--cyan), var(--gold), transparent);
-      opacity: 0.5;
-    }
-    .topbar-brand { display: flex; align-items: center; gap: 12px; }
-    .topbar-avatar {
-      width: 38px; height: 38px; border-radius: 9px; overflow: hidden; position: relative;
-      border: 1.5px solid rgba(0,200,255,0.5);
-      box-shadow: var(--glow-cyan); flex-shrink: 0;
-    }
-    .topbar-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .topbar-avatar .mini-pupils { position: absolute; inset: 0; pointer-events: none; }
-    .mini-pupil {
-      position: absolute; width: 5px; height: 5px; border-radius: 50%;
-      background: rgba(255,255,255,0.9); box-shadow: 0 0 5px rgba(0,200,255,0.8);
-      animation: miniEyeMove 5s ease-in-out infinite;
-    }
-    .mini-pupil:nth-child(1) { left: 39%; top: 56.8%; transform: translate(-50%,-50%); }
-    .mini-pupil:nth-child(2) { left: 60.7%; top: 56.8%; transform: translate(-50%,-50%); animation-delay: 0.15s; }
-    @keyframes miniEyeMove {
-      0%,100% { transform: translate(-50%,-50%); }
-      20%     { transform: translate(calc(-50% - 2px), calc(-50% + 1px)); }
-      50%     { transform: translate(calc(-50% + 2px), calc(-50% - 1px)); }
-      80%     { transform: translate(calc(-50% - 1px), calc(-50% - 1px)); }
-    }
-    .topbar-name {
-      font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1rem;
-      background: linear-gradient(135deg, var(--gold-dk), var(--gold-lt), var(--cyan));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      letter-spacing: 0.06em;
-    }
-    .topbar-sub { font-size: 0.62rem; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
-    .topbar-center {
-      display: flex; align-items: center; gap: 6px;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-      color: var(--text-dim);
-    }
-    .topbar-clock { color: var(--cyan); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; }
-    .topbar-right { display: flex; align-items: center; gap: 14px; }
-    .status-pill { display: flex; align-items: center; gap: 5px; font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; animation: dotPulse 2s ease-in-out infinite; }
-    .status-dot.green { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
-    .status-dot.cyan  { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
-    .status-dot.gold  { background: var(--gold); box-shadow: 0 0 6px var(--gold); }
-    .status-dot.red   { background: #ef4444; box-shadow: 0 0 6px #ef4444; animation: none; }
-    @keyframes dotPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-    .gpu-chip {
-      background: linear-gradient(135deg, rgba(245,166,35,0.12), rgba(0,200,255,0.08));
-      border: 1px solid rgba(245,166,35,0.3); border-radius: 6px;
-      padding: 3px 10px; font-size: 0.65rem; font-family: 'JetBrains Mono', monospace;
-      color: var(--gold); letter-spacing: 0.06em;
-    }
-
-    /* ── Main layout ── */
-    .main-layout {
-      position: relative; z-index: 5;
-      display: grid;
-      grid-template-columns: 300px 1fr 320px;
-      flex: 1; overflow: hidden;
-    }
-
-    /* ── Panel base ── */
-    .panel {
-      background: var(--panel);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      overflow: hidden; position: relative;
-    }
-    .panel::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-      opacity: 0.4;
-    }
-    .panel-header {
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .panel-title {
-      font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 700;
-      color: var(--cyan); letter-spacing: 0.15em; text-transform: uppercase;
-    }
-    .panel-badge {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
-      padding: 2px 8px; border-radius: 4px;
-      background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.2);
-      color: var(--cyan);
-    }
-    .panel-badge.gold { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.2); color: var(--gold); }
-
-    /* ── Left panel: Avatar + Chat ── */
-    .left-panel { border-right: 1px solid var(--border); }
-
-    .avatar-section {
-      padding: 18px 16px 14px;
-      display: flex; flex-direction: column; align-items: center;
-      border-bottom: 1px solid var(--border); flex-shrink: 0;
-      background: linear-gradient(180deg, rgba(0,200,255,0.04), transparent);
-    }
-    .avatar-wrap {
-      position: relative; width: 120px; height: 120px;
-      animation: avatarFloat 3s ease-in-out infinite; margin-bottom: 10px;
-    }
-    @keyframes avatarFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-    .avatar-img {
-      width: 120px; height: 120px; border-radius: 22px; display: block;
-      border: 2px solid rgba(0,200,255,0.4);
-      box-shadow: var(--glow-cyan), inset 0 0 20px rgba(0,200,255,0.1);
-      animation: avatarGlow 2.5s ease-in-out infinite;
-    }
-    @keyframes avatarGlow {
-      0%,100% { box-shadow: 0 0 20px rgba(0,200,255,0.5), 0 0 40px rgba(0,200,255,0.25), inset 0 0 20px rgba(0,200,255,0.05); }
-      50%      { box-shadow: 0 0 40px rgba(0,200,255,0.9), 0 0 80px rgba(0,200,255,0.5), inset 0 0 30px rgba(0,200,255,0.1); }
-    }
-    .avatar-pupils { position: absolute; inset: 0; pointer-events: none; }
-    .eye-pupil-main {
-      position: absolute; width: 9px; height: 9px; border-radius: 50%;
-      background: rgba(255,255,255,0.95);
-      box-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 16px rgba(0,200,255,0.6);
-      animation: eyeMoveFull 5s ease-in-out infinite;
-    }
-    .eye-pupil-main:nth-child(1) { left: 39%; top: 56.8%; transform: translate(-50%,-50%); }
-    .eye-pupil-main:nth-child(2) { left: 60.7%; top: 56.8%; transform: translate(-50%,-50%); animation-delay: 0.15s; }
-    @keyframes eyeMoveFull {
-      0%,100% { transform: translate(-50%,-50%); }
-      20%     { transform: translate(calc(-50% - 5px), calc(-50% + 2px)); }
-      50%     { transform: translate(calc(-50% + 5px), calc(-50% - 2px)); }
-      80%     { transform: translate(calc(-50% - 3px), calc(-50% - 3px)); }
-    }
-    .avatar-name {
-      font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 0.9rem;
-      background: linear-gradient(135deg, var(--gold-dk), var(--gold-lt));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .avatar-model { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--cyan); margin-top: 2px; }
-    .avatar-gpu-badge {
-      display: flex; align-items: center; gap: 5px; margin-top: 6px;
-      background: rgba(0,200,255,0.06); border: 1px solid rgba(0,200,255,0.2);
-      border-radius: 20px; padding: 2px 10px;
-      font-size: 0.62rem; font-family: 'JetBrains Mono', monospace; color: var(--cyan);
-    }
-
-    /* Chat */
-    .chat-section { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .chat-messages {
-      flex: 1; overflow-y: auto; padding: 12px 14px;
-      display: flex; flex-direction: column; justify-content: flex-start; gap: 10px;
-      scrollbar-width: thin; scrollbar-color: rgba(0,200,255,0.15) transparent;
-    }
-    .chat-messages::-webkit-scrollbar { width: 3px; }
-    .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,200,255,0.2); border-radius: 2px; }
-    .msg { display: flex; gap: 7px; align-items: flex-start; animation: msgIn 0.3s ease; }
-    @keyframes msgIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
-    .msg.user { flex-direction: row-reverse; }
-    .msg-av { width: 26px; height: 26px; border-radius: 7px; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
-    .msg-av img { width: 100%; height: 100%; object-fit: cover; }
-    .msg-av.user-av { background: linear-gradient(135deg, var(--gold-dk), var(--gold)); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: #000510; }
-    .msg-bubble { max-width: 88%; padding: 8px 12px; border-radius: 12px; font-size: 0.8rem; line-height: 1.55; }
-    .msg.ai .msg-bubble {
-      background: linear-gradient(145deg, rgba(2,10,24,0.97), rgba(0,5,16,0.99));
-      border: 1px solid rgba(0,200,255,0.15); border-radius: 3px 12px 12px 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(0,200,255,0.05);
-    }
-    .msg.user .msg-bubble {
-      background: linear-gradient(135deg, rgba(245,166,35,0.12), rgba(196,122,30,0.08));
-      border: 1px solid rgba(245,166,35,0.2); border-radius: 12px 3px 12px 12px;
-    }
-    .msg-time { font-size: 0.58rem; color: var(--text-dim); margin-top: 2px; }
-    .typing-indicator { display: none; align-items: center; gap: 4px; padding: 8px 12px; background: linear-gradient(145deg, rgba(2,10,24,0.97), rgba(0,5,16,0.99)); border: 1px solid rgba(0,200,255,0.15); border-radius: 3px 12px 12px 12px; width: fit-content; }
-    .typing-indicator.active { display: flex; }
-    .typing-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); opacity: 0.5; animation: typingBounce 1.2s ease-in-out infinite; }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); opacity: 0.3; } 30% { transform: translateY(-5px); opacity: 1; } }
-    .chat-input-wrap { padding: 10px 12px; border-top: 1px solid var(--border); display: flex; gap: 7px; align-items: flex-end; flex-shrink: 0; }
-    .chat-input { flex: 1; background: rgba(0,5,16,0.9); border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.8rem; resize: none; outline: none; min-height: 36px; max-height: 90px; transition: border-color 0.2s; }
-    .chat-input:focus { border-color: rgba(0,200,255,0.4); box-shadow: 0 0 10px rgba(0,200,255,0.1); }
-    .chat-send { width: 36px; height: 36px; border-radius: 8px; border: 1px solid rgba(0,200,255,0.3); background: linear-gradient(135deg, rgba(0,200,255,0.15), rgba(0,136,187,0.1)); color: var(--cyan); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
-    .chat-send:hover { background: rgba(0,200,255,0.25); box-shadow: var(--glow-cyan); }
-    .chat-send:disabled { opacity: 0.3; cursor: not-allowed; }
-
-    /* ── Centre panel: Visual preview ── */
-    .centre-panel { border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-
-    /* Service nav */
-    .service-nav {
-      display: flex; gap: 0; overflow-x: auto; flex-shrink: 0;
-      border-bottom: 1px solid var(--border);
-      scrollbar-width: none;
-    }
-    .service-nav::-webkit-scrollbar { display: none; }
-    .snav-btn {
-      padding: 8px 14px; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;
-      color: var(--text-dim); cursor: pointer; border: none; background: none;
-      border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .snav-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); background: rgba(0,200,255,0.04); }
-    .snav-btn:hover:not(.active) { color: var(--text); }
-    .snav-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-dim); }
-    .snav-btn.active .snav-dot { background: var(--cyan); box-shadow: 0 0 5px var(--cyan); animation: dotPulse 1.5s ease-in-out infinite; }
-
-    /* Preview window */
-    .preview-window {
-      flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;
-    }
-    .preview-frame-wrap {
-      flex: 1; position: relative; overflow: hidden;
-      background: #000510;
-    }
-    /* Holographic frame border */
-    .preview-frame-wrap::before {
-      content: ''; position: absolute; inset: 0; z-index: 10; pointer-events: none;
-      border: 1px solid rgba(0,200,255,0.25);
-      box-shadow: inset 0 0 30px rgba(0,200,255,0.05);
-    }
-    /* Corner brackets */
-    .preview-frame-wrap::after {
-      content: ''; position: absolute; inset: 0; z-index: 11; pointer-events: none;
-      background:
-        linear-gradient(var(--cyan), var(--cyan)) top left / 20px 2px no-repeat,
-        linear-gradient(var(--cyan), var(--cyan)) top left / 2px 20px no-repeat,
-        linear-gradient(var(--cyan), var(--cyan)) top right / 20px 2px no-repeat,
-        linear-gradient(var(--cyan), var(--cyan)) top right / 2px 20px no-repeat,
-        linear-gradient(var(--cyan), var(--cyan)) bottom left / 20px 2px no-repeat,
-        linear-gradient(var(--cyan), var(--cyan)) bottom left / 2px 20px no-repeat,
-        linear-gradient(var(--cyan), var(--cyan)) bottom right / 20px 2px no-repeat,
-        linear-gradient(var(--cyan), var(--cyan)) bottom right / 2px 20px no-repeat;
-      opacity: 0.8;
-    }
-    .preview-iframe {
-      width: 100%; height: 100%; border: none; display: block;
-      background: #000510;
-    }
-    /* Placeholder when iframe blocked */
-    .preview-placeholder {
-      position: absolute; inset: 0; z-index: 5;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 12px; padding: 20px;
-      background: radial-gradient(ellipse at center, rgba(0,200,255,0.04) 0%, transparent 70%);
-    }
-    .placeholder-icon { font-size: 3.5rem; filter: drop-shadow(0 0 20px rgba(0,200,255,0.5)); }
-    .placeholder-name { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--cyan); letter-spacing: 0.1em; }
-    .placeholder-url { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-dim); }
-    .placeholder-open {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: linear-gradient(135deg, rgba(0,200,255,0.15), rgba(0,136,187,0.1));
-      border: 1px solid rgba(0,200,255,0.3); border-radius: 8px;
-      padding: 8px 18px; font-size: 0.78rem; color: var(--cyan);
-      text-decoration: none; transition: all 0.2s; cursor: pointer;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .placeholder-open:hover { background: rgba(0,200,255,0.25); box-shadow: var(--glow-cyan); }
-
-    /* Animated mock dashboard for services that block iframes */
-    .mock-dashboard {
-      width: 100%; height: 100%; padding: 16px;
-      display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr 1fr;
-      gap: 10px; overflow: hidden;
-    }
-    .mock-header { grid-column: 1/-1; display: flex; align-items: center; justify-content: space-between; }
-    .mock-title { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--cyan); letter-spacing: 0.1em; }
-    .mock-card {
-      background: rgba(0,5,16,0.8); border: 1px solid rgba(0,200,255,0.15);
-      border-radius: 8px; padding: 12px; overflow: hidden; position: relative;
-    }
-    .mock-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: 0.3; }
-    .mock-card-label { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
-    .mock-value { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 700; color: var(--cyan); }
-    .mock-value.gold { color: var(--gold); }
-    .mock-value.green { color: #22c55e; }
-    .mock-sparkline { height: 40px; margin-top: 8px; position: relative; overflow: hidden; }
-    .mock-sparkline svg { width: 100%; height: 100%; }
-    .mock-sparkline polyline { fill: none; stroke: var(--cyan); stroke-width: 1.5; opacity: 0.8; animation: sparklineAnim 3s ease-in-out infinite; }
-    @keyframes sparklineAnim { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
-    .mock-bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 50px; margin-top: 8px; }
-    .mock-bar { flex: 1; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, var(--cyan), var(--cyan-dk)); opacity: 0.7; animation: barPulse 2s ease-in-out infinite; }
-    @keyframes barPulse { 0%,100% { opacity: 0.5; } 50% { opacity: 0.9; } }
-
-    /* Preview info bar */
-    .preview-infobar {
-      padding: 8px 14px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-shrink: 0; background: rgba(0,5,16,0.95);
-    }
-    .preview-service-name { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--gold); letter-spacing: 0.1em; }
-    .preview-service-url { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim); }
-    .preview-open-btn {
-      display: flex; align-items: center; gap: 5px;
-      background: rgba(245,166,35,0.1); border: 1px solid rgba(245,166,35,0.25);
-      border-radius: 6px; padding: 4px 12px;
-      font-size: 0.68rem; color: var(--gold); text-decoration: none;
-      font-family: 'JetBrains Mono', monospace; transition: all 0.2s; cursor: pointer;
-    }
-    .preview-open-btn:hover { background: rgba(245,166,35,0.2); box-shadow: var(--glow-gold); }
-
-    /* ── Right panel: Stats + Services ── */
-    .right-panel { display: flex; flex-direction: column; border-right: none; }
-
-    /* Live Render toggle */
-    .render-toggle {
-      display: flex; gap: 4px; align-items: center;
-      background: rgba(0,5,16,0.6); border: 1px solid rgba(0,200,255,0.15);
-      border-radius: 8px; padding: 3px;
-    }
-    .render-btn {
-      background: transparent; border: none; cursor: pointer;
-      font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
-      color: var(--text-dim); padding: 4px 10px; border-radius: 6px;
-      transition: all 0.2s; letter-spacing: 0.04em;
-    }
-    .render-btn.active {
-      background: rgba(0,200,255,0.15); color: var(--cyan);
-      box-shadow: 0 0 8px rgba(0,200,255,0.2);
-    }
-    .render-btn:hover:not(.active) { color: rgba(0,200,255,0.6); }
-    #live-render-frame {
-      width: 100%; height: 100%; border: none; background: #fff;
-      border-radius: 4px;
-    }
-
-    /* Stats widgets */
-    .stats-section { padding: 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .stats-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .stat-w {
-      background: linear-gradient(145deg, rgba(2,10,24,0.95), rgba(0,5,16,0.98));
-      border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
-      position: relative; overflow: hidden;
-    }
-    .stat-w::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: 0.3; }
-    .stat-w-label { font-size: 0.58rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.12em; font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
-    .stat-w-val { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--cyan); }
-    .stat-w-val.gold { color: var(--gold); }
-    .stat-w-val.green { color: #22c55e; }
-    .stat-w-sub { font-size: 0.6rem; color: var(--text-dim); margin-top: 2px; }
-    .stat-w-bar { height: 2px; background: rgba(0,200,255,0.1); border-radius: 1px; margin-top: 7px; overflow: hidden; }
-    .stat-w-fill { height: 100%; border-radius: 1px; background: linear-gradient(90deg, var(--cyan-dk), var(--cyan)); transition: width 1s ease; }
-    .stat-w-fill.gold { background: linear-gradient(90deg, var(--gold-dk), var(--gold)); }
-    .stat-w-fill.green { background: linear-gradient(90deg, #16a34a, #22c55e); }
-
-    /* Service list */
-    .services-section { flex: 1; overflow-y: auto; padding: 12px; scrollbar-width: thin; scrollbar-color: rgba(0,200,255,0.15) transparent; }
-    .services-section::-webkit-scrollbar { width: 3px; }
-    .services-section::-webkit-scrollbar-thumb { background: rgba(0,200,255,0.2); border-radius: 2px; }
-    .section-label { font-family: 'Orbitron', sans-serif; font-size: 0.62rem; color: var(--text-dim); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
-    .service-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 10px; border-radius: 8px; cursor: pointer;
-      border: 1px solid transparent; transition: all 0.2s; margin-bottom: 5px;
-      background: rgba(0,5,16,0.5);
-    }
-    .service-item:hover, .service-item.active {
-      background: rgba(0,200,255,0.06); border-color: rgba(0,200,255,0.2);
-      box-shadow: 0 0 12px rgba(0,200,255,0.08);
-    }
-    .service-item.active { border-color: rgba(0,200,255,0.35); }
-    .service-icon { font-size: 1.3rem; flex-shrink: 0; width: 32px; text-align: center; }
-    .service-info { flex: 1; min-width: 0; }
-    .service-name { font-size: 0.8rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .service-desc { font-size: 0.65rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .service-status { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: #22c55e; box-shadow: 0 0 5px #22c55e; animation: dotPulse 2s ease-in-out infinite; }
-    .service-status.offline { background: #ef4444; box-shadow: 0 0 5px #ef4444; animation: none; }
-    .service-badge { font-size: 0.55rem; font-family: 'JetBrains Mono', monospace; padding: 1px 6px; border-radius: 3px; background: rgba(0,200,255,0.08); border: 1px solid rgba(0,200,255,0.15); color: var(--cyan); text-transform: uppercase; flex-shrink: 0; }
-    .service-badge.gold { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.15); color: var(--gold); }
-    .service-badge.green { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.15); color: #22c55e; }
-    .service-badge.purple { background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.15); color: #a855f7; }
-
-    /* ── Status bar ── */
-    .statusbar {
-      position: relative; z-index: 100;
-      display: flex; align-items: center; gap: 14px; padding: 4px 18px;
-      background: rgba(0,5,16,0.98); border-top: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--text-dim);
-      flex-shrink: 0;
-    }
-    .statusbar::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), var(--gold), transparent); opacity: 0.4; }
-    .sb-item { display: flex; align-items: center; gap: 4px; }
-    .sb-dot { width: 5px; height: 5px; border-radius: 50%; }
-    .sb-ticker { margin-left: auto; overflow: hidden; white-space: nowrap; color: var(--gold); opacity: 0.5; }
-    .sb-ticker-inner { display: inline-block; animation: tickerScroll 35s linear infinite; }
-    @keyframes tickerScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-    /* ── Responsive ── */
-    @media (max-width: 1100px) {
-      .main-layout { grid-template-columns: 280px 1fr; }
-      .right-panel { display: none; }
-    }
-    @media (max-width: 750px) {
-      .main-layout { grid-template-columns: 1fr; }
-      .left-panel { max-height: 45vh; }
-    }
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
   </style>
 </head>
 <body>
-
-<!-- ═══ SPLASH SCREEN ═══ -->
-<div id="splash">
-  <canvas id="splash-canvas"></canvas>
-  <div class="light-streak"></div>
-  <div class="light-streak"></div>
-  <div class="light-streak"></div>
-  <div class="lens-flare"></div>
-
-  <div class="splash-content">
-    <div class="splash-logo-icon">
-      <img src="avatar_v2.png" onerror="this.src='avatar.png'" alt="DannyGC AI">
-      <div class="splash-pupils">
-        <div class="splash-pupil"></div>
-        <div class="splash-pupil"></div>
-      </div>
-    </div>
-    <div class="splash-title">DANNYGC HUB</div>
-    <div class="splash-subtitle">Cloud Services Command Centre</div>
-    <div class="splash-tagline">We Work So You Don't Have To</div>
-
-    <div class="splash-boot" id="splash-boot">
-      <!-- Boot lines injected by JS -->
-    </div>
-
-    <div class="splash-progress-wrap">
-      <div class="splash-progress-label">
-        <span>INITIALISING SYSTEMS</span>
-        <span id="splash-pct">0%</span>
-      </div>
-      <div class="splash-progress-bar">
-        <div class="splash-progress-fill" id="splash-fill"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MAIN APP ═══ -->
-<div id="app">
-  <canvas id="bg-canvas"></canvas>
-
-  <!-- Topbar -->
-  <header class="topbar">
-    <div class="topbar-brand">
-      <div class="topbar-avatar">
-        <img src="avatar_v2.png" onerror="this.src='avatar.png'" alt="DannyGC AI">
-        <div class="mini-pupils"><div class="mini-pupil"></div><div class="mini-pupil"></div></div>
-      </div>
-      <div>
-        <div class="topbar-name">DANNYGC HUB</div>
-        <div class="topbar-sub">hub.dannygc.cloud</div>
-      </div>
-    </div>
-    <div class="topbar-center">
-      <span>SYS TIME</span>
-      <span class="topbar-clock" id="topbar-clock">00:00:00</span>
-    </div>
-    <div class="topbar-right">
-      <div class="status-pill"><div class="status-dot cyan" id="gemma-dot"></div><span id="gemma-status-text">Gemma 4</span></div>
-      <div class="status-pill"><div class="status-dot gold"></div><span>Portal</span></div>
-      <div class="status-pill"><div class="status-dot green"></div><span>Hub</span></div>
-      <button id="cloud-pa-btn" onclick="toggleCloudPA()" style="background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.35);border-radius:8px;padding:5px 14px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--cyan);cursor:pointer;letter-spacing:0.06em;transition:all 0.2s;backdrop-filter:blur(8px)" onmouseover="this.style.background='rgba(0,200,255,0.2)';this.style.boxShadow='0 0 12px rgba(0,200,255,0.3)'" onmouseout="this.style.background='rgba(0,200,255,0.08)';this.style.boxShadow='none'">[ Cloud PA ]</button>
-      <div class="gpu-chip">⚡ RTX A6000</div>
-    </div>
-  </header>
-
-  <!-- Main layout -->
-  <div class="main-layout">
-
-    <!-- Left: Avatar + Chat -->
-    <div class="panel left-panel">
-      <div class="panel-header">
-        <span class="panel-title" id="left-panel-title">AI Interface</span>
-        <div style="display:flex;align-items:center;gap:6px">
-          <button id="cloud-pa-btn" onclick="toggleCloudPA()" style="background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.3);border-radius:6px;padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--cyan);cursor:pointer;letter-spacing:0.05em;transition:all 0.2s" onmouseover="this.style.background='rgba(0,200,255,0.18)';this.style.boxShadow='0 0 8px rgba(0,200,255,0.3)'" onmouseout="this.style.background='rgba(0,200,255,0.08)';this.style.boxShadow='none'">[ Cloud PA ]</button>
-          <span class="panel-badge" id="chat-model-badge">gemma4</span>
-        </div>
-      </div>
-      <div class="avatar-section">
-        <div class="avatar-wrap">
-          <img class="avatar-img" src="avatar_v2.png" onerror="this.src='avatar.png'" alt="DannyGC AI">
-          <div class="avatar-pupils"><div class="eye-pupil-main"></div><div class="eye-pupil-main"></div></div>
-        </div>
-        <div class="avatar-name">GEMMA AI</div>
-        <div class="avatar-model" id="model-name-display">gemma4:latest</div>
-        <div class="avatar-gpu-badge">⚡ RTX A6000 · GPU</div>
-      </div>
-      <!-- Cloud PA native chat (hidden by default) -->
-      <div id="cloud-pa-container" style="display:none;flex:1;flex-direction:column;overflow:hidden">
-        <!-- Agent Zero avatar header -->
-        <div style="padding:14px 12px 10px;text-align:center;flex-shrink:0;border-bottom:1px solid rgba(0,200,255,0.1)">
-          <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(0,200,255,0.15),rgba(168,85,247,0.15));border:1px solid rgba(0,200,255,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;overflow:hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" width="52" height="52">
-              <!-- Body / suit -->
-              <rect x="14" y="30" width="24" height="18" rx="4" fill="#0a1628" stroke="rgba(0,200,255,0.5)" stroke-width="1"/>
-              <!-- Tie -->
-              <polygon points="26,30 23,36 26,40 29,36" fill="rgba(0,200,255,0.7)"/>
-              <!-- Collar -->
-              <polygon points="26,30 20,30 23,36" fill="rgba(0,200,255,0.3)"/>
-              <polygon points="26,30 32,30 29,36" fill="rgba(0,200,255,0.3)"/>
-              <!-- Head -->
-              <rect x="17" y="12" width="18" height="18" rx="5" fill="#0a1628" stroke="rgba(0,200,255,0.6)" stroke-width="1"/>
-              <!-- Hat brim -->
-              <rect x="13" y="16" width="26" height="3" rx="1.5" fill="#0a1628" stroke="rgba(0,200,255,0.5)" stroke-width="1"/>
-              <!-- Hat top -->
-              <rect x="17" y="6" width="18" height="11" rx="3" fill="#0a1628" stroke="rgba(0,200,255,0.5)" stroke-width="1"/>
-              <!-- Hat band -->
-              <rect x="17" y="13" width="18" height="3" fill="rgba(0,200,255,0.25)"/>
-              <!-- Eyes (glowing) -->
-              <ellipse cx="22" cy="22" rx="2.5" ry="2" fill="rgba(0,229,255,0.9)" filter="url(#glow)"/>
-              <ellipse cx="30" cy="22" rx="2.5" ry="2" fill="rgba(0,229,255,0.9)" filter="url(#glow)"/>
-              <!-- Sunglasses bar -->
-              <rect x="19" y="20" width="14" height="1" rx="0.5" fill="rgba(0,200,255,0.4)"/>
-              <!-- Mouth -->
-              <rect x="22" y="26" width="8" height="1.5" rx="0.75" fill="rgba(0,200,255,0.3)"/>
-              <!-- Shoulder epaulettes -->
-              <rect x="10" y="30" width="6" height="3" rx="1" fill="rgba(0,200,255,0.3)" stroke="rgba(0,200,255,0.5)" stroke-width="0.5"/>
-              <rect x="36" y="30" width="6" height="3" rx="1" fill="rgba(0,200,255,0.3)" stroke="rgba(0,200,255,0.5)" stroke-width="0.5"/>
-              <!-- Chest badge -->
-              <rect x="22" y="34" width="8" height="5" rx="1" fill="rgba(0,200,255,0.1)" stroke="rgba(0,200,255,0.4)" stroke-width="0.5"/>
-              <text x="26" y="38" text-anchor="middle" font-size="3" fill="rgba(0,229,255,0.9)" font-family="monospace">A0</text>
-              <defs>
-                <filter id="glow"><feGaussianBlur stdDeviation="1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-              </defs>
-            </svg>
-          </div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;color:var(--cyan);letter-spacing:0.1em">AGENT ZERO</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:rgba(0,200,255,0.45);margin-top:2px">38.247.186.142:8090</div>
-        </div>
-        <!-- Chat messages -->
-        <div id="az-messages" style="flex:1;overflow-y:auto;padding:10px 10px 6px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.15) transparent">
-          <div style="display:flex;gap:8px;align-items:flex-start">
-            <div style="width:26px;height:26px;border-radius:7px;background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.25);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0">&#129302;</div>
-            <div style="background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.12);border-radius:4px 12px 12px 12px;padding:8px 12px;font-size:0.72rem;color:#c8e8ff;line-height:1.5;max-width:calc(100% - 38px)">Agent Zero online. I&apos;m connected and ready to assist. How can I help you?</div>
-          </div>
-          <div id="az-typing" style="display:none;align-items:center;gap:8px">
-            <div style="width:26px;height:26px;border-radius:7px;background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.25);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0">&#129302;</div>
-            <div style="display:flex;gap:4px;padding:8px 12px;background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.12);border-radius:4px 12px 12px 12px">
-              <span style="width:6px;height:6px;border-radius:50%;background:rgba(0,200,255,0.6);display:inline-block;animation:dotPulse 1.2s ease-in-out infinite"></span>
-              <span style="width:6px;height:6px;border-radius:50%;background:rgba(0,200,255,0.6);display:inline-block;animation:dotPulse 1.2s ease-in-out 0.2s infinite"></span>
-              <span style="width:6px;height:6px;border-radius:50%;background:rgba(0,200,255,0.6);display:inline-block;animation:dotPulse 1.2s ease-in-out 0.4s infinite"></span>
-            </div>
-          </div>
-        </div>
-        <!-- Input -->
-        <div style="padding:8px 10px;border-top:1px solid rgba(0,200,255,0.1);display:flex;gap:6px;flex-shrink:0">
-          <textarea id="az-input" rows="1" placeholder="Ask Agent Zero..." style="flex:1;background:rgba(0,5,16,0.7);border:1px solid rgba(0,200,255,0.2);border-radius:8px;padding:8px 12px;color:#c8e8ff;font-family:'JetBrains Mono',monospace;font-size:0.72rem;resize:none;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='rgba(0,200,255,0.5)'" onblur="this.style.borderColor='rgba(0,200,255,0.2)'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAgentZero();}"></textarea>
-          <button onclick="sendAgentZero()" style="background:rgba(0,200,255,0.12);border:1px solid rgba(0,200,255,0.3);border-radius:8px;padding:0 12px;color:var(--cyan);cursor:pointer;font-size:1rem;transition:all 0.2s" onmouseover="this.style.background='rgba(0,200,255,0.25)'" onmouseout="this.style.background='rgba(0,200,255,0.12)'">&#9658;</button>
-        </div>
-      </div>
-
-      <div class="chat-section" id="gemma-chat-section">
-        <div class="chat-messages" id="chat-messages">
-          <div class="msg ai">
-            <div class="msg-av"><img src="avatar_v2.png" onerror="this.src='avatar.png'" alt="AI"></div>
-            <div>
-              <div class="msg-bubble">Hub online. I'm Gemma 4, running on your RTX A6000 GPU. All systems operational. How can I assist you?</div>
-              <div class="msg-time">Now</div>
-            </div>
-          </div>
-          <div class="typing-indicator" id="typing-indicator">
-            <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-          </div>
-        </div>
-        <div class="chat-input-wrap">
-          <textarea class="chat-input" id="chat-input" placeholder="Ask Gemma 4..." rows="1"></textarea>
-          <button class="chat-send" id="chat-send">&#9658;</button>
-        </div>
-      </div><!-- end chat-section -->
-    </div><!-- end left-panel -->
-
-    <!-- Centre: Visual preview window -->
-    <div class="panel centre-panel">
-      <div class="panel-header">
-        <span class="panel-title">Visual Preview</span>
-        <span class="panel-badge gold" id="preview-status-badge">SELECT SERVICE</span>
-      </div>
-      <div class="service-nav" id="service-nav">
-        <!-- Injected by JS -->
-      </div>
-      <div class="preview-window">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px 0;flex-shrink:0">
-          <div class="render-toggle" id="render-toggle">
-            <button class="render-btn active" id="btn-code-view" onclick="setRenderMode('code')">&#9654; Code View</button>
-            <button class="render-btn" id="btn-live-render" onclick="setRenderMode('render')">&#9670; Live Render</button>
-          </div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:rgba(0,200,255,0.3)">SVG · HTML · Images</span>
-        </div>
-        <div class="preview-frame-wrap" id="preview-frame-wrap">
-          <!-- Content injected by JS -->
-        </div>
-        <div class="preview-infobar">
-          <div>
-            <div class="preview-service-name" id="preview-service-name">SELECT A SERVICE</div>
-            <div class="preview-service-url" id="preview-service-url">Click a service above to preview</div>
-          </div>
-          <a class="preview-open-btn" id="preview-open-btn" href="#" target="_blank">Open ↗</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right: Stats + Service list -->
-    <div class="panel right-panel">
-      <div class="panel-header">
-        <span class="panel-title">System Status</span>
-        <span class="panel-badge gold">LIVE</span>
-      </div>
-      <div class="stats-section">
-        <div class="stats-grid-2">
-          <div class="stat-w">
-            <div class="stat-w-label">AI Status</div>
-            <div class="stat-w-val" id="ai-stat-val" style="color:#ef4444">Offline</div>
-            <div class="stat-w-sub" id="ai-stat-sub">Checking...</div>
-            <div class="stat-w-bar"><div class="stat-w-fill" id="ai-stat-bar" style="width:0%"></div></div>
-          </div>
-          <div class="stat-w">
-            <div class="stat-w-label">GPU</div>
-            <div class="stat-w-val gold">A6000</div>
-            <div class="stat-w-sub">49 GB VRAM</div>
-            <div class="stat-w-bar"><div class="stat-w-fill gold" style="width:25%"></div></div>
-          </div>
-          <div class="stat-w">
-            <div class="stat-w-label">Services</div>
-            <div class="stat-w-val green">8</div>
-            <div class="stat-w-sub">All operational</div>
-            <div class="stat-w-bar"><div class="stat-w-fill green" style="width:100%"></div></div>
-          </div>
-          <div class="stat-w">
-            <div class="stat-w-label">Portal</div>
-            <div class="stat-w-val green">Online</div>
-            <div class="stat-w-sub">cloud.dannygc.cloud</div>
-            <div class="stat-w-bar"><div class="stat-w-fill green" style="width:100%"></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="services-section" id="services-list">
-        <!-- Injected by JS -->
-      </div>
-    </div>
-
-  </div><!-- end main-layout -->
-
-  <!-- Status bar -->
-  <footer class="statusbar">
-    <div class="sb-item"><div class="sb-dot" style="background:#22c55e;box-shadow:0 0 4px #22c55e"></div><span>Hub v1.0</span></div>
-    <div class="sb-item"><div class="sb-dot" id="sb-gemma-dot" style="background:#ef4444;box-shadow:0 0 4px #ef4444"></div><span id="sb-gemma">Gemma 4 · Checking</span></div>
-    <div class="sb-item"><div class="sb-dot" style="background:var(--gold);box-shadow:0 0 4px var(--gold)"></div><span>RTX A6000 · CUDA 12.6</span></div>
-    <div class="sb-ticker"><div class="sb-ticker-inner">DannyGC Cloud Services &nbsp;·&nbsp; hub.dannygc.cloud &nbsp;·&nbsp; Powered by Gemma 4 on RTX A6000 GPU &nbsp;·&nbsp; We Work So You Don't Have To &nbsp;·&nbsp; All Systems Operational &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></div>
-  </footer>
-</div><!-- end app -->
-
-<script>
-// ═══ SERVICES DATA ═══
-const SERVICES = [
-  { id:'portal',    name:'Cloud Portal',    icon:'🌐', desc:'Main command centre',          url:'https://cloud.dannygc.cloud',    badge:'PORTAL',  badgeClass:'',       canIframe: false },
-  { id:'ollama',    name:'Ollama / Gemma',  icon:'🤖', desc:'AI model management',           url:'https://ai.dannygc.cloud',       badge:'AI',      badgeClass:'purple', canIframe: false },
-  { id:'portainer', name:'Portainer',       icon:'🐳', desc:'Container management',          url:'https://portainer.dannygc.cloud',badge:'TOOLS',   badgeClass:'',       canIframe: false },
-  { id:'grafana',   name:'Grafana',         icon:'📊', desc:'Metrics & analytics',           url:'https://grafana.dannygc.cloud',  badge:'MONITOR', badgeClass:'',       canIframe: false },
-  { id:'monitor',   name:'System Monitor',  icon:'📈', desc:'Real-time server stats',        url:'https://monitor.dannygc.cloud',  badge:'MONITOR', badgeClass:'',       canIframe: false },
-  { id:'files',     name:'File Manager',    icon:'📁', desc:'Browse server files',           url:'https://files.dannygc.cloud',    badge:'TOOLS',   badgeClass:'',       canIframe: false },
-  { id:'code',      name:'VS Code Server',  icon:'💻', desc:'Browser-based code editor',     url:'https://code.dannygc.cloud',     badge:'DEV',     badgeClass:'',       canIframe: false },
-  { id:'n8n',       name:'n8n Automation',  icon:'⚡', desc:'Workflow automation',           url:'https://n8n.dannygc.cloud',      badge:'AUTO',    badgeClass:'gold',   canIframe: false },
-  { id:'office',    name:'LibreOffice',     icon:'📝', desc:'Online documents & sheets',     url:'https://www.libreoffice.org/download/libreoffice-online/', badge:'PROD', badgeClass:'green', canIframe: false },
-  { id:'kasm',      name:'Web Browser',     icon:'🌍', desc:'Kasm cloud browser',            url:'https://kasm.dannyk.online',     badge:'DEV',     badgeClass:'',       canIframe: false },
-  { id:'cloud',      name:'Cloud',           icon:'☁️',  desc:'Agent Zero cloud search',       url:'/cloud-search/',                 badge:'CLOUD',   badgeClass:'purple', canIframe: true  },
-  { id:'terminal',   name:'Terminal',        icon:'⌨️',  desc:'Built-in web terminal',          url:'',                               badge:'DEV',     badgeClass:'',       canIframe: false },
-];
-
-// Mock dashboard data for services that block iframes
-const MOCK_DASHBOARDS = {
-  ollama:    { title:'GEMMA_CODING', metrics:[] }, // special — handled by showGemmaCodingPreview
-  portainer: { title:'PORTAINER', metrics:[{label:'Containers',val:'12',color:'cyan'},{label:'Running',val:'9',color:'green'},{label:'Images',val:'24',color:'gold'},{label:'Volumes',val:'8',color:'cyan'}] },
-  grafana:   { title:'GRAFANA',   metrics:[{label:'CPU Usage',val:'34%',color:'cyan'},{label:'RAM',val:'61%',color:'gold'},{label:'Disk I/O',val:'12%',color:'green'},{label:'Network',val:'2.4Gbps',color:'cyan'}] },
-  monitor:   { title:'NETDATA',   metrics:[{label:'CPU',val:'28%',color:'cyan'},{label:'Memory',val:'58%',color:'gold'},{label:'Uptime',val:'99.9%',color:'green'},{label:'Processes',val:'347',color:'cyan'}] },
-  kasm:      { title:'KASM',      metrics:[{label:'Sessions',val:'1',color:'cyan'},{label:'CPU',val:'15%',color:'green'},{label:'RAM',val:'4.2GB',color:'gold'},{label:'Status',val:'Ready',color:'green'}] },
-};
-
-// ═══ SPLASH SCREEN ═══
-(function(){
-  // Particle canvas
-  const canvas = document.getElementById('splash-canvas');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const particles = [];
-  const GOLD = 'rgba(245,166,35,';
-  const CYAN = 'rgba(0,200,255,';
-  for (let i = 0; i < 180; i++) {
-    const isGold = Math.random() > 0.5;
-    const size = Math.random() * 3 + 0.5;
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.3 - 0.1,
-      size,
-      blur: Math.random() > 0.6 ? Math.random() * 8 + 2 : 0,
-      color: isGold ? GOLD : CYAN,
-      alpha: Math.random() * 0.6 + 0.2,
-      pulse: Math.random() * Math.PI * 2,
-    });
-  }
-
-  let splashFrame;
-  function drawSplash() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.pulse += 0.02;
-      if (p.x < 0) p.x = canvas.width;
-      if (p.x > canvas.width) p.x = 0;
-      if (p.y < 0) p.y = canvas.height;
-      if (p.y > canvas.height) p.y = 0;
-      const a = p.alpha * (0.7 + 0.3 * Math.sin(p.pulse));
-      if (p.blur > 0) { ctx.filter = `blur(${p.blur}px)`; }
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fillStyle = p.color + a + ')';
-      ctx.fill();
-      if (p.blur > 0) ctx.filter = 'none';
-    });
-    splashFrame = requestAnimationFrame(drawSplash);
-  }
-  drawSplash();
-
-  // Boot sequence
-  const bootLines = [
-    ['OK', 'Initialising <span>DannyGC Hub</span> v1.0'],
-    ['OK', 'Connecting to <span>ollama.dannygc.cloud</span>'],
-    ['OK', 'Loading <span>Gemma 4</span> model — RTX A6000 GPU'],
-    ['OK', 'CUDA 12.6 acceleration <span>enabled</span>'],
-    ['OK', 'Mounting <span>8 services</span> — all operational'],
-    ['OK', 'n8n automation <span>workflows active</span>'],
-    ['OK', 'Visual preview engine <span>ready</span>'],
-    ['OK', '<span>Hub online</span> — Welcome back, Danny.'],
-  ];
-
-  const bootContainer = document.getElementById('splash-boot');
-  const fill = document.getElementById('splash-fill');
-  const pct = document.getElementById('splash-pct');
-  let lineIdx = 0;
-
-  function addBootLine() {
-    if (lineIdx >= bootLines.length) {
-      // All done — launch app
-      setTimeout(launchApp, 800);
-      return;
-    }
-    const [status, text] = bootLines[lineIdx];
-    const div = document.createElement('div');
-    div.className = 'boot-line';
-    div.style.animationDelay = '0s';
-    div.innerHTML = `<span class="boot-ok">[ ${status} ]</span><span class="boot-text">${text}</span>`;
-    bootContainer.appendChild(div);
-    lineIdx++;
-    const progress = Math.round((lineIdx / bootLines.length) * 100);
-    fill.style.width = progress + '%';
-    pct.textContent = progress + '%';
-    setTimeout(addBootLine, 850);
-  }
-
-  setTimeout(addBootLine, 1400);
-
-  function launchApp() {
-    cancelAnimationFrame(splashFrame);
-    const splash = document.getElementById('splash');
-    splash.classList.add('exiting');
-    setTimeout(() => {
-      splash.style.display = 'none';
-      const app = document.getElementById('app');
-      app.classList.add('visible');
-      startApp();
-    }, 800);
-  }
-})();
-
-// ═══ MAIN APP ═══
-function startApp() {
-  initBgCanvas();
-  initClock();
-  initServiceNav();
-  initServicesList();
-  checkGemmaStatus();
-  setInterval(checkGemmaStatus, 30000);
-  loadPreview(SERVICES[0]);
-}
-
-// Background canvas
-function initBgCanvas() {
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, nodes = [], packets = [];
-  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-  window.addEventListener('resize', resize); resize();
-  const count = Math.floor((W * H) / 20000);
-  for (let i = 0; i < count; i++) {
-    nodes.push({ x: Math.random()*W, y: Math.random()*H, vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25, r:Math.random()*2+0.8, color:Math.random()>0.5?'rgba(0,200,255,':'rgba(245,166,35,', pulse:Math.random()*Math.PI*2 });
-  }
-  let frame = 0;
-  function draw() {
-    ctx.clearRect(0,0,W,H); frame++;
-    if (frame%20===0 && nodes.length>=2) {
-      const a=nodes[Math.floor(Math.random()*nodes.length)], b=nodes[Math.floor(Math.random()*nodes.length)];
-      if (a!==b && Math.hypot(b.x-a.x,b.y-a.y)<200) packets.push({ax:a.x,ay:a.y,bx:b.x,by:b.y,t:0,color:a.color});
-    }
-    nodes.forEach(n => {
-      n.x+=n.vx; n.y+=n.vy; n.pulse+=0.02;
-      if(n.x<0||n.x>W) n.vx*=-1; if(n.y<0||n.y>H) n.vy*=-1;
-    });
-    for (let i=0;i<nodes.length;i++) for (let j=i+1;j<nodes.length;j++) {
-      const d=Math.hypot(nodes[i].x-nodes[j].x,nodes[i].y-nodes[j].y);
-      if(d<150){ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.strokeStyle=nodes[i].color+(0.1*(1-d/150))+')';ctx.lineWidth=0.5;ctx.stroke();}
-    }
-    nodes.forEach(n => { const g=0.5+0.5*Math.sin(n.pulse);ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=n.color+g+')';ctx.fill(); });
-    packets=packets.filter(p=>p.t<=1);
-    packets.forEach(p => { p.t+=0.02;const x=p.ax+(p.bx-p.ax)*p.t,y=p.ay+(p.by-p.ay)*p.t;ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fillStyle=p.color+'0.85)';ctx.fill(); });
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
-
-// Clock
-function initClock() {
-  function update() {
-    const now = new Date();
-    document.getElementById('topbar-clock').textContent = now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  }
-  update(); setInterval(update, 1000);
-}
-
-// Service nav tabs
-function initServiceNav() {
-  const nav = document.getElementById('service-nav');
-  SERVICES.forEach((s, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'snav-btn' + (i===0?' active':'');
-    btn.dataset.id = s.id;
-    btn.innerHTML = `<span class="snav-dot"></span>${s.icon} ${s.name}`;
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.snav-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      loadPreview(s);
-    });
-    nav.appendChild(btn);
-  });
-}
-
-// Service list (right panel)
-function initServicesList() {
-  const list = document.getElementById('services-list');
-  const groups = [
-    { label:'AI & Intelligence', ids:['ollama'] },
-    { label:'Dev Tools', ids:['code','files','kasm'] },
-    { label:'Monitoring', ids:['portainer','grafana','monitor'] },
-    { label:'Automation', ids:['n8n'] },
-    { label:'Productivity', ids:['office','portal'] },
-  ];
-  groups.forEach(g => {
-    const lbl = document.createElement('div');
-    lbl.className = 'section-label'; lbl.textContent = g.label;
-    list.appendChild(lbl);
-    g.ids.forEach(id => {
-      const s = SERVICES.find(x=>x.id===id);
-      if (!s) return;
-      const item = document.createElement('div');
-      item.className = 'service-item'; item.dataset.id = id;
-      item.innerHTML = `<div class="service-icon">${s.icon}</div><div class="service-info"><div class="service-name">${s.name}</div><div class="service-desc">${s.desc}</div></div><span class="service-badge ${s.badgeClass}">${s.badge}</span><div class="service-status"></div>`;
-      item.addEventListener('click', () => {
-        document.querySelectorAll('.snav-btn').forEach(b=>b.classList.remove('active'));
-        const navBtn = document.querySelector(`.snav-btn[data-id="${id}"]`);
-        if (navBtn) navBtn.classList.add('active');
-        loadPreview(s);
-      });
-      list.appendChild(item);
-    });
-  });
-}
-
-// Load preview
-function loadPreview(service) {
-  const wrap = document.getElementById('preview-frame-wrap');
-  document.getElementById('preview-service-name').textContent = service.name.toUpperCase();
-  document.getElementById('preview-service-url').textContent = service.url;
-  document.getElementById('preview-open-btn').href = service.url;
-  document.getElementById('preview-status-badge').textContent = service.name;
-
-  // Highlight active service in list
-  document.querySelectorAll('.service-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.id === service.id);
-  });
-
-  wrap.innerHTML = '';
-
-  // Use mock dashboard if available, otherwise show clean service card
-  if (service.id === 'ollama') {
-    showGemmaCodingPreview(wrap);
-  } else if (service.id === 'terminal') {
-    showTerminalPreview(wrap);
-  } else if (service.id === 'cloud') {
-    showCloudPreview(wrap, service);
-  } else if (MOCK_DASHBOARDS[service.id]) {
-    showMockDashboard(wrap, service);
-  } else {
-    showServiceCard(wrap, service);
-  }
-}
-
-// ═══ GEMMA CODING PREVIEW ═══
-let gemmaCodingTimer = null;
-function showGemmaCodingPreview(wrap) {
-  if (gemmaCodingTimer) { clearInterval(gemmaCodingTimer); gemmaCodingTimer = null; }
-
-  const snippets = [
-    {
-      lang: 'Python',
-      prompt: '# Gemma 4 — Write a FastAPI endpoint for user auth',
-      lines: [
-        '<span style="color:#a855f7">from</span> <span style="color:#00c8ff">fastapi</span> <span style="color:#a855f7">import</span> FastAPI, HTTPException',
-        '<span style="color:#a855f7">from</span> <span style="color:#00c8ff">pydantic</span> <span style="color:#a855f7">import</span> BaseModel',
-        '<span style="color:#a855f7">import</span> <span style="color:#00c8ff">jwt</span>',
-        '',
-        'app = FastAPI()',
-        '',
-        '<span style="color:#a855f7">class</span> <span style="color:#f5a623">UserLogin</span>(BaseModel):',
-        '    username: <span style="color:#22c55e">str</span>',
-        '    password: <span style="color:#22c55e">str</span>',
-        '',
-        '<span style="color:#00c8ff">@app.post</span>(<span style="color:#22c55e">"/auth/login"</span>)',
-        '<span style="color:#a855f7">async def</span> <span style="color:#f5a623">login</span>(user: UserLogin):',
-        '    <span style="color:#a855f7">if not</span> verify_user(user.username, user.password):',
-        '        <span style="color:#a855f7">raise</span> HTTPException(status_code=<span style="color:#22c55e">401</span>)',
-        '    token = jwt.encode({<span style="color:#22c55e">"sub"</span>: user.username}, SECRET)',
-        '    <span style="color:#a855f7">return</span> {<span style="color:#22c55e">"token"</span>: token, <span style="color:#22c55e">"type"</span>: <span style="color:#22c55e">"bearer"</span>}',
-      ]
-    },
-    {
-      lang: 'JavaScript',
-      prompt: '// Gemma 4 — Build a real-time WebSocket server',
-      lines: [
-        '<span style="color:#a855f7">const</span> <span style="color:#00c8ff">WebSocket</span> = require(<span style="color:#22c55e">"ws"</span>);',
-        '<span style="color:#a855f7">const</span> wss = <span style="color:#a855f7">new</span> WebSocket.Server({ port: <span style="color:#f5a623">8080</span> });',
-        '',
-        '<span style="color:#a855f7">const</span> clients = <span style="color:#a855f7">new</span> <span style="color:#00c8ff">Set</span>();',
-        '',
-        'wss.on(<span style="color:#22c55e">"connection"</span>, (ws) => {',
-        '    clients.add(ws);',
-        '    console.log(<span style="color:#22c55e">`Client connected — ${clients.size} online`</span>);',
-        '',
-        '    ws.on(<span style="color:#22c55e">"message"</span>, (data) => {',
-        '        clients.forEach(c => {',
-        '            <span style="color:#a855f7">if</span> (c !== ws && c.readyState === WebSocket.OPEN)',
-        '                c.send(data);',
-        '        });',
-        '    });',
-        '',
-        '    ws.on(<span style="color:#22c55e">"close"</span>, () => clients.delete(ws));',
-        '});',
-      ]
-    },
-    {
-      lang: 'Python',
-      prompt: '# Gemma 4 — Neural network with PyTorch',
-      lines: [
-        '<span style="color:#a855f7">import</span> <span style="color:#00c8ff">torch</span>',
-        '<span style="color:#a855f7">import</span> <span style="color:#00c8ff">torch.nn</span> <span style="color:#a855f7">as</span> nn',
-        '',
-        '<span style="color:#a855f7">class</span> <span style="color:#f5a623">NeuralNet</span>(nn.Module):',
-        '    <span style="color:#a855f7">def</span> <span style="color:#f5a623">__init__</span>(self, input_dim, hidden, output):',
-        '        super().__init__()',
-        '        self.net = nn.Sequential(',
-        '            nn.Linear(input_dim, hidden),',
-        '            nn.ReLU(),',
-        '            nn.Dropout(<span style="color:#f5a623">0.3</span>),',
-        '            nn.Linear(hidden, output),',
-        '            nn.Softmax(dim=<span style="color:#f5a623">-1</span>)',
-        '        )',
-        '',
-        '    <span style="color:#a855f7">def</span> <span style="color:#f5a623">forward</span>(self, x):',
-        '        <span style="color:#a855f7">return</span> self.net(x)',
-      ]
-    }
-  ];
-
-  let snippetIdx = 0;
-
-  function renderSnippet() {
-    const s = snippets[snippetIdx % snippets.length];
-    snippetIdx++;
-
-    wrap.innerHTML = `
-      <div style="width:100%;height:100%;display:flex;flex-direction:column;background:#020a18;font-family:'JetBrains Mono',monospace;overflow:hidden">
-        <!-- Header bar -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(0,5,16,0.95);border-bottom:1px solid rgba(0,200,255,0.15);flex-shrink:0">
-          <div style="display:flex;align-items:center;gap:10px">
-            <img src="avatar_v2.png" onerror="this.src='avatar.png'" style="width:22px;height:22px;border-radius:5px;border:1px solid rgba(0,200,255,0.4)">
-            <span style="color:#a855f7;font-size:0.7rem;font-weight:700;letter-spacing:0.1em">GEMMA 4</span>
-            <span style="color:rgba(0,200,255,0.4);font-size:0.65rem">— coding assistant</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:4px;padding:2px 8px;font-size:0.6rem;color:#f5a623">⚡ RTX A6000</span>
-            <span style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:4px;padding:2px 8px;font-size:0.6rem;color:#a855f7">${s.lang}</span>
-            <span style="display:flex;align-items:center;gap:4px;font-size:0.6rem;color:rgba(34,197,94,0.8)">
-              <span style="width:5px;height:5px;border-radius:50%;background:#22c55e;box-shadow:0 0 4px #22c55e;display:inline-block"></span>generating
-            </span>
-          </div>
-        </div>
-        <!-- Prompt bar -->
-        <div style="padding:7px 14px;background:rgba(168,85,247,0.06);border-bottom:1px solid rgba(168,85,247,0.1);flex-shrink:0">
-          <span style="font-size:0.65rem;color:rgba(168,85,247,0.7)">${s.prompt}</span>
-        </div>
-        <!-- Code area -->
-        <div style="flex:1;overflow:hidden;position:relative;padding:14px 18px">
-          <div id="gemma-code-output" style="font-size:0.72rem;line-height:1.7;color:#c8e8ff"></div>
-          <span id="gemma-cursor" style="display:inline-block;width:8px;height:14px;background:#00c8ff;vertical-align:middle;animation:cursorBlink 0.7s step-end infinite;margin-left:1px"></span>
-        </div>
-        <!-- Footer -->
-        <div style="padding:6px 14px;border-top:1px solid rgba(0,200,255,0.1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:rgba(0,5,16,0.9)">
-          <span style="font-size:0.6rem;color:rgba(0,200,255,0.4)">gemma4:latest · 49GB VRAM · CUDA 12.6</span>
-          <span id="gemma-token-count" style="font-size:0.6rem;color:rgba(245,166,35,0.6)">0 tokens</span>
-        </div>
-      </div>`;
-
-    const output = document.getElementById('gemma-code-output');
-    const cursor = document.getElementById('gemma-cursor');
-    const tokenCount = document.getElementById('gemma-token-count');
-    let lineIdx = 0;
-    let charIdx = 0;
-    let tokens = 0;
-    let currentLineEl = null;
-
-    function typeChar() {
-      if (lineIdx >= s.lines.length) {
-        // Done — pause then load next snippet
-        cursor.style.display = 'none';
-        gemmaCodingTimer = setTimeout(renderSnippet, 3200);
-        return;
-      }
-      const line = s.lines[lineIdx];
-      if (charIdx === 0) {
-        currentLineEl = document.createElement('div');
-        output.appendChild(currentLineEl);
-      }
-      // Strip HTML tags for char counting, but render HTML directly for syntax colour
-      const stripped = line.replace(/<[^>]+>/g, '');
-      if (charIdx < stripped.length) {
-        // Reveal HTML progressively by tracking visible char count
-        let visible = 0;
-        let result = '';
-        let inTag = false;
-        for (let i = 0; i < line.length; i++) {
-          if (line[i] === '<') inTag = true;
-          if (!inTag) visible++;
-          result += line[i];
-          if (line[i] === '>') inTag = false;
-          if (visible >= charIdx + 1 && !inTag) break;
-        }
-        currentLineEl.innerHTML = result;
-        charIdx++;
-        tokens++;
-        tokenCount.textContent = tokens + ' tokens';
-        gemmaCodingTimer = setTimeout(typeChar, line === '' ? 0 : 18 + Math.random() * 22);
-      } else {
-        lineIdx++; charIdx = 0;
-        gemmaCodingTimer = setTimeout(typeChar, line === '' ? 60 : 80);
-      }
-    }
-    typeChar();
-  }
-
-  renderSnippet();
-}
-
-function showServiceCard(wrap, service) {
-  const badgeColour = {
-    'purple': '#a855f7', 'gold': 'var(--gold)', 'green': '#22c55e', '': 'var(--cyan)'
-  }[service.badgeClass] || 'var(--cyan)';
-  wrap.innerHTML = `
-    <div class="preview-placeholder" style="gap:18px">
-      <div style="font-size:4.5rem;filter:drop-shadow(0 0 28px ${badgeColour});animation:logoFloat 3s ease-in-out infinite">${service.icon}</div>
-      <div style="font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;color:${badgeColour};letter-spacing:0.12em">${service.name.toUpperCase()}</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text-dim);max-width:340px;text-align:center">${service.desc}</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:rgba(0,200,255,0.5);margin-top:-6px">${service.url}</div>
-      <div style="display:flex;gap:10px;margin-top:4px">
-        <a href="${service.url}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,rgba(0,200,255,0.15),rgba(0,136,187,0.1));border:1px solid rgba(0,200,255,0.35);border-radius:9px;padding:10px 22px;font-size:0.8rem;color:var(--cyan);text-decoration:none;font-family:'JetBrains Mono',monospace;transition:all 0.2s" onmouseover="this.style.background='rgba(0,200,255,0.25)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(0,200,255,0.15),rgba(0,136,187,0.1))'">
-          ▶ Open ${service.name}
-        </a>
-      </div>
-      <div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text-dim)">
-        <div style="width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 5px #22c55e;animation:dotPulse 2s ease-in-out infinite"></div>
-        Service operational
-      </div>
-    </div>`;
-}
-
-function showMockDashboard(wrap, service) {
-  const mock = MOCK_DASHBOARDS[service.id];
-  const bars = [60,80,45,90,55,70,85,40,75,65].map(h=>`<div class="mock-bar" style="height:${h}%;animation-delay:${Math.random()*1.5}s"></div>`).join('');
-  const sparkPoints = Array.from({length:12},(_,i)=>`${i*30},${40-Math.random()*30}`).join(' ');
-  const cards = mock.metrics.map(m=>`
-    <div class="mock-card">
-      <div class="mock-card-label">${m.label}</div>
-      <div class="mock-value ${m.color}">${m.val}</div>
-      <div class="mock-sparkline"><svg viewBox="0 0 330 40" preserveAspectRatio="none"><polyline points="${sparkPoints}" style="stroke:var(--${m.color==='cyan'?'cyan':m.color==='gold'?'gold':'cyan'})"/></svg></div>
-    </div>`).join('');
-  wrap.innerHTML = `
-    <div class="mock-dashboard">
-      <div class="mock-header">
-        <div class="mock-title">${mock.title} DASHBOARD</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-dim)">LIVE SIMULATION</div>
-      </div>
-      ${cards}
-      <div class="mock-card" style="grid-column:1/-1">
-        <div class="mock-card-label">Activity</div>
-        <div class="mock-bar-chart">${bars}</div>
-      </div>
-    </div>`;
-}
-
-// Gemma status
-const OLLAMA_BASE = 'https://ollama.dannygc.cloud';
-let gemmaOnline = false;
-async function checkGemmaStatus() {
-  try {
-    const res = await fetch(OLLAMA_BASE + '/api/tags', { signal: AbortSignal.timeout(6000) });
-    if (res.ok) {
-      const data = await res.json();
-      const models = data.models || [];
-      const m = models.find(x=>x.name&&x.name.toLowerCase().includes('gemma')) || models[0];
-      const modelName = m ? m.name : 'gemma4:latest';
-      const short = modelName.split(':')[0];
-      gemmaOnline = true;
-      document.getElementById('gemma-dot').className = 'status-dot green';
-      document.getElementById('gemma-status-text').textContent = short;
-      document.getElementById('ai-stat-val').textContent = 'Online';
-      document.getElementById('ai-stat-val').style.color = '#22c55e';
-      document.getElementById('ai-stat-sub').textContent = modelName;
-      document.getElementById('ai-stat-bar').style.width = '100%';
-      document.getElementById('ai-stat-bar').style.background = 'linear-gradient(90deg,#16a34a,#22c55e)';
-      document.getElementById('model-name-display').textContent = modelName;
-      document.getElementById('chat-model-badge').textContent = short;
-      document.getElementById('sb-gemma-dot').style.cssText = 'background:#22c55e;box-shadow:0 0 4px #22c55e';
-      document.getElementById('sb-gemma').textContent = short + ' · Online · GPU';
-    } else throw new Error();
-  } catch {
-    gemmaOnline = false;
-    document.getElementById('gemma-dot').className = 'status-dot red';
-    document.getElementById('gemma-status-text').textContent = 'Offline';
-    document.getElementById('ai-stat-val').textContent = 'Offline';
-    document.getElementById('ai-stat-val').style.color = '#ef4444';
-    document.getElementById('ai-stat-sub').textContent = 'Check CORS config';
-    document.getElementById('ai-stat-bar').style.width = '0%';
-    document.getElementById('sb-gemma-dot').style.cssText = 'background:#ef4444;box-shadow:0 0 4px #ef4444';
-    document.getElementById('sb-gemma').textContent = 'Gemma 4 · Offline';
-  }
-}
-
-// Chat
-const chatMessages = document.getElementById('chat-messages');
-const chatInput = document.getElementById('chat-input');
-const chatSend = document.getElementById('chat-send');
-const typingIndicator = document.getElementById('typing-indicator');
-let chatHistory = [];
-
-function getTime() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
-
-function appendMsg(role, text) {
-  const isUser = role === 'user';
-  const div = document.createElement('div');
-  div.className = 'msg ' + (isUser ? 'user' : 'ai');
-  div.innerHTML = `
-    <div class="msg-av ${isUser?'user-av':''}">${ isUser?'D':'<img src="avatar_v2.png" onerror="this.src=\'avatar.png\'" alt="AI">'}</div>
-    <div><div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">${getTime()}</div></div>`;
-  // Insert before typing indicator so new messages appear above the dots but in natural order
-  chatMessages.insertBefore(div, typingIndicator);
-  // Force scroll to bottom after every insertion
-  requestAnimationFrame(() => { chatMessages.scrollTop = chatMessages.scrollHeight; });
-}
-
-// ── Live code mirror into Visual Preview ──
-function extractCodeBlock(text) {
-  // Find the last (or only) code block in the streamed text
-  const matches = [...text.matchAll(/```(\w*)\n?([\s\S]*?)(?:```|$)/g)];
-  if (matches.length > 0) {
-    const last = matches[matches.length - 1];
-    return { lang: last[1] || 'code', code: last[2] };
-  }
-  // If we're mid-stream inside a code block (no closing ```)
-  const open = text.lastIndexOf('```');
-  if (open !== -1) {
-    const after = text.slice(open + 3);
-    const langEnd = after.indexOf('\n');
-    const lang = langEnd > 0 ? after.slice(0, langEnd).trim() : 'code';
-    const code = langEnd > 0 ? after.slice(langEnd + 1) : after;
-    return { lang: lang || 'code', code };
-  }
-  return null;
-}
-
-function syntaxHighlight(code, lang) {
-  const keywords = /\b(import|from|as|def|class|return|if|else|elif|for|while|in|not|and|or|try|except|raise|with|async|await|const|let|var|function|new|this|typeof|instanceof|=>|true|false|null|undefined|void|export|default|require|module)\b/g;
-  const strings = /("[^"]*"|'[^']*'|`[^`]*`)/g;
-  const numbers = /\b(\d+\.?\d*)\b/g;
-  const comments = /(#.*$|\/\/.*$)/gm;
-  const decorators = /(@\w+)/g;
-  const funcs = /\b([A-Z][a-zA-Z0-9_]*)(?=\(|:)/g;
-  return code
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(comments, '<span style="color:#4a7090">$1</span>')
-    .replace(strings, '<span style="color:#22c55e">$1</span>')
-    .replace(keywords, '<span style="color:#a855f7">$1</span>')
-    .replace(numbers, '<span style="color:#f5a623">$1</span>')
-    .replace(decorators, '<span style="color:#00c8ff">$1</span>')
-    .replace(funcs, '<span style="color:#f5a623">$1</span>');
-}
-
-let liveCodeWrap = null;
-let liveCodeEl = null;
-let liveCodeTokenEl = null;
-let liveCodeLangEl = null;
-let liveCodeActive = false;
-
-function initLiveCodePreview(lang) {
-  const wrap = document.getElementById('preview-frame-wrap');
-  if (gemmaCodingTimer) { clearTimeout(gemmaCodingTimer); gemmaCodingTimer = null; }
-  wrap.innerHTML = `
-    <div id="gemma-code-panel" style="width:100%;height:100%;display:flex;flex-direction:column;background:#020a18;font-family:'JetBrains Mono',monospace;overflow:hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(0,5,16,0.95);border-bottom:1px solid rgba(0,200,255,0.15);flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:10px">
-          <img src="avatar_v2.png" onerror="this.src='avatar.png'" style="width:22px;height:22px;border-radius:5px;border:1px solid rgba(0,200,255,0.4)">
-          <span style="color:#a855f7;font-size:0.7rem;font-weight:700;letter-spacing:0.1em">GEMMA 4</span>
-          <span style="color:rgba(0,200,255,0.4);font-size:0.65rem">— live coding</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:4px;padding:2px 8px;font-size:0.6rem;color:#f5a623">⚡ RTX A6000</span>
-          <span id="live-lang-badge" style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:4px;padding:2px 8px;font-size:0.6rem;color:#a855f7">${lang}</span>
-          <span style="display:flex;align-items:center;gap:4px;font-size:0.6rem;color:rgba(34,197,94,0.8)">
-            <span style="width:5px;height:5px;border-radius:50%;background:#22c55e;box-shadow:0 0 4px #22c55e;display:inline-block;animation:dotPulse 1s ease-in-out infinite"></span>streaming
-          </span>
-        </div>
-      </div>
-      <div style="flex:1;overflow-y:auto;padding:14px 18px;scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.15) transparent">
-        <div id="live-code-output" style="font-size:0.72rem;line-height:1.75;color:#c8e8ff;white-space:pre-wrap"></div>
-      </div>
-      <div style="padding:6px 14px;border-top:1px solid rgba(0,200,255,0.1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:rgba(0,5,16,0.9)">
-        <span style="font-size:0.6rem;color:rgba(0,200,255,0.4)">gemma4:latest · 49GB VRAM · CUDA 12.6</span>
-        <span id="live-token-count" style="font-size:0.6rem;color:rgba(245,166,35,0.6)">0 tokens</span>
-      </div>
-    </div>`;
-  liveCodeEl = document.getElementById('live-code-output');
-  liveCodeTokenEl = document.getElementById('live-token-count');
-  liveCodeLangEl = document.getElementById('live-lang-badge');
-  liveCodeActive = true;
-  // Switch preview nav to ollama tab
-  document.querySelectorAll('.snav-btn').forEach(b => b.classList.toggle('active', b.dataset.id === 'ollama'));
-  document.getElementById('preview-status-badge').textContent = 'Gemma 4 — Live Coding';
-  document.getElementById('preview-service-name').textContent = 'GEMMA 4 — LIVE CODE';
-  document.getElementById('preview-service-url').textContent = 'ollama.dannygc.cloud — streaming';
-  document.getElementById('preview-open-btn').href = 'https://ai.dannygc.cloud';
-}
-
-function updateLiveCodePreview(code, lang, tokenCount) {
-  if (!liveCodeEl) return;
-  if (liveCodeLangEl && lang) liveCodeLangEl.textContent = lang;
-  liveCodeEl.innerHTML = syntaxHighlight(code, lang);
-  if (liveCodeTokenEl) liveCodeTokenEl.textContent = tokenCount + ' tokens';
-  // Auto-scroll code window
-  const codeWrap = liveCodeEl.parentElement;
-  if (codeWrap) codeWrap.scrollTop = codeWrap.scrollHeight;
-  // If Live Render mode is active, also update the render frame
-  if (currentRenderMode === 'render') applyLiveRender(code, lang);
-}
-
-// ═══ CODE VIEW / LIVE RENDER TOGGLE ═══
-let currentRenderMode = 'code';
-let lastRenderedCode = '';
-let lastRenderedLang = '';
-
-function setRenderMode(mode) {
-  currentRenderMode = mode;
-  document.getElementById('btn-code-view').classList.toggle('active', mode === 'code');
-  document.getElementById('btn-live-render').classList.toggle('active', mode === 'render');
-
-  const wrap = document.getElementById('preview-frame-wrap');
-  const codePanel = document.getElementById('gemma-code-panel');
-  const renderPanel = document.getElementById('gemma-render-panel');
-
-  if (mode === 'render') {
-    if (codePanel) codePanel.style.display = 'none';
-    if (lastRenderedCode) {
-      applyLiveRender(lastRenderedCode, lastRenderedLang);
-    } else {
-      // Show placeholder if no code yet
-      let rp = renderPanel || document.createElement('div');
-      rp.id = 'gemma-render-panel';
-      rp.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a;flex-direction:column;gap:10px';
-      rp.innerHTML = `<div style="font-size:2.5rem">&#9670;</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:rgba(0,200,255,0.6)">Waiting for Gemma to generate SVG or HTML...</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:rgba(0,200,255,0.3)">Try: "draw me an SVG circuit" or "write an HTML dashboard"</div>`;
-      if (!renderPanel) wrap.appendChild(rp);
-      rp.style.display = 'flex';
-    }
-  } else {
-    // Code View — hide render panel, show code panel
-    if (renderPanel) renderPanel.style.display = 'none';
-    if (codePanel) codePanel.style.display = 'flex';
-  }
-}
-
-function applyLiveRender(code, lang) {
-  lastRenderedCode = code;
-  lastRenderedLang = lang || '';
-  const wrap = document.getElementById('preview-frame-wrap');
-  const lowerLang = (lang || '').toLowerCase();
-
-  // Hide code panel
-  const codePanel = document.getElementById('gemma-code-panel');
-  if (codePanel) codePanel.style.display = 'none';
-
-  // Get or create render panel
-  let rp = document.getElementById('gemma-render-panel');
-  if (!rp) {
-    rp = document.createElement('div');
-    rp.id = 'gemma-render-panel';
-    rp.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a;overflow:hidden';
-    wrap.appendChild(rp);
-  }
-  rp.style.display = 'flex';
-  rp.innerHTML = ''; // clear previous render
-
-  // Detect SVG
-  const isSvg = lowerLang === 'svg' || code.trim().startsWith('<svg') || /<svg[\s>]/i.test(code);
-  // Detect HTML
-  const isHtml = lowerLang === 'html' || /<!doctype|<html|<body|<div|<section/i.test(code);
-  // Detect image URL
-  const imgMatch = code.match(/https?:\/\/[^\s"'<>]+\.(?:png|jpg|jpeg|gif|webp|svg)/i);
-
-  if (isSvg) {
-    rp.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#0a0f1a;overflow:auto;padding:16px;box-sizing:border-box';
-    rp.innerHTML = code;
-    const svgEl = rp.querySelector('svg');
-    if (svgEl) {
-      svgEl.style.maxWidth = '100%';
-      svgEl.style.maxHeight = '100%';
-      svgEl.style.filter = 'drop-shadow(0 0 16px rgba(0,200,255,0.4))';
-    }
-  } else if (isHtml) {
-    rp.style.cssText = 'width:100%;height:100%;display:block;background:#fff;overflow:hidden';
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'width:100%;height:100%;border:none';
-    iframe.sandbox = 'allow-scripts allow-same-origin';
-    rp.appendChild(iframe);
-    const doc = iframe.contentDocument || iframe.contentWindow.document;
-    doc.open(); doc.write(code); doc.close();
-  } else if (imgMatch) {
-    rp.innerHTML = `<img src="${imgMatch[0]}" style="max-width:90%;max-height:90%;object-fit:contain;border-radius:8px;box-shadow:0 0 24px rgba(0,200,255,0.25)" onerror="this.parentElement.innerHTML='<span style=color:#ef4444;font-family:monospace;font-size:0.75rem>Image failed to load: ${imgMatch[0]}</span>'">`;
-  } else {
-    rp.innerHTML = `<div style="text-align:center;font-family:'JetBrains Mono',monospace;padding:20px">
-      <div style="font-size:2.5rem;margin-bottom:12px">&#9670;</div>
-      <div style="font-size:0.72rem;color:rgba(0,200,255,0.6);margin-bottom:8px">No renderable output detected</div>
-      <div style="font-size:0.62rem;color:rgba(0,200,255,0.3);line-height:1.6">Ask Gemma to generate SVG graphics,<br>HTML layouts, or share an image URL</div>
-    </div>`;
-  }
-}
-
-// ═══ CLOUD PREVIEW ═══
-function showCloudPreview(wrap, service) {
-  wrap.innerHTML = `
-    <div style="width:100%;height:100%;display:flex;flex-direction:column;background:#020a18;overflow:hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:rgba(0,5,16,0.95);border-bottom:1px solid rgba(168,85,247,0.2);flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:1rem">☁️</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#a855f7;font-weight:700;letter-spacing:0.08em">CLOUD SEARCH</span>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:rgba(0,200,255,0.4)">Agent Zero</span>
-        </div>
-        <span style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:4px;padding:2px 8px;font-size:0.6rem;color:#a855f7;font-family:'JetBrains Mono',monospace">CLOUD</span>
-      </div>
-      <iframe src="/cloud-search/" style="flex:1;width:100%;border:none;background:#fff" allow="fullscreen"
-        onerror="this.parentElement.innerHTML+='<div style=position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:monospace;font-size:0.65rem;color:#ef4444;background:rgba(0,0,0,0.7);padding:6px 12px;border-radius:6px>Cloud search not found at /cloud-search/</div>'"
-      ></iframe>
-    </div>`;
-}
-
-// ═══ BUILT-IN TERMINAL ═══
-let termHistory = [];
-let termHistIdx = -1;
-let termCwd = '~';
-
-function showTerminalPreview(wrap) {
-  wrap.innerHTML = `
-    <div style="width:100%;height:100%;display:flex;flex-direction:column;background:#020a18;font-family:'JetBrains Mono',monospace;overflow:hidden">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:rgba(0,5,16,0.95);border-bottom:1px solid rgba(0,200,255,0.15);flex-shrink:0">
-        <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:0.9rem">⌨️</span>
-          <span style="color:var(--cyan);font-size:0.68rem;font-weight:700;letter-spacing:0.08em">TERMINAL</span>
-          <span style="color:rgba(0,200,255,0.4);font-size:0.6rem">hub.dannygc.cloud</span>
-        </div>
-        <div style="display:flex;gap:6px">
-          <span style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block"></span>
-          <span style="width:10px;height:10px;border-radius:50%;background:#f5a623;display:inline-block"></span>
-          <span style="width:10px;height:10px;border-radius:50%;background:#22c55e;display:inline-block"></span>
-        </div>
-      </div>
-      <div id="term-output" style="flex:1;overflow-y:auto;padding:10px 14px;font-size:0.72rem;line-height:1.6;color:#c8e8ff;scrollbar-width:thin;scrollbar-color:rgba(0,200,255,0.15) transparent">
-        <div style="color:rgba(0,200,255,0.5);margin-bottom:6px">DannyGC Hub Terminal v1.0 &mdash; Type <span style="color:#22c55e">help</span> for commands</div>
-      </div>
-      <div style="display:flex;align-items:center;padding:8px 14px;border-top:1px solid rgba(0,200,255,0.12);background:rgba(0,5,16,0.9);flex-shrink:0;gap:8px">
-        <span style="color:#22c55e;font-size:0.7rem;white-space:nowrap" id="term-prompt">danny@hub:<span id="term-cwd">~</span>$</span>
-        <input id="term-input" type="text" autocomplete="off" spellcheck="false"
-          style="flex:1;background:transparent;border:none;outline:none;color:#c8e8ff;font-family:'JetBrains Mono',monospace;font-size:0.72rem;caret-color:var(--cyan)"
-          placeholder="enter command...">
-      </div>
-    </div>`;
-
-  const output = document.getElementById('term-output');
-  const input = document.getElementById('term-input');
-  const cwdEl = document.getElementById('term-cwd');
-
-  const COMMANDS = {
-    help: () => [
-      '<span style="color:#a855f7">Available commands:</span>',
-      '  <span style="color:#22c55e">help</span>        &mdash; show this help',
-      '  <span style="color:#22c55e">clear</span>       &mdash; clear terminal',
-      '  <span style="color:#22c55e">date</span>        &mdash; show current date/time',
-      '  <span style="color:#22c55e">whoami</span>      &mdash; current user',
-      '  <span style="color:#22c55e">hostname</span>    &mdash; server hostname',
-      '  <span style="color:#22c55e">uptime</span>      &mdash; simulated uptime',
-      '  <span style="color:#22c55e">ls</span>          &mdash; list directory',
-      '  <span style="color:#22c55e">pwd</span>         &mdash; print working directory',
-      '  <span style="color:#22c55e">echo [text]</span> &mdash; print text',
-      '  <span style="color:#22c55e">services</span>    &mdash; list Hub services',
-      '  <span style="color:#22c55e">status</span>      &mdash; system status',
-      '  <span style="color:#22c55e">gemma [msg]</span> &mdash; ask Gemma AI',
-    ],
-    clear: () => { output.innerHTML = ''; return []; },
-    date: () => [new Date().toString()],
-    whoami: () => ['<span style="color:#22c55e">danny</span>'],
-    hostname: () => ['hub.dannygc.cloud'],
-    uptime: () => ['up 99 days, 4:20, 1 user, load average: 0.12, 0.08, 0.05'],
-    pwd: () => [termCwd === '~' ? '/home/danny' : termCwd],
-    ls: () => ['<span style="color:#00c8ff">services/</span>  <span style="color:#00c8ff">logs/</span>  <span style="color:#22c55e">config.yml</span>  <span style="color:#22c55e">README.md</span>  <span style="color:#a855f7">.env</span>'],
-    services: () => SERVICES.map(s => `  <span style="color:#00c8ff">${s.icon}</span> <span style="color:#22c55e">${s.name}</span> &mdash; ${s.url||'built-in'}`),
-    status: () => [
-      '<span style="color:#a855f7">System Status:</span>',
-      `  GPU: <span style="color:#f5a623">⚡ RTX A6000 · 49GB VRAM</span>`,
-      `  AI:  <span style="color:${gemmaOnline?'#22c55e':'#ef4444'}">${gemmaOnline?'Gemma 4 Online':'Gemma 4 Offline'}</span>`,
-      `  Hub: <span style="color:#22c55e">Online</span>`,
-      `  Services: <span style="color:#22c55e">${SERVICES.length} registered</span>`,
-    ],
-  };
-
-  function termPrint(lines, cmdText) {
-    if (cmdText !== undefined) {
-      const promptLine = document.createElement('div');
-      promptLine.innerHTML = `<span style="color:#22c55e">danny@hub:${termCwd}$</span> <span style="color:#c8e8ff">${cmdText.replace(/</g,'&lt;')}</span>`;
-      output.appendChild(promptLine);
-    }
-    lines.forEach(l => {
-      const d = document.createElement('div');
-      d.innerHTML = l;
-      output.appendChild(d);
-    });
-    output.scrollTop = output.scrollHeight;
-  }
-
-  input.addEventListener('keydown', async function(e) {
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (termHistIdx < termHistory.length - 1) termHistIdx++;
-      input.value = termHistory[termHistory.length - 1 - termHistIdx] || '';
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (termHistIdx > 0) termHistIdx--;
-      else { termHistIdx = -1; input.value = ''; return; }
-      input.value = termHistory[termHistory.length - 1 - termHistIdx] || '';
-    } else if (e.key === 'Enter') {
-      const raw = input.value.trim();
-      input.value = '';
-      termHistIdx = -1;
-      if (!raw) return;
-      termHistory.push(raw);
-      const [cmd, ...args] = raw.split(' ');
-      const rest = args.join(' ');
-
-      if (cmd === 'echo') {
-        termPrint([rest || ''], raw);
-      } else if (cmd === 'gemma') {
-        termPrint([`<span style="color:rgba(0,200,255,0.5)">Sending to Gemma...</span>`], raw);
-        if (!gemmaOnline) {
-          termPrint(['<span style="color:#ef4444">Gemma is offline. Fix CORS first.</span>']);
-        } else {
-          try {
-            const res = await fetch(OLLAMA_BASE + '/api/chat', {
-              method: 'POST', headers: {'Content-Type':'application/json'},
-              body: JSON.stringify({model:'gemma4', messages:[{role:'user',content:rest}], stream:false})
-            });
-            const j = await res.json();
-            const reply = j.message?.content || 'No response';
-            termPrint(reply.split('\n').map(l => `<span style="color:#c8e8ff">${l.replace(/</g,'&lt;')}</span>`));
-          } catch { termPrint(['<span style="color:#ef4444">Connection error.</span>']); }
-        }
-      } else if (COMMANDS[cmd]) {
-        const result = COMMANDS[cmd]();
-        if (result && result.length) termPrint(result, raw);
-        else if (cmd !== 'clear') termPrint([], raw);
-      } else {
-        termPrint([`<span style="color:#ef4444">command not found: ${cmd.replace(/</g,'&lt;')}</span><span style="color:rgba(0,200,255,0.4)"> &mdash; type 'help' for commands</span>`], raw);
-      }
-    }
-  });
-
-  setTimeout(() => input.focus(), 100);
-}
-
-// ═══ CLOUD PA TOGGLE ═══
-let cloudPAActive = false;
-function toggleCloudPA() {
-  cloudPAActive = !cloudPAActive;
-  const paContainer = document.getElementById('cloud-pa-container');
-  const chatSection = document.getElementById('gemma-chat-section');
-  const btn = document.getElementById('cloud-pa-btn');
-  const avatarSection = document.querySelector('.avatar-section');
-  const titleEl = document.getElementById('left-panel-title');
-  const badgeEl = document.getElementById('chat-model-badge');
-
-  if (cloudPAActive) {
-    paContainer.style.display = 'flex';
-    chatSection.style.display = 'none';
-    if (avatarSection) avatarSection.style.display = 'none';
-    btn.textContent = '[ Gemma AI ]';
-    btn.style.color = '#a855f7';
-    btn.style.borderColor = 'rgba(168,85,247,0.4)';
-    btn.style.background = 'rgba(168,85,247,0.08)';
-    if (titleEl) titleEl.textContent = 'Agent Zero';
-    if (badgeEl) { badgeEl.textContent = 'a0'; badgeEl.style.background = 'rgba(0,200,255,0.15)'; badgeEl.style.color = 'var(--cyan)'; }
-  } else {
-    paContainer.style.display = 'none';
-    chatSection.style.display = 'flex';
-    if (avatarSection) avatarSection.style.display = '';
-    btn.textContent = '[ Cloud PA ]';
-    btn.style.color = 'var(--cyan)';
-    btn.style.borderColor = 'rgba(0,200,255,0.3)';
-    btn.style.background = 'rgba(0,200,255,0.08)';
-    if (titleEl) titleEl.textContent = 'AI Interface';
-    if (badgeEl) { badgeEl.textContent = 'gemma4'; badgeEl.style.background = ''; badgeEl.style.color = ''; }
-  }
-}
-
-// ═══ AGENT ZERO NATIVE CHAT ═══
-const AZ_ENDPOINT = 'http://38.247.186.142:8090/api_message';
-const AZ_API_KEY  = 'O7m1g0xar';
-
-function azAppendMsg(text, role) {
-  const msgs = document.getElementById('az-messages');
-  const typing = document.getElementById('az-typing');
-  const isAI = role === 'ai';
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex;gap:8px;align-items:flex-start' + (isAI ? '' : ';flex-direction:row-reverse');
-  const avatar = document.createElement('div');
-  avatar.style.cssText = 'width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;' + (isAI ? 'background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.25)' : 'background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.25)');
-  if (isAI) {
-    avatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" width="22" height="22"><rect x="7" y="14" width="12" height="10" rx="2" fill="#0a1628" stroke="rgba(0,200,255,0.5)" stroke-width="0.8"/><polygon points="13,14 11,17 13,19 15,17" fill="rgba(0,200,255,0.7)"/><rect x="8" y="6" width="10" height="9" rx="2.5" fill="#0a1628" stroke="rgba(0,200,255,0.6)" stroke-width="0.8"/><rect x="6" y="8" width="14" height="2" rx="1" fill="#0a1628" stroke="rgba(0,200,255,0.4)" stroke-width="0.7"/><rect x="8" y="3" width="10" height="6" rx="1.5" fill="#0a1628" stroke="rgba(0,200,255,0.4)" stroke-width="0.7"/><ellipse cx="11" cy="11" rx="1.4" ry="1.1" fill="rgba(0,229,255,0.9)"/><ellipse cx="15" cy="11" rx="1.4" ry="1.1" fill="rgba(0,229,255,0.9)"/><rect x="10" y="10" width="6" height="0.7" rx="0.3" fill="rgba(0,200,255,0.4)"/></svg>`;
-  } else {
-    avatar.textContent = 'D';
-  }
-  const bubble = document.createElement('div');
-  bubble.style.cssText = 'padding:8px 12px;font-size:0.72rem;line-height:1.55;max-width:calc(100% - 38px);word-break:break-word;white-space:pre-wrap;' + (isAI ? 'background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.12);border-radius:4px 12px 12px 12px;color:#c8e8ff' : 'background:rgba(245,166,35,0.06);border:1px solid rgba(245,166,35,0.12);border-radius:12px 4px 12px 12px;color:#f5e6c8');
-  bubble.textContent = text;
-  wrap.appendChild(avatar);
-  wrap.appendChild(bubble);
-  msgs.insertBefore(wrap, typing);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-async function sendAgentZero() {
-  const input = document.getElementById('az-input');
-  const typing = document.getElementById('az-typing');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  azAppendMsg(text, 'user');
-  typing.style.display = 'flex';
-  document.getElementById('az-messages').scrollTop = document.getElementById('az-messages').scrollHeight;
-
-  try {
-    const res = await fetch(AZ_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-API-KEY': AZ_API_KEY },
-      body: JSON.stringify({ message: text, stream: false })
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    typing.style.display = 'none';
-    // Agent Zero may return response in different fields — try common ones
-    const reply = data.response || data.message || data.content || data.text || data.output ||
-                  (data.messages && data.messages[data.messages.length-1]?.content) ||
-                  JSON.stringify(data);
-    azAppendMsg(reply, 'ai');
-  } catch (err) {
-    typing.style.display = 'none';
-    azAppendMsg('Connection error: ' + err.message + '\n\nMake sure Agent Zero CORS allows hub.dannygc.cloud.', 'ai');
-  }
-}
-
-async function sendMessage() {
-  const text = chatInput.value.trim();
-  if (!text) return;
-  chatInput.value = ''; chatInput.style.height = 'auto'; chatSend.disabled = true;
-  appendMsg('user', text);
-  chatHistory.push({ role: 'user', content: text });
-  typingIndicator.classList.add('active');
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-  liveCodeActive = false; liveCodeEl = null;
-
-  if (!gemmaOnline) {
-    typingIndicator.classList.remove('active');
-    appendMsg('assistant', 'I\'m currently offline. Please check Ollama is running and CORS is configured.');
-    chatSend.disabled = false; return;
-  }
-
-  try {
-    const res = await fetch(OLLAMA_BASE + '/api/chat', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: document.getElementById('chat-model-badge').textContent || 'gemma4', messages: chatHistory, stream: true })
-    });
-    typingIndicator.classList.remove('active');
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'msg ai';
-    msgDiv.innerHTML = `<div class="msg-av"><img src="avatar_v2.png" onerror="this.src='avatar.png'" alt="AI"></div><div><div class="msg-bubble" id="stream-bubble"></div><div class="msg-time">${getTime()}</div></div>`;
-    // Always insert before typing indicator to keep chronological order
-    chatMessages.insertBefore(msgDiv, typingIndicator);
-    requestAnimationFrame(() => { chatMessages.scrollTop = chatMessages.scrollHeight; });
-    const bubble = document.getElementById('stream-bubble');
-    const reader = res.body.getReader(); const decoder = new TextDecoder();
-    let full = ''; let tokenCount = 0;
-    while (true) {
-      const {done, value} = await reader.read(); if (done) break;
-      const lines = decoder.decode(value).split('\n').filter(l=>l.trim());
-      for (const line of lines) {
-        try {
-          const j = JSON.parse(line);
-          if (j.message && j.message.content) {
-            full += j.message.content;
-            tokenCount++;
-            // Update chat bubble with formatted code blocks
-            bubble.innerHTML = full.replace(/\n/g,'<br>').replace(/```(\w*)[\s\S]*?```/g, (m) =>
-              `<code style="display:block;background:rgba(0,200,255,0.06);border:1px solid rgba(0,200,255,0.15);border-radius:6px;padding:8px 10px;font-size:0.7rem;color:#c8e8ff;white-space:pre-wrap;margin:4px 0">${m.replace(/```\w*/g,'').replace(/```/g,'').trim()}</code>`);
-            // Anchor scroll to bottom on every token
-            requestAnimationFrame(() => { chatMessages.scrollTop = chatMessages.scrollHeight; });
-            // Mirror code to preview panel
-            const cb = extractCodeBlock(full);
-            if (cb) {
-              if (!liveCodeActive) initLiveCodePreview(cb.lang || 'code');
-              updateLiveCodePreview(cb.code, cb.lang, tokenCount);
-            }
-          }
-        } catch{}
-      }
-    }
-    chatHistory.push({ role: 'assistant', content: full });
-    // Final render
-    const finalCb = extractCodeBlock(full);
-    if (finalCb && liveCodeEl) {
-      updateLiveCodePreview(finalCb.code, finalCb.lang, tokenCount);
-      liveCodeLangEl && (liveCodeLangEl.textContent = (finalCb.lang || 'code'));
-      // Update streaming badge to done
-      const streamBadge = document.querySelector('#preview-frame-wrap [style*="streaming"]');
-      if (streamBadge) streamBadge.innerHTML = '<span style="width:5px;height:5px;border-radius:50%;background:#f5a623;box-shadow:0 0 4px #f5a623;display:inline-block"></span>done';
-    }
-  } catch {
-    typingIndicator.classList.remove('active');
-    appendMsg('assistant', 'Connection error. Please check your Ollama CORS settings.');
-  }
-  chatSend.disabled = false; chatInput.focus();
-}
-
-chatSend.addEventListener('click', sendMessage);
-chatInput.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
-chatInput.addEventListener('input', function(){ this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,90)+'px'; });
-</script>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="description" content="DannyGC Cloud Portal — AI-Powered Server Dashboard"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="theme-color" content="#0a0806"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;DannyGC Cloud Portal&lt;/title&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;link rel="manifest" href="/manifest.json"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="apple-mobile-web-app-title" content="DannyGC"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="mobile-web-app-capable" content="yes"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="application-name" content="DannyGC Cloud"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Sora:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* ─── RESET &amp; ROOT ─── */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>html { scroll-behavior: smooth; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>:root {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--bg: #0a0806; --bg2: #120e08; --bg3: #1c1509; --bg4: #261c0c;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--card: #1a1208; --card-hover: #221a0a; --border: rgba(245,166,35,0.18);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--border-bright: rgba(245,166,35,0.50); --amber: #f5a623; --amber-dim: #c47a1e;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--amber-glow: rgba(245,166,35,0.15); --amber-glow2: rgba(245,166,35,0.08);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--cyan: #00c8ff; --cyan-dim: #38bdf8; --cyan-glow: rgba(0,200,255,0.15);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--orange: #f97316; --green: #22c55e; --red: #ef4444; --purple: #a855f7;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--text: #f0e8d8; --text-dim: #a89070; --text-muted: #5a4a30;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--radius: 12px; --radius-lg: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--cat-auto: #f97316; --cat-dev: #00c8ff; --cat-ai: #a855f7; --cat-prod: #22c55e;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>--transition: all 0.22s cubic-bezier(0.23,1,0.32,1);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>::-webkit-scrollbar { width: 5px; height: 5px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>::-webkit-scrollbar-track { background: var(--bg2); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* ─── TECH CANVAS &amp; SPLASH ─── */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#techCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.55; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#splash { position: fixed; inset: 0; z-index: 9999; background: radial-gradient(ellipse at 50% 40%, #050d1a 0%, #000508 60%, #000 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; transition: opacity 1.2s ease, visibility 1.2s ease; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#splash::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px); background-size: 40px 40px; animation: gridDrift 20s linear infinite; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes gridDrift { from{background-position:0 0} to{background-position:40px 40px} }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.splash-logo-wrap { text-align: center; margin-bottom: 24px; position: relative; z-index: 2; animation: splashLogoIn 1.4s ease 0.5s both; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes splashLogoIn { from { opacity: 0; transform: scale(0.75) translateY(-30px); } to { opacity: 1; transform: scale(1) translateY(0); } }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.splash-title { font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #c47a1e, #f5a623, #00c8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.08em; text-transform: uppercase; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.splash-sub { font-size: 0.72rem; color: rgba(0,200,255,0.5); letter-spacing: 0.22em; text-transform: uppercase; margin-top: 6px; }</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.terminal-window { width: min(620px, 90vw); background: #0d0a06; border: 1px solid rgba(245,166,35,0.25); border-radius: 10px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.9); animation: termIn 0.8s ease 1.2s both; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes termIn { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.terminal-bar { background: #160f05; padding: 10px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(245,166,35,0.15); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.term-dot { width: 12px; height: 12px; border-radius: 50%; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.term-dot.red { background: #ff5f57; } .term-dot.yellow { background: #febc2e; } .term-dot.green { background: #28c840; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.terminal-body { padding: 18px 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2; min-height: 180px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.term-line { display: flex; align-items: center; gap: 12px; opacity: 0; transition: opacity 0.3s; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.term-line.visible { opacity: 1; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.term-ok { color: #28c840; font-weight: 700; flex-shrink: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.term-text { color: #a89070; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.term-cursor { display: inline-block; width: 8px; height: 15px; background: var(--amber); animation: blink 1s step-end infinite; vertical-align: middle; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* ─── MAIN LAYOUT ─── */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#app { display: none; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>#app.visible { display: flex; height: 100vh; overflow: hidden; position: relative; z-index: 1; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidebar { width: 230px; min-width: 230px; background: rgba(18,14,8,0.92); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 10; backdrop-filter: blur(12px); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidebar-logo { padding: 18px 16px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.logo-text { font-size: 13px; font-weight: 700; line-height: 1.2; } .logo-text .amber { color: var(--amber); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidebar-nav { flex: 1; padding: 10px 8px; overflow-y: auto; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.12em; color: var(--text-muted); text-transform: uppercase; padding: 0 10px; margin-bottom: 5px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-dim); transition: var(--transition); border: none; background: none; width: 100%; text-align: left; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.nav-item:hover { background: var(--bg3); color: var(--text); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.nav-item.active { background: var(--amber-glow); color: var(--amber); border: 1px solid rgba(245,166,35,0.25); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.nav-icon { font-size: 15px; width: 20px; text-align: center; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.sidebar-status { padding: 10px 14px; border-top: 1px solid var(--border); font-size: 11px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.status-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; color: var(--text-dim); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.status-dot.red { background: var(--red); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>@keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.3);opacity:0.7} }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.status-val { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--green); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.topbar { height: 52px; min-height: 52px; background: rgba(18,14,8,0.88); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.topbar-title { font-size: 16px; font-weight: 700; flex: 1; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.content { flex: 1; overflow-y: auto; padding: 24px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.tab-panel { display: none; } .tab-panel.active { display: block; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>/* ─── CHAT PANEL ─── */</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-panel { display: flex; flex-direction: column; height: 100%; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-info .chat-name { font-size: 14px; font-weight: 700; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-info .chat-model { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-online { margin-left: auto; display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--green); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-msg { display: flex; gap: 10px; max-width: 85%; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-msg.user { align-self: flex-end; flex-direction: row-reverse; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-bubble { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 10px 14px; font-size: 13px; line-height: 1.6; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-msg.user .chat-bubble { background: var(--amber-glow); border-color: rgba(245,166,35,0.35); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-msg-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-input-wrap { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; gap: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 13px; font-family: 'Inter', sans-serif; outline: none; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.chat-send { background: linear-gradient(135deg, var(--amber-dim), var(--amber)); border: none; border-radius: 10px; padding: 10px 18px; color: #0a0806; font-size: 13px; font-weight: 700; cursor: pointer; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;canvas id="techCanvas"&gt;&lt;/canvas&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="splash"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="splash-logo-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="splash-title"&gt;DannyGC Cloud&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="splash-sub"&gt;Cloud Services — We Work So You Don't Have To&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="terminal-window"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="terminal-bar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="term-dot red"&gt;&lt;/div&gt;&lt;div class="term-dot yellow"&gt;&lt;/div&gt;&lt;div class="term-dot green"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;span&gt;dannygc-portal — boot sequence&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="terminal-body" id="termBody"&gt;&lt;div class="term-cursor" id="termCursor"&gt;&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div id="app"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;nav class="sidebar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sidebar-logo"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div&gt;&lt;div class="logo-text"&gt;&lt;span class="amber"&gt;Danny&lt;/span&gt;GC&lt;/div&gt;&lt;div class="logo-sub"&gt;Cloud Portal&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sidebar-nav"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="nav-item active" onclick="showTab('dashboard', this)"&gt;&lt;span class="nav-icon"&gt;🏠&lt;/span&gt;&lt;span&gt;Dashboard&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="nav-item" onclick="showTab('chat', this)"&gt;&lt;span class="nav-icon"&gt;🤖&lt;/span&gt;&lt;span&gt;AI Chat&lt;/span&gt;&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="sidebar-status"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="status-row"&gt;&lt;div class="status-dot green" id="sidebarAiDot"&gt;&lt;/div&gt;&lt;span&gt;AI Core&lt;/span&gt;&lt;span class="status-val" id="ollamaStatus"&gt;checking...&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="status-row"&gt;&lt;div class="status-dot green"&gt;&lt;/div&gt;&lt;span&gt;Portal&lt;/span&gt;&lt;span class="status-val" style="color:var(--amber)"&gt;online&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/nav&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="main"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="topbar"&gt;&lt;div class="topbar-title" id="topbarTitle"&gt;Dashboard&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="content"&gt;</p>
+<p class="p2"><span class="Apple-converted-space">      </span></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="tab-panel active" id="tab-dashboard"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;h2 style="margin-bottom:15px;"&gt;Welcome to the DannyGC Dashboard&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;p style="color:var(--text-dim)"&gt;Navigate to the AI Chat tab to interact with your local DeepSeek agent.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="tab-panel" id="tab-chat"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="chat-panel" style="height:calc(100vh - 100px)"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="chat-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="chat-info"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="chat-name"&gt;DannyGC AI Assistant&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div class="chat-model" id="chatModel"&gt;ollama / deepseek-r1:32b&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="chat-online" id="chatOnline"&gt;&lt;div class="status-dot green"&gt;&lt;/div&gt; Online&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="chat-messages" id="chatMessages"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="chat-msg"&gt;&lt;div class="chat-msg-icon"&gt;☁️&lt;/div&gt;&lt;div class="chat-bubble"&gt;DannyGC AI Core Online. Bare-metal A6000 connection established. Awaiting directive.&lt;/div&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="chat-input-wrap"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input class="chat-input" id="chatInput" placeholder="Enter command directive..." onkeydown="if(event.key==='Enter')sendChat()"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="chat-send" onclick="sendChat()"&gt;EXECUTE&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Simple splash screen logic</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const bootLines = ['Initializing DannyGC Cloud...', 'Connecting to A6000...', 'Mounting UI...'];</p>
+<p class="p1"><span class="Apple-converted-space">  </span>async function runBootSequence() {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const body = document.getElementById('termBody');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const cursor = document.getElementById('termCursor');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for (let i = 0; i &lt; bootLines.length; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await new Promise(r =&gt; setTimeout(r, 600));</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const line = document.createElement('div'); line.className = 'term-line visible';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>line.innerHTML = `&lt;span class="term-ok"&gt;[ OK ]&lt;/span&gt;&lt;span class="term-text"&gt;${bootLines[i]}&lt;/span&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>body.insertBefore(line, cursor);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>await new Promise(r =&gt; setTimeout(r, 800));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('splash').classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('app').classList.add('visible');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>checkOllama();</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function showTab(name, btn) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.tab-panel').forEach(p =&gt; p.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.querySelectorAll('.nav-item').forEach(b =&gt; b.classList.remove('active'));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('tab-' + name).classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (btn) btn.classList.add('active');</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>/* ─── LIVE AI STATUS ─── */</p>
+<p class="p1"><span class="Apple-converted-space">  </span>async function checkOllama() {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const sidebarDot = document.getElementById('sidebarAiDot');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const sidebarSt = document.getElementById('ollamaStatus');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const chatOnline = document.getElementById('chatOnline');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const r = await fetch('http://38.247.186.142:11434/api/tags', { signal: AbortSignal.timeout(5000) });</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (r.ok) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>sidebarDot.className = 'status-dot green';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>sidebarSt.textContent = 'online'; sidebarSt.style.color = 'var(--green)';</p>
+<p class="p1"><span class="Apple-converted-space">        </span>chatOnline.innerHTML = '&lt;div class="status-dot green"&gt;&lt;/div&gt; Online';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>} else throw new Error();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>sidebarDot.className = 'status-dot red';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>sidebarSt.textContent = 'offline'; sidebarSt.style.color = 'var(--red)';</p>
+<p class="p1"><span class="Apple-converted-space">      </span>chatOnline.innerHTML = '&lt;div class="status-dot red"&gt;&lt;/div&gt; Offline (CORS or Server Down)';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>/* ─── AI CHAT ─── */</p>
+<p class="p1"><span class="Apple-converted-space">  </span>async function sendChat() {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const input = document.getElementById('chatInput');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const msg = input.value.trim();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!msg) return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>input.value = '';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const msgs = document.getElementById('chatMessages');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>msgs.innerHTML += `&lt;div class="chat-msg user"&gt;&lt;div class="chat-msg-icon"&gt;👤&lt;/div&gt;&lt;div class="chat-bubble"&gt;${msg}&lt;/div&gt;&lt;/div&gt;`;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const bubbleId = 'ai-msg-' + Date.now();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const thinking = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>thinking.className = 'chat-msg';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>thinking.innerHTML = `&lt;div class="chat-msg-icon"&gt;☁️&lt;/div&gt;&lt;div class="chat-bubble" id="${bubbleId}"&gt;Processing directive...&lt;/div&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>msgs.appendChild(thinking);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>msgs.scrollTop = msgs.scrollHeight;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const res = await fetch('http://38.247.186.142:11434/api/chat', {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>method: 'POST',</p>
+<p class="p1"><span class="Apple-converted-space">        </span>headers: { 'Content-Type': 'application/json' },</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body: JSON.stringify({</p>
+<p class="p1"><span class="Apple-converted-space">          </span>model: 'deepseek-r1:32b',</p>
+<p class="p1"><span class="Apple-converted-space">          </span>messages: [</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ role: 'system', content: 'You are the central intelligence for DannyGC Cloud Services. Your core directive is to execute automated B2B lead enrichment. Keep responses tactical and efficient.' },</p>
+<p class="p1"><span class="Apple-converted-space">            </span>{ role: 'user', content: msg }</p>
+<p class="p1"><span class="Apple-converted-space">          </span>],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>stream: false</p>
+<p class="p1"><span class="Apple-converted-space">        </span>})</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const data = await res.json();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById(bubbleId).innerHTML = data.message.content.replace(/\n/g, '&lt;br&gt;');</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch (err) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById(bubbleId).innerHTML = '&lt;span style="color:var(--red)"&gt;System Error: Could not reach DeepSeek model on the A6000.&lt;/span&gt;';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>msgs.scrollTop = msgs.scrollHeight;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><span class="Apple-converted-space">  </span></p>
+<p class="p1"><span class="Apple-converted-space">  </span>runBootSequence();</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
 </body>
 </html>
